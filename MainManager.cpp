@@ -150,7 +150,7 @@ void MainManager::tcpLoop()
 	}
 }
 
-void MainManager::tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data0, int data1)
+void MainManager::tcpSend(int socket, WAROIDROBOTCOMMAND::ETYPE command, int data0, int data1)
 {
 	WAROIDROBOTDATA d;
 	d.command = (unsigned char) command;
@@ -159,7 +159,7 @@ void MainManager::tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, 
 	send(socket, &d, sizeof(d), 0);
 }
 
-void MainManager::tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data)
+void MainManager::tcpSend(int socket, WAROIDROBOTCOMMAND::ETYPE command, int data)
 {
 	WAROIDROBOTDATA d;
 	d.command = (unsigned char) command;
@@ -185,11 +185,11 @@ void MainManager::onProcess(const WAROIDROBOTDATA& data)
 	{
 		case WAROIDROBOTCOMMAND::C_R_OPEN_CAMERA:
 		{
-			bool onoff = (control.data0 == 1);
+			bool onoff = (data.data0 == 1);
 			if (onoff)
 			{
 				int bitRate = 15000000;
-				switch (control.data1)
+				switch (data.data1)
 				{
 					case 1:
 						bitRate = 8000000;

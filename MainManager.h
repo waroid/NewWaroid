@@ -23,8 +23,8 @@ public:
 private:
 	bool tcpListen();
 	void tcpLoop();
-	void tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data0, int data1);
-	void tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data);
+	void tcpSend(int socket, WAROIDROBOTCOMMAND::ETYPE command, int data0, int data1);
+	void tcpSend(int socket, WAROIDROBOTCOMMAND::ETYPE command, int data);
 	void tcpDisconnect(int socket);
 
 	void onProcess(const WAROIDROBOTDATA& data);

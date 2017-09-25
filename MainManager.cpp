@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <sys/sysinfo.h>
@@ -57,9 +58,7 @@ void MainManager::stop()
 
 	if (m_ownerSocket != INVALID_SOCKET)
 	{
-		close(m_ownerSocket);
-		m_ownerSocket = INVALID_SOCKET;
-		memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
+		tcpDisconnect(m_ownerSocket);
 		GLOG("close owner socket");
 	}
 
@@ -114,6 +113,8 @@ void MainManager::tcpLoop()
 			GLOG("new connection. socket=%d addr=%s", s, inet_ntoa(sockaddrIn.sin_addr));
 			if (m_ownerSocket == INVALID_SOCKET)
 			{
+				int optval = 1;
+				setsockopt(s, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(optval));
 				m_ownerSocket = s;
 				strcpy(m_ownerAddress, inet_ntoa(sockaddrIn.sin_addr));
 				FD_SET(s, &master_fds);
@@ -169,6 +170,11 @@ void MainManager::tcpSend(int socket, WAROIDROBOTCOMMAND::ETYPE command, int dat
 
 void MainManager::tcpDisconnect(int socket)
 {
+	linger ling;
+	ling.l_onoff = 1;
+	ling.l_linger = 0;
+	setsockopt(socket, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling));
+
 	close(socket);
 	if (m_ownerSocket == socket)
 	{

@@ -15,6 +15,7 @@ CSOURCES =
 
 CPPSOURCES = main.cpp \
 	core/Logger.cpp \
+	Global.cpp \
 	MainManager.cpp
 
 OBJECTS = $(CSOURCES:%.c=%.o)

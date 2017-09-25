@@ -25,7 +25,7 @@ namespace MAIN_MANAGER
 using namespace MAIN_MANAGER;
 
 MainManager::MainManager()
-		: m_listenSocket(INVALID_SOCKET), m_ownerSocket(INVALID_SOCKET), m_networkThread(-1)
+		: m_listenSocket(INVALID_SOCKET), m_ownerSocket(INVALID_SOCKET), m_networkThread(-1), m_opendCamera(false)
 {
 	memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
 }
@@ -154,8 +154,8 @@ void MainManager::tcpSend(int socket, WAROIDROBOTCOMMAND::ETYPE command, int dat
 {
 	WAROIDROBOTDATA d;
 	d.command = (unsigned char) command;
-	d.data0 = (char)data0;
-	d.data1 = (char)data1;
+	d.data0 = (char) data0;
+	d.data1 = (char) data1;
 	send(socket, &d, sizeof(d), 0);
 }
 
@@ -163,7 +163,7 @@ void MainManager::tcpSend(int socket, WAROIDROBOTCOMMAND::ETYPE command, int dat
 {
 	WAROIDROBOTDATA d;
 	d.command = (unsigned char) command;
-	d.data = (short)data;
+	d.data = (short) data;
 	send(socket, &d, sizeof(d), 0);
 }
 
@@ -172,6 +172,7 @@ void MainManager::tcpDisconnect(int socket)
 	close(socket);
 	if (m_ownerSocket == socket)
 	{
+		m_opendCamera = false;
 		system("killall raspivid");
 		m_ownerSocket = INVALID_SOCKET;
 		memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
@@ -188,28 +189,34 @@ void MainManager::onProcess(const WAROIDROBOTDATA& data)
 			bool onoff = (data.data0 == 1);
 			if (onoff)
 			{
-				int bitRate = 15000000;
-				switch (data.data1)
+				if (m_opendCamera)
 				{
-					case 1:
-						bitRate = 8000000;
-					break;
-					case 2:
-						bitRate = 4000000;
-					break;
-					case 3:
-						bitRate = 2000000;
-					break;
-					case 4:
-						bitRate = 1000000;
-					break;
+					GLOG("already opened camera");
 				}
+				else
+				{
+					int bitRate = 15000000;
+					switch (data.data1)
+					{
+						case 1:
+							bitRate = 8000000;
+						break;
+						case 2:
+							bitRate = 4000000;
+						break;
+						case 3:
+							bitRate = 2000000;
+						break;
+						case 4:
+							bitRate = 1000000;
+						break;
+					}
 
-				char systemCommand[256];
-				sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", bitRate, m_ownerAddress, CAMERA_PORT);
-				system(systemCommand);
-				GLOG("open camera. system=%s", systemCommand);
-
+					char systemCommand[256];
+					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", bitRate, m_ownerAddress, CAMERA_PORT);
+					system(systemCommand);
+					GLOG("open camera. system=%s", systemCommand);
+				}
 			}
 			else
 			{

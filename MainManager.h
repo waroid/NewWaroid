@@ -34,6 +34,7 @@ private:
 	int m_ownerSocket;
 	char m_ownerAddress[30];
 	pthread_t m_networkThread;
+	bool m_opendCamera;
 
 private:
 	static void* networkWorker(void* param);

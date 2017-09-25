@@ -25,7 +25,7 @@ namespace MAIN_MANAGER
 using namespace MAIN_MANAGER;
 
 MainManager::MainManager()
-		: m_listenSocket(INVALID_SOCKET), m_ownerSocket(INVALID_SOCKET), m_networkThread(-1), m_opendCamera(false)
+		: m_listenSocket(INVALID_SOCKET), m_ownerSocket(INVALID_SOCKET), m_networkThread(-1), m_openedCamera(false)
 {
 	memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
 }
@@ -172,7 +172,7 @@ void MainManager::tcpDisconnect(int socket)
 	close(socket);
 	if (m_ownerSocket == socket)
 	{
-		m_opendCamera = false;
+		m_openedCamera = false;
 		system("killall raspivid");
 		m_ownerSocket = INVALID_SOCKET;
 		memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
@@ -189,7 +189,7 @@ void MainManager::onProcess(const WAROIDROBOTDATA& data)
 			bool onoff = (data.data0 == 1);
 			if (onoff)
 			{
-				if (m_opendCamera)
+				if (m_openedCamera)
 				{
 					GLOG("already opened camera");
 				}
@@ -216,6 +216,7 @@ void MainManager::onProcess(const WAROIDROBOTDATA& data)
 					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", bitRate, m_ownerAddress, CAMERA_PORT);
 					system(systemCommand);
 					GLOG("open camera. system=%s", systemCommand);
+					m_openedCamera = true;
 				}
 			}
 			else
@@ -223,6 +224,7 @@ void MainManager::onProcess(const WAROIDROBOTDATA& data)
 				system("killall raspivid");
 				//system("killall nc");
 				GLOG("close camera. system=killall raspivid");
+				m_openedCamera = false;
 			}
 		}
 		break;

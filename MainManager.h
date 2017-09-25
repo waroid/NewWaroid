@@ -23,18 +23,16 @@ public:
 private:
 	bool tcpListen();
 	void tcpLoop();
-	void tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, signed char value0, signed char value1);
-	void tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, unsigned short value);
+	void tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data0, int data1);
+	void tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data);
 	void tcpDisconnect(int socket);
 
-	bool infoInit();
-	void infoLoop();
-
-	void onProcess(const WAROIDROBOTCONTROL& control);
+	void onProcess(const WAROIDROBOTDATA& data);
 
 private:
 	int m_listenSocket;
 	int m_ownerSocket;
+	char m_ownerAddress[30];
 	pthread_t m_networkThread;
 
 private:

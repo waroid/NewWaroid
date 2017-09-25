@@ -27,6 +27,7 @@ using namespace MAIN_MANAGER;
 MainManager::MainManager()
 		: m_listenSocket(INVALID_SOCKET), m_ownerSocket(INVALID_SOCKET), m_networkThread(-1)
 {
+	memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
 }
 
 MainManager::~MainManager()
@@ -58,6 +59,7 @@ void MainManager::stop()
 	{
 		close(m_ownerSocket);
 		m_ownerSocket = INVALID_SOCKET;
+		memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
 		GLOG("close owner socket");
 	}
 
@@ -81,7 +83,7 @@ bool MainManager::tcpListen()
 	memset(&sockaddrIn, 0, sizeof(sockaddrIn));
 	sockaddrIn.sin_family = AF_INET;
 	sockaddrIn.sin_addr.s_addr = htonl(INADDR_ANY);
-	sockaddrIn.sin_port = htons(5002);
+	sockaddrIn.sin_port = htons(LISTEN_PORT);
 
 	GCHECK_RETFALSE(bind(m_listenSocket, (struct sockaddr* ) &sockaddrIn, sizeof(sockaddrIn)) != -1);
 	GCHECK_RETFALSE(listen(m_listenSocket, 3) != -1);
@@ -98,7 +100,7 @@ void MainManager::tcpLoop()
 	FD_SET(m_listenSocket, &master_fds);
 	int fd_max = m_listenSocket;
 	fd_set read_fds;
-	WAROIDROBOTCONTROL control;
+	WAROIDROBOTDATA data;
 	for (;;)
 	{
 		read_fds = master_fds;
@@ -113,29 +115,30 @@ void MainManager::tcpLoop()
 			if (m_ownerSocket == INVALID_SOCKET)
 			{
 				m_ownerSocket = s;
+				strcpy(m_ownerAddress, inet_ntoa(sockaddrIn.sin_addr));
 				FD_SET(s, &master_fds);
 				if (s > fd_max) fd_max = s;
 			}
 			else
 			{
 				GLOG("close connection. reason=EXIST_OWNER, socket=%d addr=%s", s, inet_ntoa(sockaddrIn.sin_addr));
-				tcpSend(s, WAROIDROBOTCONTROLCOMMAND::ERROR_ACK, WAROIDROBOTCONTROLERROR::EXIST_OWNER);
+				tcpSend(s, WAROIDROBOTCOMMAND::R_C_ERROR, WAROIDROBOTERROR::EXIST_OWNER);
 				tcpDisconnect(s);
 			}
 		}
 
 		if (m_ownerSocket != INVALID_SOCKET && FD_ISSET(m_ownerSocket, &read_fds))
 		{
-			int recvLen = recv(m_ownerSocket, &control, sizeof(control), 0);
+			int recvLen = recv(m_ownerSocket, &data, sizeof(data), 0);
 			if (recvLen <= 0)
 			{
 				GLOG("disconnect. recv=%d err=%s(%d)", recvLen, strerror(errno), errno);
 				FD_CLR(m_ownerSocket, &master_fds);
 				tcpDisconnect(m_ownerSocket);
 			}
-			else if (recvLen == sizeof(control))
+			else if (recvLen == sizeof(data))
 			{
-				onProcess(control);
+				onProcess(data);
 			}
 			else
 			{
@@ -147,21 +150,21 @@ void MainManager::tcpLoop()
 	}
 }
 
-void MainManager::tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, signed char value0, signed char value1)
+void MainManager::tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data0, int data1)
 {
-	WAROIDROBOTCONTROL control;
-	control.command = (signed char) command;
-	control.value0 = value0;
-	control.value1 = value1;
-	send(socket, &control, sizeof(control), 0);
+	WAROIDROBOTDATA d;
+	d.command = (unsigned char) command;
+	d.data0 = (char)data0;
+	d.data1 = (char)data1;
+	send(socket, &d, sizeof(d), 0);
 }
 
-void MainManager::tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, unsigned short value)
+void MainManager::tcpSend(int socket, WAROIDROBOTCONTROLCOMMAND::ETYPE command, int data)
 {
-	WAROIDROBOTCONTROL control;
-	control.command = (signed char) command;
-	control.value = value;
-	send(socket, &control, sizeof(control), 0);
+	WAROIDROBOTDATA d;
+	d.command = (unsigned char) command;
+	d.data = (short)data;
+	send(socket, &d, sizeof(d), 0);
 }
 
 void MainManager::tcpDisconnect(int socket)
@@ -171,21 +174,22 @@ void MainManager::tcpDisconnect(int socket)
 	{
 		system("killall raspivid");
 		m_ownerSocket = INVALID_SOCKET;
+		memset(m_ownerAddress, 0, sizeof(m_ownerAddress));
 	}
 }
 
-void MainManager::onProcess(const WAROIDROBOTCONTROL& control)
+void MainManager::onProcess(const WAROIDROBOTDATA& data)
 {
-	GDEV("received. command=%d value=%u(%d,%d)", control.command, control.value, control.value0, control.value1);
-	switch (control.command)
+	GDEV("received. command=%d data=%u(%d,%d)", data.command, data.data, data.data0, data.data1);
+	switch (data.command)
 	{
-		case WAROIDROBOTCONTROLCOMMAND::CAMERA:
+		case WAROIDROBOTCOMMAND::C_R_OPEN_CAMERA:
 		{
-			bool onoff = (control.value0 == 1);
+			bool onoff = (control.data0 == 1);
 			if (onoff)
 			{
 				int bitRate = 15000000;
-				switch (control.value1)
+				switch (control.data1)
 				{
 					case 1:
 						bitRate = 8000000;
@@ -202,7 +206,7 @@ void MainManager::onProcess(const WAROIDROBOTCONTROL& control)
 				}
 
 				char systemCommand[256];
-				sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc -l -p 5001 &", bitRate);
+				sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", bitRate, m_ownerAddress, CAMERA_PORT);
 				system(systemCommand);
 				GLOG("open camera. system=%s", systemCommand);
 

@@ -223,13 +223,7 @@ void MainManager::onOpenCamera(int mode, int transferType)
 			switch (transferType)
 			{
 				case WAROIDCAMERATRNSFER::UDP_SEND:
-					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", CameraBitRateForMode[mode], m_ownerAddress, CAMERA_PORT);
-				break;
-				case WAROIDCAMERATRNSFER::TCP_LISTEN:
-					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc -l -p %d &", CameraBitRateForMode[mode], CAMERA_PORT);
-				break;
-				case WAROIDCAMERATRNSFER::UDP_BIND:
-					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", CameraBitRateForMode[mode], m_ownerAddress, CAMERA_PORT);
+					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc -4u %s %d &", CameraBitRateForMode[mode], m_ownerAddress, CAMERA_PORT);
 				break;
 				case WAROIDCAMERATRNSFER::TCP_SEND:
 				default:

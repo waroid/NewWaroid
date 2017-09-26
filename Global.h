@@ -40,7 +40,7 @@ namespace WAROIDCAMERATRNSFER
 {
 	enum ETYPE
 	{
-		TCP_SEND = 0, UDP_SEND, TCP_LISTEN, UDP_BIND,
+		TCP_SEND = 0, UDP_SEND,
 		//-----
 		TOTAL
 	};

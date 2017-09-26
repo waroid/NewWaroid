@@ -22,6 +22,9 @@ namespace MAIN_MANAGER
 {
 	const int MAX_BUFFER_SIZE = 128;
 	const int INVALID_SOCKET = -1;
+
+	const int CameraBitRateForMode[MAX_CAMERA_MODE] =
+	{ 0, 16000000, 8000000, 4000000, 2000000, 1000000 };
 }
 using namespace MAIN_MANAGER;
 
@@ -191,49 +194,52 @@ void MainManager::onProcess(const WAROIDROBOTDATA& data)
 	switch (data.command)
 	{
 		case WAROIDROBOTCOMMAND::C_R_OPEN_CAMERA:
-		{
-			bool onoff = (data.data0 == 1);
-			if (onoff)
-			{
-				if (m_openedCamera)
-				{
-					GLOG("already opened camera");
-				}
-				else
-				{
-					int bitRate = 15000000;
-					switch (data.data1)
-					{
-						case 1:
-							bitRate = 8000000;
-						break;
-						case 2:
-							bitRate = 4000000;
-						break;
-						case 3:
-							bitRate = 2000000;
-						break;
-						case 4:
-							bitRate = 1000000;
-						break;
-					}
-
-					char systemCommand[256];
-					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", bitRate, m_ownerAddress, CAMERA_PORT);
-					system(systemCommand);
-					GLOG("open camera. system=%s", systemCommand);
-					m_openedCamera = true;
-				}
-			}
-			else
-			{
-				system("killall raspivid");
-				//system("killall nc");
-				GLOG("close camera. system=killall raspivid");
-				m_openedCamera = false;
-			}
-		}
+			onOpenCamera(data.data0, data.data1);
 		break;
+	}
+}
+
+void MainManager::onOpenCamera(int mode, int transferType)
+{
+	if (mode < 0 || mode >= MAX_CAMERA_MODE) mode = 0;
+
+	if (mode == 0)
+	{
+		//camera off
+		system("killall raspivid");
+		system("killall nc");
+		GLOG("close camera. system=killall raspivid and killall nc");
+		m_openedCamera = false;
+	}
+	else
+	{
+		if (m_openedCamera)
+		{
+			GLOG("already opened camera");
+		}
+		else
+		{
+			char systemCommand[256];
+			switch (transferType)
+			{
+				case WAROIDCAMERATRNSFER::UDP_SEND:
+					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", CameraBitRateForMode[mode], m_ownerAddress, CAMERA_PORT);
+				break;
+				case WAROIDCAMERATRNSFER::TCP_LISTEN:
+					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc -l -p %d &", CameraBitRateForMode[mode], CAMERA_PORT);
+				break;
+				case WAROIDCAMERATRNSFER::UDP_BIND:
+					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", CameraBitRateForMode[mode], m_ownerAddress, CAMERA_PORT);
+				break;
+				case WAROIDCAMERATRNSFER::TCP_SEND:
+				default:
+					sprintf(systemCommand, "raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -hf -n -b %d  | nc %s %d &", CameraBitRateForMode[mode], m_ownerAddress, CAMERA_PORT);
+				break;
+			}
+			system(systemCommand);
+			GLOG("open camera. system=%s", systemCommand);
+			m_openedCamera = true;
+		}
 	}
 }
 

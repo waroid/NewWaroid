@@ -28,6 +28,7 @@ private:
 	void tcpDisconnect(int socket);
 
 	void onProcess(const WAROIDROBOTDATA& data);
+	void onOpenCamera(int mode, int transferType);
 
 private:
 	int m_listenSocket;

@@ -8,22 +8,23 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
-#define CAMERA_PORT	5001
-#define LISTEN_PORT	5002
+#define CAMERA_PORT					5001
+#define LISTEN_PORT					5002
+#define MAX_CAMERA_MODE				6
 
 namespace WAROIDROBOTCOMMAND
 {
 	enum ETYPE
 	{
 		NONE = 0,
-        //-----
-        C_R_OPEN_CAMERA,
+		//-----
+		C_R_OPEN_CAMERA,
 
-        //-----
-        R_C_ERROR,
+		//-----
+		R_C_ERROR,
 
-        //-----
-        TOTAL
+		//-----
+		TOTAL
 	};
 }
 
@@ -31,9 +32,17 @@ namespace WAROIDROBOTERROR
 {
 	enum ETYPE
 	{
-		UNKNOWN = 0,
-        SUCCESS,
-        EXIST_OWNER,
+		UNKNOWN = 0, SUCCESS, EXIST_OWNER,
+	};
+}
+
+namespace WAROIDCAMERATRNSFER
+{
+	enum ETYPE
+	{
+		TCP_SEND = 0, UDP_SEND, TCP_LISTEN, UDP_BIND,
+		//-----
+		TOTAL
 	};
 }
 
@@ -54,7 +63,5 @@ struct WAROIDROBOTDATA
 };
 
 #pragma pack()
-
-
 
 #endif /* GLOBAL_H_ */

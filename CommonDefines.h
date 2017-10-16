@@ -173,17 +173,16 @@ namespace WAROIDSERIALCOMMAND
 		NONE = 0,
 		//-----
 		RP_AR_INIT = 0x11,
-		RP_AR_INIT_YAW = 0x12,
-		RP_AR_STOP_ALL = 0x13,
-		RP_AR_MOVE = 0x13,
-		RP_AR_FIRE = 0x14,
-		RP_AR_LED = 0x15,
+		RP_AR_INIT_YAW,
+		RP_AR_STOP_ALL,
+		RP_AR_MOVE,
+		RP_AR_FIRE,
+		RP_AR_LED,
 		//-----
 		AR_RP_INIT_OK = 0x21,
-		AR_RP_YAW = 0x22,
-		AR_RP_BATTERY = 0x23,
+		AR_RP_YAW,
+		AR_RP_BATTERY,
 		//-----
-		TOTAL
 	};
 }
 

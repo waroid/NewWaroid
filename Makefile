@@ -1,25 +1,43 @@
 DEPEND_FILE = depend_file
 BINDIR = /usr/local/bin
+DATADIR = /usr/local/share/waroid
 
 CC = gcc
 CXX = g++
-CFLAGS = -D__RASPBERRY__
-CXXFLAGS = -D__RASPBERRY__
+CFLAGS = 
+CXXFLAGS = 
 
 INCPATH = 
 LINK = g++
-LIBS = -lm -lpthread
+LIBS = -lm -lpthread -lwiringPi -lasound -lsndfile
 
 # FILE
 CSOURCES = 
 
 CPPSOURCES = main.cpp \
-	core/Logger.cpp \
-	Global.cpp \
-	MainManager.cpp
+	core/GRCLogger.cpp \
+	core/GRCWave.cpp \
+	communication/GRCSockAddr.cpp \
+	communication/GRCBaseSession.cpp \
+	communication/GRCSerialSession.cpp \
+	communication/GRCTcpSession.cpp \
+	jsoncpp.cpp \
+	RobotData.cpp \
+	WeaponData.cpp \
+	ControlBoardSession.cpp \
+	GameServerSession.cpp \
+	UserSession.cpp \
+	RobotInfo.cpp \
+	Manager.cpp
 
 OBJECTS = $(CSOURCES:%.c=%.o)
 OBJECTS += $(CPPSOURCES:%.cpp=%.o)
+
+SOUNDS = sound/startup.wav \
+	sound/test.wav
+	
+JSONS = json/WaroidRobotData.json \
+	json/WaroidWeaponData.json
 
 TARGET = NewWaroidServer
 
@@ -46,10 +64,14 @@ depend:
 rebuild: clean depend all
 
 install:
+	mkdir -p $(DATADIR)
 	cp -f $(TARGET) $(BINDIR)
+	cp -f $(SOUNDS) $(DATADIR)
+	cp -f $(JSONS) $(DATADIR)
 
 uninstall:
 	- killall $(TARGET)
+	rm -fr $(DATADIR)
 	rm -f $(BINDIR)/$(TARGET)
 
 kill:

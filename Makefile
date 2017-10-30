@@ -33,8 +33,19 @@ CPPSOURCES = main.cpp \
 OBJECTS = $(CSOURCES:%.c=%.o)
 OBJECTS += $(CPPSOURCES:%.cpp=%.o)
 
-SOUNDS = sound/startup.wav \
-	sound/test.wav
+SOUNDS = sound/Common_Booting_Sound.wav \
+	sound/12.7mm_GAU-19B_HMG.wav \
+	sound/2_c_Hit.wav \
+	sound/20mm_M134D_Minigun.wav \
+	sound/20mm_M61_Vulcan.wav \
+	sound/25mm_M242_Chaingun.wav \
+	sound/3_c_destruction.wav \
+	sound/30mm_2A72_Autocannon.wav \
+	sound/4_c_revival.wav \
+	sound/5_2nd_Weapon.wav \
+	sound/6_2nd_Weapon.wav \
+	sound/7_2nd_Weapon.wav
+
 	
 JSONS = json/WaroidRobotData.json \
 	json/WaroidWeaponData.json

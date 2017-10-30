@@ -11,7 +11,8 @@
 #include <pthread.h>
 
 #include "communication/GRCSerialSession.h"
-#include "CommonDefines.h"
+#include "Defines.h"
+#include "ControlBoardSessionDefines.h"
 
 class ControlBoardSession: public GRCSerialSession
 {
@@ -22,7 +23,7 @@ public:
 public:
 	void sendInitYaw();
 	void sendStopAll();
-	void sendMove(WAROIDROBOTDIRECTION::ETYPE dir, WAROIDROBOTSPEED::ETYPE speed);
+	void sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed);
 	void sendFire(bool on);
 	void sendLed(bool on);
 
@@ -35,7 +36,7 @@ private:
 	int getSkipSize(const char* data, int size);
 	void initializing();
 
-	void sendPacket(const WAROIDSERIALPACKET& packet)
+	void sendPacket(const WAROIDCONTROLBOARD::PACKET& packet)
 	{
 		send((const unsigned char*)&packet, sizeof(packet));
 	}

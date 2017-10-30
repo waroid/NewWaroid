@@ -19,10 +19,10 @@ namespace WAROIDROBOTGAME
 			HEARTBEAT_1 = 1,
 			HEARTBEAT_2,
 			HEARTBEAT_3,
-			
+
 			R_G_ACTIVE,
 			R_G_INFO,
-			
+
 			G_R_ATTACHED,
 			G_R_DETACHED,
 			G_R_UPDATE_SECOND_WEAPON,
@@ -41,60 +41,71 @@ namespace WAROIDROBOTGAME
 	class HEADER
 	{
 	public:
-		HEADER(COMMAND::ETYPE command, UINT packetSize)
-			: m_command(static_cast<char>(command))
-			, m_packetSize(static_cast<USHORT>(packetSize))
-		{};
+		HEADER(COMMAND::ETYPE command, int packetSize)
+				:
+						m_command(static_cast<char>(command)),
+						m_packetSize(static_cast<unsigned short>(packetSize))
+		{
+		}
+		;
 
 	public:
-		COMMAND::ETYPE	getCommand() const { return static_cast<COMMAND::ETYPE>(m_command); }
-		GRCCSTR			getCommandName() const { return COMMAND::getName(m_command); }
-		UINT			getPacketSize() const { return m_packetSize; }
+		COMMAND::ETYPE getCommand() const
+		{
+			return static_cast<COMMAND::ETYPE>(m_command);
+		}
+		int getPacketSize() const
+		{
+			return m_packetSize;
+		}
 
 	private:
-		USHORT m_packetSize;
+		unsigned short m_packetSize;
 		char m_command;
 
 	public:
-		static UINT	getSize() { return sizeof(HEADER); }
+		static int getSize()
+		{
+			return sizeof(HEADER);
+		}
 	};
 
-#define WAROID_ROBOT_GAME_PACKET_STRUCT_START(cmd)	struct cmd:public HEADER{cmd():HEADER(COMMAND::##cmd, sizeof(*this)){}
+#define WAROID_ROBOT_GAME_PACKET_STRUCT_START(cmd)	struct cmd:public HEADER{cmd():HEADER(COMMAND::cmd, sizeof(*this)){}
 #define WAROID_ROBOT_GAME_PACKET_STRUCT_END			}
 	////////////////////
 	//	packet
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(HEARTBEAT_1)
-		UINT	serverTick;
+		unsigned int serverTick;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(HEARTBEAT_2)
-		UINT	serverTick;
-		UINT	clientTick;
+		unsigned int serverTick;
+		unsigned int clientTick;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(HEARTBEAT_3)
-		UINT	clientTick;
+		unsigned int clientTick;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(R_G_ACTIVE)
-		int		id;
-		int		type;
+		int id;
+		int type;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(R_G_INFO)
-		int		yaw;
-		int		battery;
+		int yaw;
+		int battery;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(G_R_ATTACHED)
-		UINT	validateKey;
+		unsigned int validateKey;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(G_R_DETACHED)
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(G_R_UPDATE_SECOND_WEAPON)
-		int		weaponId;
+		int weaponId;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(G_R_ATTACKED)

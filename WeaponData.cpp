@@ -7,15 +7,11 @@
 
 #include "WeaponData.h"
 
-#include <pthread.h>
-#include <cerrno>
+#include <rapidjson/document.h>
+#include <rapidjson/rapidjson.h>
 #include <cstdio>
-#include <map>
-#include <string>
-#include <utility>
 
 #include "core/GRCCore.h"
-#include "core/GRCLogger.h"
 #include "Defines.h"
 
 WeaponData::WeaponData()
@@ -37,16 +33,33 @@ bool WeaponData::load()
 	return loadFile(path);
 }
 
-bool WeaponData::onLoad(const Json::Value& data)
+bool WeaponData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 {
-	for (auto iter = data.begin(); iter != data.end(); ++iter)
+	for (auto iter = data.MemberBegin(); iter != data.MemberEnd(); ++iter)
 	{
 		DATA* data = new DATA();
-		strcpy(data->name, iter.name().c_str());
-		data->id = iter->get("id", 0).asInt();
-		data->secondid = iter->get("secondid", 0).asInt();
-		data->repeat = iter->get("repeat", 0).asBool();
-		strcpy(data->soundfilename, iter->get("soundfilename", "").asString().c_str());
+		loadBaseData(iter, data);
+
+		const RAPIDJSON_NAMESPACE::Value& v = iter->value;
+
+		{
+			auto siter = v.FindMember("secondid");
+			if (siter != v.MemberEnd())
+				data->secondid = siter->value.GetInt();
+		}
+
+		{
+			auto siter = v.FindMember("repeat");
+			if (siter != v.MemberEnd())
+				data->repeat = siter->value.GetBool();
+		}
+
+		{
+			auto siter = v.FindMember("soundfilename");
+			if (siter != v.MemberEnd())
+				SAFE_STR_COPY(data->soundfilename, sizeof(data->soundfilename), siter->value.GetString());
+		}
+
 		GRC_CHECK_RETFALSE(addData(data));
 	}
 

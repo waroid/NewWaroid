@@ -10,8 +10,7 @@
 
 #include <cstring>
 
-#include "json/GRCJsonData.h"
-#include "json/json.h"
+#include "core/GRCJsonData.h"
 
 class WeaponData: public GRCJsonData
 {
@@ -25,7 +24,6 @@ public:
 		DATA()
 				: secondid(0), repeat(false)
 		{
-			bzero(name, sizeof(name));
 			bzero(soundfilename, sizeof(soundfilename));
 		}
 	};
@@ -47,7 +45,7 @@ public:
 	}
 
 protected:
-	virtual bool onLoad(const Json::Value& data) override;
+	virtual bool onLoad(const RAPIDJSON_NAMESPACE::Value& data) override;
 };
 
 #endif /* WEAPONDATA_H_ */

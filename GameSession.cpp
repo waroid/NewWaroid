@@ -1,29 +1,29 @@
 /*
- * GameServerSession.cpp
+ * GameSession.cpp
  *
  *  Created on: Oct 14, 2017
  *      Author: mirime
  */
 
-#include "GameServerSession.h"
+#include "GameSession.h"
 
-GameServerSession::GameServerSession()
+GameSession::GameSession()
 {
 	// TODO Auto-generated constructor stub
 
 }
 
-GameServerSession::~GameServerSession()
+GameSession::~GameSession()
 {
 	// TODO Auto-generated destructor stub
 }
 
-int GameServerSession::onParsing(const char* data, int size)
+int GameSession::onParsing(const char* data, int size)
 {
 
 	return -1;
 }
 
-void GameServerSession::onPacket(const char* packet, int size)
+void GameSession::onPacket(const char* packet, int size)
 {
 }

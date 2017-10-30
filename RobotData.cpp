@@ -7,16 +7,9 @@
 
 #include "RobotData.h"
 
-#include <pthread.h>
-#include <cerrno>
 #include <cstdio>
-#include <fstream>
-#include <map>
-#include <string>
-#include <utility>
 
 #include "core/GRCCore.h"
-#include "core/GRCLogger.h"
 #include "Defines.h"
 
 //#include "json/json.h"
@@ -40,17 +33,39 @@ bool RobotData::load()
 	return loadFile(path);
 }
 
-bool RobotData::onLoad(const Json::Value& data)
+bool RobotData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 {
-	for (auto iter = data.begin(); iter != data.end(); ++iter)
+	for (auto iter = data.MemberBegin(); iter != data.MemberEnd(); ++iter)
 	{
 		DATA* data = new DATA();
-		strcpy(data->name, iter.name().c_str());
-		data->id = iter->get("id", 0).asInt();
-		strcpy(data->weaponname, iter->get("weaponname", "").asString().c_str());
-		strcpy(data->attackedsoundfilename, iter->get("attackedsoundfilename", "").asString().c_str());
-		strcpy(data->deathsoundfilename, iter->get("deathsoundfilename", "").asString().c_str());
-		strcpy(data->revivesoundfilename, iter->get("revivesoundfilename", "").asString().c_str());
+		loadBaseData(iter, data);
+
+		const RAPIDJSON_NAMESPACE::Value& v = iter->value;
+
+		{
+			auto siter = v.FindMember("weaponname");
+			if (siter != v.MemberEnd())
+				SAFE_STR_COPY(data->weaponname, sizeof(data->weaponname), siter->value.GetString());
+		}
+
+		{
+			auto siter = v.FindMember("attackedsoundfilename");
+			if (siter != v.MemberEnd())
+				SAFE_STR_COPY(data->attackedsoundfilename, sizeof(data->attackedsoundfilename), siter->value.GetString());
+		}
+
+		{
+			auto siter = v.FindMember("deathsoundfilename");
+			if (siter != v.MemberEnd())
+				SAFE_STR_COPY(data->deathsoundfilename, sizeof(data->deathsoundfilename), siter->value.GetString());
+		}
+
+		{
+			auto siter = v.FindMember("revivesoundfilename");
+			if (siter != v.MemberEnd())
+				SAFE_STR_COPY(data->weaponname, sizeof(data->revivesoundfilename), siter->value.GetString());
+		}
+
 		GRC_CHECK_RETFALSE(addData(data));
 	}
 

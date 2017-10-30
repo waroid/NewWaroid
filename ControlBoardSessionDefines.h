@@ -26,11 +26,16 @@ namespace WAROIDCONTROLBOARD
 		char low;
 		unsigned char postfix;
 
-		WAROIDSERIALPACKET()
-			: prefix(WAROID_CONTROLBOARD_PREFIX), cmd(0), hi(0), low(0), postfix(WAROID_CONTROLBOARD_POSTFIX)
+		PACKET()
+				:
+						prefix(WAROID_CONTROLBOARD_PREFIX),
+						cmd(0),
+						hi(0),
+						low(0),
+						postfix(WAROID_CONTROLBOARD_POSTFIX)
 		{
 		}
-	};	
+	};
 }
 #pragma pack()
 
@@ -52,7 +57,7 @@ namespace WAROIDCONTROLBOARD
 			AR_RP_INIT_OK = 0x21,
 			AR_RP_YAW,
 			AR_RP_BATTERY,
-			//-----
+		//-----
 		};
 	}
 }

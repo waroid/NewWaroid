@@ -7,10 +7,16 @@
 
 #include "GRCWave.h"
 
+#include <alsa/error.h>
+#include <alsa/pcm.h>
+#include <asm-generic/errno-base.h>
 #include <sndfile.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <cstring>
 
 #include "GRCCore.h"
-#include "GRCLogger.h"
 
 namespace GRC_WAVE
 {

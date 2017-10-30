@@ -8,10 +8,11 @@
 #ifndef GRCJSONDATA_H_
 #define GRCJSONDATA_H_
 
+#include <rapidjson/document.h>
+#include <rapidjson/rapidjson.h>
+#include <stddef.h>
 #include <cstring>
 #include <map>
-
-#include "json.h"
 
 class GRCJsonData
 {
@@ -26,6 +27,14 @@ public:
 		{
 			bzero(name, sizeof(name));
 		}
+		virtual ~BASEDATA()
+		{
+		}
+
+		virtual bool isValid() const
+		{
+			return name[0] != 0 && id >= 0;
+		}
 	};
 	typedef std::map<int, BASEDATA*> MapData;
 
@@ -38,11 +47,13 @@ public:
 	bool loadFile(const char* path);
 
 protected:
-	virtual bool onLoad(const Json::Value& data) = 0;
+	virtual bool onLoad(const RAPIDJSON_NAMESPACE::Value& data) = 0;
 
-	bool addData(BASEDATA* data);
 	const BASEDATA* findData(int id) const;
 	const BASEDATA* findData(const char* name) const;
+
+	void loadBaseData(const RAPIDJSON_NAMESPACE::Value::ConstMemberIterator& iter, BASEDATA* data);
+	bool addData(BASEDATA* data);
 
 private:
 	MapData m_datas;

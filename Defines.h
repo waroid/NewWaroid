@@ -22,53 +22,46 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-namespace WAROIDTEAM
-{
-	enum ETYPE
-	{
-		NONE = 0,
-		//-----
-		RED,
-		BLUE,
-		//-----
-		TOTAL,
-	};
+namespace WAROIDTEAM {
+enum ETYPE {
+	NONE = 0,
+	//-----
+	RED,
+	BLUE,
+	//-----
+	TOTAL,
+};
 }
 
-namespace WAROIDDIRECTION
-{
-	enum ETYPE
-	{
-		NONE = 0,
-		//-----
-		FORWARD,
-		BACKWARD,
-		LEFT,
-		RIGHT,
-		LEFT_FORWARD,
-		RIGHT_FORWARD,
-		LEFT_BACKWARD,
-		RIGHT_BACKWARD,
-		LEFT_TURN,
-		RIGHT_TURN,
-		//-----
-		TOTAL
-	};
+namespace WAROIDDIRECTION {
+enum ETYPE {
+	NONE = 0,
+	//-----
+	FORWARD,
+	BACKWARD,
+	LEFT,
+	RIGHT,
+	LEFT_FORWARD,
+	RIGHT_FORWARD,
+	LEFT_BACKWARD,
+	RIGHT_BACKWARD,
+	LEFT_TURN,
+	RIGHT_TURN,
+	//-----
+	TOTAL
+};
 }
 
-namespace WAROIDSPEED
-{
-	enum ETYPE
-	{
-		NONE = 0,
-		//-----
-		SLOW,
-		DEFAULT,
-		FAST,
-		//-----
-		TOTAL
-	};
+namespace WAROIDSPEED {
+enum ETYPE {
+	NONE = 0,
+	//-----
+	SLOW,
+	DEFAULT,
+	FAST,
+	//-----
+	TOTAL
+};
 }
-
 
 #endif /* DEFINES_H_ */

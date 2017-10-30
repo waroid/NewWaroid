@@ -15,17 +15,17 @@ LIBS = -lm -lpthread -lwiringPi -lasound -lsndfile
 CSOURCES = 
 
 CPPSOURCES = main.cpp \
+	core/GRCJsonData.cpp \
 	core/GRCLogger.cpp \
 	core/GRCWave.cpp \
 	communication/GRCSockAddr.cpp \
 	communication/GRCBaseSession.cpp \
 	communication/GRCSerialSession.cpp \
 	communication/GRCTcpSession.cpp \
-	jsoncpp.cpp \
 	RobotData.cpp \
 	WeaponData.cpp \
 	ControlBoardSession.cpp \
-	GameServerSession.cpp \
+	GameSession.cpp \
 	UserSession.cpp \
 	RobotInfo.cpp \
 	Manager.cpp

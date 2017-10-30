@@ -7,27 +7,22 @@
 
 #include "ControlBoardSession.h"
 
-//#include <pthread.h>
 #include <unistd.h>
-#include <cerrno>
 #include <cstring>
 
 #include "core/GRCCore.h"
-#include "core/GRCLogger.h"
-//#include "CommonDefines.h"
-//#include "Defines.h"
 #include "Manager.h"
 #include "RobotData.h"
 #include "RobotInfo.h"
 
 namespace CONTROL_BOARD_SESSION
 {
-	const int PACKET_SIZE = sizeof(WAROIDSERIALPACKET);
+const int PACKET_SIZE = sizeof(WAROIDCONTROLBOARD::PACKET);
 }
 using namespace CONTROL_BOARD_SESSION;
 
 ControlBoardSession::ControlBoardSession()
-		: m_thread(INVALID_THREAD)
+: m_thread(INVALID_THREAD)
 {
 	// TODO Auto-generated constructor stub
 
@@ -40,22 +35,22 @@ ControlBoardSession::~ControlBoardSession()
 
 void ControlBoardSession::sendInitYaw()
 {
-	WAROIDSERIALPACKET packet;
-	packet.cmd = WAROIDSERIALCOMMAND::RP_AR_INIT_YAW;
+	WAROIDCONTROLBOARD::PACKET packet;
+	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_INIT_YAW;
 	sendPacket(packet);
 }
 
 void ControlBoardSession::sendStopAll()
 {
-	WAROIDSERIALPACKET packet;
-	packet.cmd = WAROIDSERIALCOMMAND::RP_AR_STOP_ALL;
+	WAROIDCONTROLBOARD::PACKET packet;
+	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_STOP_ALL;
 	sendPacket(packet);
 }
 
-void ControlBoardSession::sendMove(WAROIDROBOTDIRECTION::ETYPE dir, WAROIDROBOTSPEED::ETYPE speed)
+void ControlBoardSession::sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed)
 {
-	WAROIDSERIALPACKET packet;
-	packet.cmd = WAROIDSERIALCOMMAND::RP_AR_MOVE;
+	WAROIDCONTROLBOARD::PACKET packet;
+	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_MOVE;
 	packet.hi = (char)dir;
 	packet.low = (char)speed;
 	sendPacket(packet);
@@ -63,16 +58,16 @@ void ControlBoardSession::sendMove(WAROIDROBOTDIRECTION::ETYPE dir, WAROIDROBOTS
 
 void ControlBoardSession::sendFire(bool on)
 {
-	WAROIDSERIALPACKET packet;
-	packet.cmd = WAROIDSERIALCOMMAND::RP_AR_FIRE;
+	WAROIDCONTROLBOARD::PACKET packet;
+	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_FIRE;
 	packet.hi = on ? 1 : 0;
 	sendPacket(packet);
 }
 
 void ControlBoardSession::sendLed(bool on)
 {
-	WAROIDSERIALPACKET packet;
-	packet.cmd = WAROIDSERIALCOMMAND::RP_AR_LED;
+	WAROIDCONTROLBOARD::PACKET packet;
+	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_LED;
 	packet.hi = on ? 1 : 0;
 	sendPacket(packet);
 }
@@ -90,8 +85,8 @@ int ControlBoardSession::onParsing(const char* data, int size, int& skipSize)
 
 	if (size < (skipSize + PACKET_SIZE)) return 0;
 
-	WAROIDSERIALPACKET* packet = (WAROIDSERIALPACKET*) (data + skipSize);
-	if (packet->postfix != SERIAL_POSTFIX)
+	WAROIDCONTROLBOARD::PACKET* packet = (WAROIDCONTROLBOARD::PACKET*) (data + skipSize);
+	if (packet->postfix != WAROID_CONTROLBOARD_POSTFIX)
 	{
 		skipSize++;
 		return -1;
@@ -102,24 +97,24 @@ int ControlBoardSession::onParsing(const char* data, int size, int& skipSize)
 
 void ControlBoardSession::onPacket(const char* packet, int size)
 {
-	WAROIDSERIALPACKET* wsp = (WAROIDSERIALPACKET*) packet;
+	WAROIDCONTROLBOARD::PACKET* wsp = (WAROIDCONTROLBOARD::PACKET*) packet;
 	switch (wsp->cmd)
 	{
-		case WAROIDSERIALCOMMAND::AR_RP_INIT_OK:
-		{
-			Manager::getRobotInfo().setReady();
-		}
-		break;
-		case WAROIDSERIALCOMMAND::AR_RP_YAW:
-		{
-			Manager::getRobotInfo().updateYaw((int)wsp->hi << 8 | wsp->low);
-		}
-		break;
-		case WAROIDSERIALCOMMAND::AR_RP_BATTERY:
-		{
-			Manager::getRobotInfo().updateBattery((int)wsp->hi << 8 | wsp->low);
-		}
-		break;
+	case WAROIDCONTROLBOARD::COMMAND::AR_RP_INIT_OK:
+	{
+		Manager::getRobotInfo().setReady();
+	}
+	break;
+	case WAROIDCONTROLBOARD::COMMAND::AR_RP_YAW:
+	{
+		Manager::getRobotInfo().updateYaw((int)wsp->hi << 8 | wsp->low);
+	}
+	break;
+	case WAROIDCONTROLBOARD::COMMAND::AR_RP_BATTERY:
+	{
+		Manager::getRobotInfo().updateBattery((int)wsp->hi << 8 | wsp->low);
+	}
+	break;
 	}
 }
 
@@ -127,7 +122,7 @@ int ControlBoardSession::getSkipSize(const char* data, int size)
 {
 	for (int i = 0; i < size; ++i)
 	{
-		if (data[i] == SERIAL_PREFIX)
+		if (data[i] == WAROID_CONTROLBOARD_PREFIX)
 		{
 			return i;
 		}
@@ -138,8 +133,8 @@ int ControlBoardSession::getSkipSize(const char* data, int size)
 
 void ControlBoardSession::initializing()
 {
-	WAROIDSERIALPACKET packet;
-	packet.cmd = (char)WAROIDSERIALCOMMAND::RP_AR_INIT;
+	WAROIDCONTROLBOARD::PACKET packet;
+	packet.cmd = (char)WAROIDCONTROLBOARD::COMMAND::RP_AR_INIT;
 	packet.hi = (char)Manager::getRobotInfo().getRobotData()->id;
 
 	while (Manager::getRobotInfo().isReady() == false)

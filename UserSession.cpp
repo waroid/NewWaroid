@@ -7,18 +7,11 @@
 
 #include "UserSession.h"
 
-#include <pthread.h>
-#include <cerrno>
-#include <cstring>
-
 #include "core/GRCCore.h"
-#include "core/GRCLogger.h"
-#include "Manager.h"
-#include "WeaponData.h"
+#include "Defines.h"
 
 namespace USER_SESSION
 {
-	const int PACKET_SIZE = sizeof(WAROIDROBOTPACKET);
 }
 using namespace USER_SESSION;
 
@@ -35,43 +28,59 @@ UserSession::~UserSession()
 
 int UserSession::onParsing(const char* data, int size)
 {
-	if (size < PACKET_SIZE) return 0;
+	if (size < WAROIDUSERROBOT::PACKET::getSize())
+		return 0;
 
-	return PACKET_SIZE;
+	return WAROIDUSERROBOT::PACKET::getSize();
 }
 
 void UserSession::onPacket(const char* packet, int size)
 {
-	WAROIDROBOTPACKET* wrp = (WAROIDROBOTPACKET*) packet;
+	const WAROIDUSERROBOT::PACKET* urp = (const WAROIDUSERROBOT::PACKET*) packet;
 
-	switch (wrp->cmd)
+	switch (urp->getCommand())
 	{
-		case WAROIDROBOTCOMMAND::C_RP_MOVE:
-			move((WAROIDROBOTDIRECTION::ETYPE) wrp->hi, (WAROIDROBOTSPEED::ETYPE) wrp->low);
-		break;
-		case WAROIDROBOTCOMMAND::C_RP_FIRE:
-			fire(wrp->hi, wrp->low == 1);
-		break;
+	WAROID_USER_SESSION_COMMAND_CASE(HEARTBEAT_2, urp)
+;		WAROID_USER_SESSION_COMMAND_CASE(U_R_LOGIN,urp);
+		WAROID_USER_SESSION_COMMAND_CASE(U_R_CAMERA,urp);
+		WAROID_USER_SESSION_COMMAND_CASE(U_R_MOVE,urp);
+		WAROID_USER_SESSION_COMMAND_CASE(U_R_FIRE,urp);
+		default:
+		{
+			GRC_LOG("invalid packet. cmd=%d", urp->getCommand());
+		}
 	}
 }
 
-void UserSession::move(WAROIDROBOTDIRECTION::ETYPE dir, WAROIDROBOTSPEED::ETYPE speed)
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_2)
 {
-	GRC_CHECK_RETURN(dir >= WAROIDROBOTDIRECTION::NONE && dir < WAROIDROBOTDIRECTION::TOTAL);
-	GRC_CHECK_RETURN(speed >= WAROIDROBOTSPEED::NONE && speed < WAROIDROBOTSPEED::TOTAL);
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
+{
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
+{
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
+{
+	GRC_CHECK_RETURN(rpacket->getDirection() >= WAROIDDIRECTION::NONE && rpacket->getDirection() < WAROIDDIRECTION::TOTAL);
+	GRC_CHECK_RETURN(rpacket->getSpeed() >= WAROIDSPEED::NONE && rpacket->getSpeed() < WAROIDSPEED::TOTAL);
 
 	//send serial
 }
 
-void UserSession::fire(int weaponId, bool on)
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 {
-	const WeaponData::DATA* data = Manager::getWeaponData().find(weaponId);
-	GRC_CHECKV_RETURN(data, "invalid weaponid. id=%d", weaponId);
+	//	const WeaponData::DATA* data = Manager::getWeaponData().find(weaponId);
+	//	GRC_CHECKV_RETURN(data, "invalid weaponid. id=%d", weaponId);
 
-	if (data->secondid == 0)
-	{
-		//send fire to arduino
-	}
+	//	if (data->secondid == 0)
+	//	{
+	//send fire to arduino
+	//	}
 
 	//play fire sound
 

@@ -8,10 +8,11 @@
 #ifndef ROBOTDATA_H_
 #define ROBOTDATA_H_
 
+#include <rapidjson/document.h>
+#include <rapidjson/rapidjson.h>
 #include <cstring>
 
-#include "json/GRCJsonData.h"
-#include "json/json.h"
+#include "core/GRCJsonData.h"
 
 class RobotData: public GRCJsonData
 {
@@ -30,6 +31,12 @@ public:
 			bzero(deathsoundfilename, sizeof(deathsoundfilename));
 			bzero(revivesoundfilename, sizeof(revivesoundfilename));
 		}
+
+		virtual bool isValid() const override
+		{
+			return BASEDATA::isValid() && weaponname[0] != 0;
+		}
+
 	};
 
 public:
@@ -49,7 +56,7 @@ public:
 	}
 
 protected:
-	virtual bool onLoad(const Json::Value& data) override;
+	virtual bool onLoad(const RAPIDJSON_NAMESPACE::Value& data) override;
 };
 
 #endif /* ROBOTDATA_H_ */

@@ -5,19 +5,12 @@
  *      Author: mirime
  */
 
+#include "GRCCore.h"
 #include "GRCJsonData.h"
 
-#include <pthread.h>
-#include <stddef.h>
-#include <cerrno>
-#include <cstring>
-#include <map>
-#include <string>
+#include <cstdio>
 #include <utility>
 
-#include "../core/GRCCore.h"
-#include "../core/GRCLogger.h"
-#include "json.h"
 
 GRCJsonData::GRCJsonData()
 {
@@ -40,10 +33,10 @@ bool GRCJsonData::loadString(const char* str, size_t len)
 	GRC_CHECK_RETFALSE(str);
 	GRC_CHECK_RETFALSE(len > 0);
 
-	Json::Value root;
-	Json::Reader reader;
-	GRC_CHECK_RETFALSE(reader.parse(str, str + len, root, false));
-	GRC_CHECK_RETFALSE(onLoad(root["Data"]));
+	RAPIDJSON_NAMESPACE::Document doc;
+	doc.Parse(str, len);
+
+	GRC_CHECK_RETFALSE(onLoad(doc["Data"]));
 
 	return true;
 }
@@ -78,11 +71,6 @@ bool GRCJsonData::loadFile(const char* path)
 	return true;
 }
 
-bool GRCJsonData::addData(BASEDATA* data)
-{
-	return m_datas.insert(std::make_pair(data->id, data)).second;
-}
-
 const GRCJsonData::BASEDATA* GRCJsonData::findData(int id) const
 {
 	auto iter = m_datas.find(id);
@@ -95,8 +83,31 @@ const GRCJsonData::BASEDATA* GRCJsonData::findData(const char* name) const
 {
 	for (auto& it : m_datas)
 	{
-		if (strcmp(it.second->name, name) == 0) return it.second;
+		if (strcmp(it.second->name, name) == 0)
+			return it.second;
 	}
 
 	return NULL;
 }
+
+bool GRCJsonData::addData(BASEDATA* data)
+{
+	GRC_CHECK_RETFALSE(data);
+	GRC_CHECK_RETFALSE(data->isValid());
+
+	return m_datas.insert(std::make_pair(data->id, data)).second;
+}
+
+void GRCJsonData::loadBaseData(const RAPIDJSON_NAMESPACE::Value::ConstMemberIterator& iter, BASEDATA* data)
+{
+	SAFE_STR_COPY(data->name, sizeof(data->name), iter->name.GetString());
+
+	const RAPIDJSON_NAMESPACE::Value& v = iter->value;
+
+	{
+		auto siter = v.FindMember("id");
+		if (siter != v.MemberEnd())
+			data->id = siter->value.GetInt();
+	}
+}
+

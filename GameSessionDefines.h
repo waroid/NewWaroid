@@ -42,9 +42,8 @@ namespace WAROIDROBOTGAME
 	{
 	public:
 		HEADER(COMMAND::ETYPE command, int packetSize)
-				:
-						m_command(static_cast<char>(command)),
-						m_packetSize(static_cast<unsigned short>(packetSize))
+				: 	m_command(static_cast<char>(command)),
+					m_packetSize(static_cast<unsigned short>(packetSize))
 		{
 		}
 		;

@@ -57,9 +57,10 @@ bool GRCJsonData::loadFile(const char* path)
 	fseek(f, 0, SEEK_END);
 	int len = ftell(f);
 	GRC_CHECK_FUNC_RETFALSE(len > 0, efunc(f, NULL));
+	fseek(f, 0, SEEK_SET);
 
 	char* buffer = new char[len + 1];
-	int read = fread(f, sizeof(char), len, f);
+	int read = fread(buffer, sizeof(char), len, f);
 	GRC_CHECK_FUNC_RETFALSE(len > 0, efunc(f, buffer));
 	buffer[read] = 0;
 

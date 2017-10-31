@@ -8,11 +8,11 @@
 #ifndef ROBOTDATA_H_
 #define ROBOTDATA_H_
 
-#include <rapidjson/document.h>
-#include <rapidjson/rapidjson.h>
 #include <cstring>
 
 #include "core/GRCJsonData.h"
+#include "rapidjson/document.h"
+#include "rapidjson/rapidjson.h"
 
 class RobotData: public GRCJsonData
 {

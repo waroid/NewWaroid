@@ -8,11 +8,12 @@
 #ifndef GRCJSONDATA_H_
 #define GRCJSONDATA_H_
 
-#include <rapidjson/document.h>
-#include <rapidjson/rapidjson.h>
 #include <stddef.h>
 #include <cstring>
 #include <map>
+
+#include "../rapidjson/document.h"
+#include "../rapidjson/rapidjson.h"
 
 class GRCJsonData
 {

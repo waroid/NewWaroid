@@ -7,12 +7,12 @@
 
 #include "WeaponData.h"
 
-#include <rapidjson/document.h>
-#include <rapidjson/rapidjson.h>
 #include <cstdio>
 
 #include "core/GRCCore.h"
 #include "Defines.h"
+#include "rapidjson/document.h"
+#include "rapidjson/rapidjson.h"
 
 WeaponData::WeaponData()
 {

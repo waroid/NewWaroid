@@ -60,7 +60,7 @@ public:
 
 		pthread_create(&m_thread, NULL, acceptWorker, this);
 
-		GRC_LOG("[%s]listened. address=%s", *m_sockAddr);
+		GRC_LOG("[%s]listened. address=%s", m_name, *m_sockAddr);
 
 		return true;
 	}
@@ -122,9 +122,9 @@ private:
 	{
 		GRCTcpListenerT* tcpListener = (GRCTcpListenerT*) param;
 
-		GRC_LOG("[%s]start thread(%d)", tcpListener->m_name, pthread_self());
+		GRC_LOG("[%s]start accept thread(%u)", tcpListener->m_name, pthread_self());
 		tcpListener->accepting();
-		GRC_LOG("[%s]stop thread(%d)", tcpListener->m_name, pthread_self());
+		GRC_LOG("[%s]stop accept thread(%u)", tcpListener->m_name, pthread_self());
 
 		return NULL;
 	}

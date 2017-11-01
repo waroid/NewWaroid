@@ -32,7 +32,7 @@ bool RobotInfo::init(int id, int type)
 	GRC_CHECK_RETFALSE(m_robotData);
 
 	m_firstWeaponData = Manager::getWeaponData().find(m_robotData->weaponname);
-	GRC_CHECK_RETFALSE(m_firstWeaponData);
+	GRC_CHECKV_RETFALSE(m_firstWeaponData, "invalid weapon. name=%s", m_robotData->weaponname);
 
 	return true;
 }

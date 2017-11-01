@@ -46,9 +46,9 @@ void* GRCBaseSession::recvWorker(void* param)
 {
 	GRCBaseSession* session = (GRCBaseSession*) param;
 
-	GRC_LOG("[%s]start thread(%d)", session->m_name, pthread_self());
+	GRC_LOG("[%s]start recv thread(%u)", session->m_name, pthread_self());
 	session->onReceiving();
-	GRC_LOG("[%s]stop thread(%d)", session->m_name, pthread_self());
+	GRC_LOG("[%s]stop recv thread(%u)", session->m_name, pthread_self());
 
 	return NULL;
 }

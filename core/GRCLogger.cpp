@@ -31,7 +31,10 @@ void GRCLogger::write(const char* format, ...)
 	if (len > 0)
 	{
 		temp[len] = 0;
-		syslog(LOG_USER, temp);
+		if (s_dev)
+			printf(temp);
+		else
+			syslog(LOG_USER, temp);
 	}
 }
 

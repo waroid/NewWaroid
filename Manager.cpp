@@ -26,8 +26,8 @@ bool Manager::start(int robotId, int robotType, const char* gameServerIp, const 
 	GRC_CHECK_RETFALSE(s_robotData.load());
 	GRC_CHECK_RETFALSE(s_weaponData.load());
 	GRC_CHECK_RETFALSE(s_userListener.listen(USER_PORT));
-	GRC_CHECK_RETFALSE(s_gameConnector.connect(gameServerIp, GAME_SERVER_PORT, true));
-	GRC_CHECK_RETFALSE(s_controlBoardOpener.open(controlBoardDevice, CONTROL_BOARD_BAUD));
+	//GRC_CHECK_RETFALSE(s_gameConnector.connect(gameServerIp, GAME_SERVER_PORT, true));
+	//GRC_CHECK_RETFALSE(s_controlBoardOpener.open(controlBoardDevice, CONTROL_BOARD_BAUD));
 
 	GRC_CHECK_RETFALSE(s_robotInfo.init(robotId, robotType));
 

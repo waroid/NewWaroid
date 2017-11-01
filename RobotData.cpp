@@ -63,7 +63,7 @@ bool RobotData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 		{
 			auto siter = v.FindMember("revivesoundfilename");
 			if (siter != v.MemberEnd())
-				SAFE_STR_COPY(data->weaponname, sizeof(data->revivesoundfilename), siter->value.GetString());
+				SAFE_STR_COPY(data->revivesoundfilename, sizeof(data->revivesoundfilename), siter->value.GetString());
 		}
 
 		GRC_CHECK_RETFALSE(addData(data));

@@ -19,15 +19,15 @@ void* woker(void* param);
 
 int main(int argc, char* argv[])
 {
-	GRC_LOG("[New Waroid] START");
-
 	if (argc < 2)
 	{
-		GRC_LOG("usage: %s <game server ip> <dev 0 or 1>", argv[0]);
+		GRC_LOG("usage: %s <dev 0 or 1>", argv[0]);
 		return -1;
 	}
 
 	GRCLogger::setDev(atoi(argv[1]) == 1);
+
+	GRC_LOG("[New Waroid] START");
 
 	GRC_CHECK_FUNC_RETMINUS(initialize(), cleanup(0));
 

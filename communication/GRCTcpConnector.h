@@ -99,9 +99,9 @@ private:
 	{
 		GRCTcpConnectorT* tcpConnector = (GRCTcpConnectorT*) param;
 
-		GRC_LOG("[%s]start thread(%d)", tcpConnector->m_name, pthread_self());
+		GRC_LOG("[%s]start reconnect thread(%u)", tcpConnector->m_name, pthread_self());
 		tcpConnector->reconnecting();
-		GRC_LOG("[%s]stop thread(%d)", tcpConnector->m_name, pthread_self());
+		GRC_LOG("[%s]stop reconnect thread(%u)", tcpConnector->m_name, pthread_self());
 
 		return NULL;
 	}

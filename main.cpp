@@ -15,9 +15,12 @@
 
 bool initialize();
 void cleanup(int s);
+void* woker(void* param);
 
 int main(int argc, char* argv[])
 {
+	GRC_LOG("[New Waroid] START");
+
 	if (argc < 2)
 	{
 		GRC_LOG("usage: %s <game server ip> <dev 0 or 1>", argv[0]);
@@ -33,9 +36,11 @@ int main(int argc, char* argv[])
 	const char* gameServerIp = "192.168.1.99";
 	const char* controlBoardDevice = "/dev/ttyS0";
 
-	GRC_CHECK_FUNC_RETMINUS(Manager::start(robotId, robotType, gameServerIp, controlBoardDevice), cleanup(0));
+	Manager::start(robotId, robotType, gameServerIp, controlBoardDevice);
 
 	cleanup(0);
+
+	GRC_LOG("[New Waroid] END");
 
 	return 0;
 }
@@ -58,6 +63,9 @@ bool initialize()
 void cleanup(int s)
 {
 	Manager::stop();
-	GRC_DEV("caught signal %d", s);
-	if (s != 0) exit(-1);
+	if (s != 0)
+	{
+		GRC_LOG("caught signal %d", s);
+		exit(-1);
+	}
 }

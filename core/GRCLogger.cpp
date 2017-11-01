@@ -21,7 +21,7 @@ bool GRCLogger::s_dev = false;
 
 void GRCLogger::write(const char* format, ...)
 {
-	char temp[MAX_BUFFER_SIZE] = {0};
+	char temp[MAX_BUFFER_SIZE] = { 0 };
 
 	va_list vl;
 	va_start(vl, format);
@@ -34,5 +34,4 @@ void GRCLogger::write(const char* format, ...)
 		syslog(LOG_USER, temp);
 	}
 }
-
 

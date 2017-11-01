@@ -7,14 +7,11 @@
 
 #include "Manager.h"
 
-#include <pthread.h>
-#include <cerrno>
-#include <cstring>
-
 #include "core/GRCCore.h"
-#include "core/GRCLogger.h"
+#include "core/GRCMutex.h"
 #include "Defines.h"
 
+GRCMutex Manager::s_mutex;
 RobotData Manager::s_robotData;
 WeaponData Manager::s_weaponData;
 GRCTcpListenerT<UserSession> Manager::s_userListener("UserListener", 1);
@@ -34,11 +31,15 @@ bool Manager::start(int robotId, int robotType, const char* gameServerIp, const 
 
 	GRC_CHECK_RETFALSE(s_robotInfo.init(robotId, robotType));
 
+	s_mutex.wait();
+
 	return true;
 }
 
 void Manager::stop()
 {
+	s_mutex.signal();
+
 	s_userListener.stop();
 	s_gameConnector.stop();
 	s_controlBoardOpener.stop();

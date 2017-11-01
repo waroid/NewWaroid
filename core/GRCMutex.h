@@ -14,7 +14,8 @@ class GRCMutex
 {
 public:
 	GRCMutex()
-			: m_mutex(PTHREAD_MUTEX_INITIALIZER), m_cond(PTHREAD_COND_INITIALIZER)
+			: 	m_mutex(PTHREAD_MUTEX_INITIALIZER),
+				m_cond(PTHREAD_COND_INITIALIZER)
 	{
 	}
 	virtual ~GRCMutex()

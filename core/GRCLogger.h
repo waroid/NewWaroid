@@ -8,10 +8,6 @@
 #ifndef GRCLOGGER_H_
 #define GRCLOGGER_H_
 
-#include <pthread.h>
-#include <cerrno>
-#include <cstring>
-
 class GRCLogger
 {
 public:

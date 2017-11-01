@@ -5,12 +5,12 @@
  *      Author: mirime
  */
 
-#include "GRCCore.h"
 #include "GRCJsonData.h"
 
 #include <cstdio>
 #include <utility>
 
+#include "GRCCore.h"
 
 GRCJsonData::GRCJsonData()
 {
@@ -84,8 +84,7 @@ const GRCJsonData::BASEDATA* GRCJsonData::findData(const char* name) const
 {
 	for (auto& it : m_datas)
 	{
-		if (strcmp(it.second->name, name) == 0)
-			return it.second;
+		if (strcmp(it.second->name, name) == 0) return it.second;
 	}
 
 	return NULL;
@@ -107,8 +106,7 @@ void GRCJsonData::loadBaseData(const RAPIDJSON_NAMESPACE::Value::ConstMemberIter
 
 	{
 		auto siter = v.FindMember("id");
-		if (siter != v.MemberEnd())
-			data->id = siter->value.GetInt();
+		if (siter != v.MemberEnd()) data->id = siter->value.GetInt();
 	}
 }
 

@@ -40,6 +40,7 @@ public:
 	}
 
 private:
+	static GRCMutex s_mutex;
 	static RobotData s_robotData;
 	static WeaponData s_weaponData;
 	static GRCTcpListenerT<UserSession> s_userListener;

@@ -10,6 +10,7 @@
 
 #include <pthread.h>
 #include <string.h>
+#include <errno.h>
 #include "GRCLogger.h"
 #include "GRCMutex.h"
 
@@ -53,7 +54,5 @@
 
 #define GRC_LOG(fmt,...)	GRCLogger::write(fmt "\n", ##__VA_ARGS__)
 #define GRC_DEV(fmt,...)	if (GRCLogger::isDev()) GRCLogger::write(fmt "\n", ##__VA_ARGS__)
-
-
 
 #endif /* GRCCORE_H_ */

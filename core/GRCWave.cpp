@@ -11,10 +11,9 @@
 #include <alsa/pcm.h>
 #include <asm-generic/errno-base.h>
 #include <sndfile.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <cstring>
+#include <cstdio>
 
 #include "GRCCore.h"
 
@@ -24,7 +23,11 @@ namespace GRC_WAVE
 using namespace GRC_WAVE;
 
 GRCWave::GRCWave()
-		: m_thread(INVALID_THREAD), m_pcm(NULL), m_data(NULL), m_playing(false), m_count(0)
+		: 	m_thread(INVALID_THREAD),
+			m_pcm(NULL),
+			m_data(NULL),
+			m_playing(false),
+			m_count(0)
 {
 	// TODO Auto-generated constructor stub
 	bzero(m_name, sizeof(m_name));
@@ -80,7 +83,7 @@ bool GRCWave::load(const char* soundDir, const char* wavFilename)
 
 	DATA** data = &m_data;
 	size_t bufferSize = frames * info.channels * sizeof(short);
-	short* buffer = (short*) malloc(bufferSize);
+	short* buffer = (short*)malloc(bufferSize);
 	sf_count_t readFrames = sf_readf_short(file, buffer, frames);
 	while (readFrames > 0)
 	{
@@ -168,7 +171,7 @@ void GRCWave::playing()
 						GRC_LOG("error writing to PCM device. (%s)", snd_strerror(writeFrames));
 						return;
 					}
-					else if (writeFrames != (snd_pcm_sframes_t) data->frames)
+					else if (writeFrames != (snd_pcm_sframes_t)data->frames)
 					{
 						GRC_LOG("write differs from read. (%s)");
 					}
@@ -184,7 +187,7 @@ void GRCWave::playing()
 
 void* GRCWave::playWorker(void* param)
 {
-	GRCWave* wave = (GRCWave*) param;
+	GRCWave* wave = (GRCWave*)param;
 
 	GRC_LOG("[%s]start thread(%d)", wave->m_name, pthread_self());
 	wave->playing();

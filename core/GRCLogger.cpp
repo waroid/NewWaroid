@@ -11,30 +11,19 @@
 #include <cstdarg>
 #include <cstdio>
 
-namespace GRC_LOGGER
-{
-	const int MAX_BUFFER_SIZE = 512;
-}
-using namespace GRC_LOGGER;
-
 bool GRCLogger::s_dev = false;
 
-void GRCLogger::write(const char* format, ...)
+void GRCLogger::write(int level, const char* format, ...)
 {
-	char temp[MAX_BUFFER_SIZE] = { 0 };
-
 	va_list vl;
 	va_start(vl, format);
-	int len = vsnprintf(temp, MAX_BUFFER_SIZE - 2, format, vl);
-	va_end(vl);
+	vsyslog(level | LOG_LOCAL0, format, vl);
 
-	if (len > 0)
+	if (s_dev)
 	{
-		temp[len] = 0;
-		if (s_dev)
-			printf(temp);
-		else
-			syslog(LOG_USER, temp);
+		vprintf(format, vl);
 	}
+
+	va_end(vl);
 }
 

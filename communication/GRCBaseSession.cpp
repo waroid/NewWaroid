@@ -43,11 +43,11 @@ void GRCBaseSession::close(const char* reason)
 			{
 				pthread_join(m_receiveThread, NULL);
 			}
-			GRC_DEV("[%s]cancel thread", getObjName());
+			GRC_INFO("[%s]cancel thread", getObjName());
 		}
 		onClose();
 		::close(fd);
-		GRC_LOG("[%s]closed. reason=%s", getObjName(), reason);
+		GRC_INFO("[%s]closed. reason=%s", getObjName(), reason);
 	}
 }
 
@@ -77,9 +77,9 @@ void* GRCBaseSession::receiveWorker(void* param)
 {
 	GRCBaseSession* session = (GRCBaseSession*)param;
 
-	GRC_LOG("[%s]start receive thread(0x%x)", session->getObjName(), pthread_self());
+	GRC_INFO("[%s]start receive thread(0x%x)", session->getObjName(), pthread_self());
 	session->onReceiving();
-	GRC_LOG("[%s]stop receive thread(0x%x)", session->getObjName(), pthread_self());
+	GRC_INFO("[%s]stop receive thread(0x%x)", session->getObjName(), pthread_self());
 
 	return NULL;
 }

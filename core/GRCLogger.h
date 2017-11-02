@@ -20,7 +20,7 @@ public:
 		s_dev = dev;
 	}
 
-	static void write(const char* format, ...);
+	static void write(int level, const char* format, ...);
 
 private:
 	static bool s_dev;

@@ -46,7 +46,7 @@ void GRCTcpSession::accepted(int fd, const GRCSockAddr& localSockAddr, const GRC
 
 	this->openning();
 
-	GRC_LOG("[%s]accepted.", getObjName());
+	GRC_INFO("[%s]accepted.", getObjName());
 }
 
 bool GRCTcpSession::connect(const GRCSockAddr& targetSockAddr, bool reconnect)
@@ -63,7 +63,7 @@ bool GRCTcpSession::connect(const GRCSockAddr& targetSockAddr, bool reconnect)
 
 	this->openning();
 
-	GRC_LOG("[%s]connected.", getObjName());
+	GRC_INFO("[%s]connected.", getObjName());
 
 	return true;
 }
@@ -76,7 +76,7 @@ void GRCTcpSession::reconnect()
 
 		this->openning();
 
-		GRC_LOG("[%s]reconnected.", getObjName());
+		GRC_INFO("[%s]reconnected.", getObjName());
 	}
 }
 

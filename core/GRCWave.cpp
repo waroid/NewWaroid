@@ -111,7 +111,7 @@ void GRCWave::close()
 		{
 			pthread_join(m_playThread, NULL);
 		}
-		GRC_DEV("[%s]cancel thread", getObjName());
+		GRC_INFO("[%s]cancel thread", getObjName());
 	}
 
 	DATA* data = m_data;
@@ -162,17 +162,17 @@ void GRCWave::playing()
 					writeFrames = snd_pcm_writei(m_pcm, data->buffer, data->frames);
 					if (writeFrames == -EPIPE)
 					{
-						GRC_LOG("Underrun");
+						GRC_ERR("Underrun");
 						snd_pcm_prepare(m_pcm);
 					}
 					else if (writeFrames < 0)
 					{
-						GRC_LOG("error writing to PCM device. (%s)", snd_strerror(writeFrames));
+						GRC_ERR("error writing to PCM device. (%s)", snd_strerror(writeFrames));
 						return;
 					}
 					else if (writeFrames != (snd_pcm_sframes_t)data->frames)
 					{
-						GRC_LOG("write differs from read. (%s)");
+						GRC_ERR("write differs from read. (%s)");
 					}
 
 					usleep(1000);
@@ -188,9 +188,9 @@ void* GRCWave::playWorker(void* param)
 {
 	GRCWave* wave = (GRCWave*)param;
 
-	GRC_LOG("[%s]start play thread(0x%x)", wave->getObjName(), pthread_self());
+	GRC_INFO("[%s]start play thread(0x%x)", wave->getObjName(), pthread_self());
 	wave->playing();
-	GRC_LOG("[%s]stop play thread(0x%x)", wave->getObjName(), pthread_self());
+	GRC_INFO("[%s]stop play thread(0x%x)", wave->getObjName(), pthread_self());
 
 	return NULL;
 }

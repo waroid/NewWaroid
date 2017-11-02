@@ -20,13 +20,13 @@ int main(int argc, char* argv[])
 {
 	if (argc < 5)
 	{
-		GRC_LOG("usage: %s <robot id> <robot type name> <game sever ip>  <dev 0 or 1>", argv[0]);
+		GRC_WARN("usage: %s <robot id> <robot type name> <game sever ip>  <dev 0 or 1>", argv[0]);
 		return -1;
 	}
 
 	GRCLogger::setDev(atoi(argv[4]) == 1);
 
-	GRC_LOG("[New Waroid] START");
+	GRC_INFO("[New Waroid] START");
 
 	GRC_CHECK_FUNC_RETMINUS(initialize(), cleanup(0));
 
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 
 	cleanup(0);
 
-	GRC_LOG("[New Waroid] END");
+	GRC_INFO("[New Waroid] END");
 
 	return 0;
 }
@@ -53,7 +53,7 @@ bool initialize()
 	GRC_CHECK_RETFALSE(wiringPiSetupGpio() != -1);
 	GRC_DEV("setup gpio of wiringPi");
 
-	GRC_LOG("initlaized.");
+	GRC_INFO("initlaized.");
 
 	return true;
 }
@@ -63,7 +63,7 @@ void cleanup(int s)
 	Manager::stop();
 	if (s != 0)
 	{
-		GRC_LOG("caught signal %d", s);
+		GRC_ERR("caught signal %d", s);
 		exit(-1);
 	}
 }

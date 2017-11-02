@@ -114,7 +114,7 @@ void GameSession::onPacket(const char* packet, int size)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_DEATH, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_REVIVE, rgh)
 		default:
-			GRC_LOG("invalid packet. cmd=%d", rgh->getCommand());
+			GRC_ERR("invalid packet. cmd=%d", rgh->getCommand());
 			break;
 	}
 }
@@ -152,9 +152,9 @@ void* GameSession::sendInfoWorker(void* param)
 {
 	GameSession* session = (GameSession*)param;
 
-	GRC_LOG("[%s]start send info thread(0x%x)", session->getObjName(), pthread_self());
+	GRC_INFO("[%s]start send info thread(0x%x)", session->getObjName(), pthread_self());
 	session->onSendingInfo();
-	GRC_LOG("[%s]stop send info thread(0x%x)", session->getObjName(), pthread_self());
+	GRC_INFO("[%s]stop send info thread(0x%x)", session->getObjName(), pthread_self());
 
 	return NULL;
 }

@@ -47,7 +47,7 @@ void UserSession::onPacket(const char* packet, int size)
 		WAROID_USER_SESSION_COMMAND_CASE(U_R_FIRE, urp)
 		default:
 		{
-			GRC_LOG("invalid packet. cmd=%d", urp->getCommand());
+			GRC_ERR("invalid packet. cmd=%d", urp->getCommand());
 		}
 	}
 }

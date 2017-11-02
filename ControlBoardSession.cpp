@@ -156,9 +156,9 @@ void* ControlBoardSession::requestInitWorker(void* param)
 {
 	ControlBoardSession* session = (ControlBoardSession*)param;
 
-	GRC_LOG("[%s]start request init thread(0x%x)", session->getObjName(), pthread_self());
+	GRC_INFO("[%s]start request init thread(0x%x)", session->getObjName(), pthread_self());
 	session->onRequestinginit();
-	GRC_LOG("[%s]stop request init thread(0x%x)", session->getObjName(), pthread_self());
+	GRC_INFO("[%s]stop request init thread(0x%x)", session->getObjName(), pthread_self());
 
 	return NULL;
 }

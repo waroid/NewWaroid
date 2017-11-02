@@ -42,14 +42,14 @@ public:
 		GRC_CHECK_RETFALSE(index!=GRC_INVALID_INDEX);
 		GRC_CHECK_RETFALSE(m_sessions[index]->open(device, baud));
 
-		GRC_LOG("[%s]opened. device=%s baud=%d", this->getObjName(), device, baud);
+		GRC_INFO("[%s]opened. device=%s baud=%d", this->getObjName(), device, baud);
 
 		return true;
 	}
 
 	void stop()
 	{
-		GRC_LOG("[%s]stopping...", this->getObjName());
+		GRC_INFO("[%s]stopping...", this->getObjName());
 
 		this->closeAll();
 	}

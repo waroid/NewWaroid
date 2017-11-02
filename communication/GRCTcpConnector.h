@@ -63,7 +63,7 @@ public:
 
 	void stop()
 	{
-		GRC_LOG("[%s]stopping...", this->getObjName());
+		GRC_INFO("[%s]stopping...", this->getObjName());
 
 		if (m_reconnectThread != GRC_INVALID_THREAD)
 		{
@@ -102,9 +102,9 @@ private:
 	{
 		GRCTcpConnectorT* tcpConnector = (GRCTcpConnectorT*)param;
 
-		GRC_LOG("[%s]start reconnect thread(0x%x)", tcpConnector->getObjName(), pthread_self());
+		GRC_INFO("[%s]start reconnect thread(0x%x)", tcpConnector->getObjName(), pthread_self());
 		tcpConnector->reconnecting();
-		GRC_LOG("[%s]stop reconnect thread(0x%x)", tcpConnector->getObjName(), pthread_self());
+		GRC_INFO("[%s]stop reconnect thread(0x%x)", tcpConnector->getObjName(), pthread_self());
 
 		return NULL;
 	}

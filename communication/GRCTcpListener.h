@@ -67,14 +67,14 @@ public:
 
 		pthread_create(&m_acceptThread, NULL, acceptWorker, this);
 
-		GRC_LOG("[%s]listened. address=%s", this->getObjName(), *m_sockAddr);
+		GRC_INFO("[%s]listened. address=%s", this->getObjName(), *m_sockAddr);
 
 		return true;
 	}
 
 	void stop()
 	{
-		GRC_LOG("[%s]stopping...", this->getObjName());
+		GRC_INFO("[%s]stopping...", this->getObjName());
 
 		if (m_acceptThread != GRC_INVALID_THREAD)
 		{
@@ -82,14 +82,14 @@ public:
 			{
 				pthread_join(m_acceptThread, NULL);
 			}
-			GRC_DEV("[%s]cancel thread", this->getObjName());
+			GRC_INFO("[%s]cancel thread", this->getObjName());
 		}
 
 		if (m_fd != GRC_INVALID_FD)
 		{
 			::close(m_fd);
 			m_fd = GRC_INVALID_FD;
-			GRC_DEV("[%s]close listen socket", this->getObjName());
+			GRC_INFO("[%s]close listen socket", this->getObjName());
 		}
 
 		this->closeAll();
@@ -110,7 +110,7 @@ private:
 			if (index == GRC_INVALID_INDEX)
 			{
 				::close(fd);
-				GRC_LOG("[%s]close accept socket. reason=not exist free");
+				GRC_ERR("[%s]close accept socket. reason=not exist free");
 			}
 			else
 			{
@@ -131,9 +131,9 @@ private:
 	{
 		GRCTcpListenerT* tcpListener = (GRCTcpListenerT*)param;
 
-		GRC_LOG("[%s]start accept thread(0x%x)", tcpListener->getObjName(), pthread_self());
+		GRC_INFO("[%s]start accept thread(0x%x)", tcpListener->getObjName(), pthread_self());
 		tcpListener->accepting();
-		GRC_LOG("[%s]stop accept thread(0x%x)", tcpListener->getObjName(), pthread_self());
+		GRC_INFO("[%s]stop accept thread(0x%x)", tcpListener->getObjName(), pthread_self());
 
 		return NULL;
 	}

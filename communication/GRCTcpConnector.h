@@ -20,45 +20,32 @@
 #include "GRCCommunicator.h"
 #include "GRCSockAddr.h"
 
-template<class TTCPSESSION>
-class GRCTcpConnectorT: public GRCCommunicatorT<TTCPSESSION>
+template<class TCONNECTSESSION>
+class GRCTcpConnectorT: public GRCCommunicatorT<TCONNECTSESSION>
 {
 protected:
-	using GRCCommunicatorT<TTCPSESSION>::m_mutex;
-	using GRCCommunicatorT<TTCPSESSION>::m_sessions;
+	using GRCCommunicatorT<TCONNECTSESSION>::m_mutex;
+	using GRCCommunicatorT<TCONNECTSESSION>::m_sessions;
 
 public:
 	GRCTcpConnectorT(const char* name, size_t maxSessionCount, size_t reconnectSeconds, size_t maxPacketSize)
-			: 	GRCCommunicatorT<TTCPSESSION>(name, maxSessionCount, maxPacketSize),
+			: 	GRCCommunicatorT<TCONNECTSESSION>(name, maxSessionCount, maxPacketSize),
 				m_reconnectSeconds(reconnectSeconds),
 				m_reconnectThread(GRC_INVALID_THREAD)
 	{
-		if (m_reconnectSeconds > 0)
-		{
-			//reconnect check thread
-			GRC_CHECK_RETURN(pthread_create(&m_reconnectThread, NULL, reconnectWorker, this) == 0);
-		}
 	}
 	virtual ~GRCTcpConnectorT()
 	{
 	}
 
 public:
-	bool connect(const char* ip, int port, bool reconnect)
+	void start()
 	{
-		GRC_CHECK_RETFALSE(ip);
-		GRC_CHECK_RETFALSE(port > 0);
-
-		GRCSockAddr sockAddr(ip, port);
-		GRC_CHECK_RETFALSE(sockAddr.isValid());
-
-		GRCMutexAutoLock autoLock(&m_mutex);
-
-		size_t index = this->findFreeIndex();
-		GRC_CHECK_RETFALSE(index != GRC_INVALID_INDEX);
-		GRC_CHECK_RETFALSE(m_sessions[index]->connect(sockAddr, reconnect));
-
-		return true;
+		if (m_reconnectSeconds > 0)
+		{
+			//reconnect check thread
+			pthread_create(&m_reconnectThread, NULL, reconnectWorker, this);
+		}
 	}
 
 	void stop()
@@ -74,8 +61,30 @@ public:
 			GRC_DEV("[%s]cancel thread", this->getObjName());
 		}
 
+		for (size_t i = 0; i < m_sessions.size(); ++i)
+		{
+			m_sessions[i]->m_reconnect = false;
+		}
+
 		this->closeAll();
 	}
+
+	bool connect(const char* ip, int port, bool reconnect)
+		{
+			GRC_CHECK_RETFALSE(ip);
+			GRC_CHECK_RETFALSE(port > 0);
+
+			GRCSockAddr sockAddr(ip, port);
+			GRC_CHECK_RETFALSE(sockAddr.isValid());
+
+			GRCMutexAutoLock autoLock(&m_mutex);
+
+			size_t index = this->findFreeIndex();
+			GRC_CHECK_RETFALSE(index != GRC_INVALID_INDEX);
+			GRC_CHECK_RETFALSE(m_sessions[index]->connect(sockAddr, reconnect));
+
+			return true;
+		}
 
 private:
 	void reconnecting()
@@ -91,10 +100,8 @@ private:
 		}
 	}
 
-protected:
-	size_t m_reconnectSeconds;
-
 private:
+	size_t m_reconnectSeconds;
 	pthread_t m_reconnectThread;
 
 private:

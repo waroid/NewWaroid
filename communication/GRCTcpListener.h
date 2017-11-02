@@ -18,16 +18,16 @@
 #include "GRCCommunicator.h"
 #include "GRCSockAddr.h"
 
-template<class TTCPSESSION>
-class GRCTcpListenerT: public GRCCommunicatorT<TTCPSESSION>
+template<class TACCEPTSESSION>
+class GRCTcpListenerT: public GRCCommunicatorT<TACCEPTSESSION>
 {
 protected:
-	using GRCCommunicatorT<TTCPSESSION>::m_mutex;
-	using GRCCommunicatorT<TTCPSESSION>::m_sessions;
+	using GRCCommunicatorT<TACCEPTSESSION>::m_mutex;
+	using GRCCommunicatorT<TACCEPTSESSION>::m_sessions;
 
 public:
 	GRCTcpListenerT(const char* name, size_t maxSessionCount, size_t maxPacketSize)
-			: 	GRCCommunicatorT<TTCPSESSION>(name, maxSessionCount, maxPacketSize),
+			: 	GRCCommunicatorT<TACCEPTSESSION>(name, maxSessionCount, maxPacketSize),
 				m_fd(GRC_INVALID_FD),
 				m_acceptThread(GRC_INVALID_THREAD)
 	{

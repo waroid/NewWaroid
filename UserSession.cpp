@@ -10,13 +10,8 @@
 #include "core/GRCCore.h"
 #include "Defines.h"
 
-namespace USER_SESSION
-{
-}
-using namespace USER_SESSION;
-
 UserSession::UserSession(size_t maxPacketSize)
-		: GRCTcpSession(maxPacketSize)
+		: GRCAcceptSession(maxPacketSize)
 {
 	// TODO Auto-generated constructor stub
 

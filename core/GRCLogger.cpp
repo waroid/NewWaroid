@@ -15,15 +15,21 @@ bool GRCLogger::s_dev = false;
 
 void GRCLogger::write(int level, const char* format, ...)
 {
-	va_list vl;
-	va_start(vl, format);
-	vsyslog(level | LOG_LOCAL0, format, vl);
+	{
+		va_list vl;
+		va_start(vl, format);
+		vsyslog(level | LOG_LOCAL0, format, vl);
+		va_end(vl);
+	}
 
 	if (s_dev)
 	{
+		va_list vl;
+		va_start(vl, format);
 		vprintf(format, vl);
+		printf("\n");
+		va_end(vl);
 	}
 
-	va_end(vl);
 }
 

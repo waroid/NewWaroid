@@ -8,10 +8,10 @@
 #ifndef USERSESSION_H_
 #define USERSESSION_H_
 
-#include "communication/GRCTcpSession.h"
+#include "communication/GRCAcceptSession.h"
 #include "UserSessionDefines.h"
 
-class UserSession: public GRCTcpSession
+class UserSession: public GRCAcceptSession
 {
 #define WAROID_USER_SESSION_COMMAND_FUNC_INTERFACE(cmd)			void on##cmd(const WAROIDUSERROBOT::cmd* rpacket)
 #define WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(cmd)	void UserSession::on##cmd(const WAROIDUSERROBOT::cmd* rpacket)

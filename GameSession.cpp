@@ -7,10 +7,18 @@
 
 #include "GameSession.h"
 
+#include <pthread.h>
+#include <stddef.h>
+#include <unistd.h>
+
+#include "communication/GRCCommunicator.h"
 #include "communication/GRCTcpListener.h"
 #include "core/GRCCore.h"
 #include "core/GRCCoreUtil.h"
+#include "core/GRCObject.h"
 #include "Manager.h"
+#include "RobotData.h"
+#include "RobotInfo.h"
 #include "UserSession.h"
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_1)
@@ -61,7 +69,7 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_REVIVE)
 }
 
 GameSession::GameSession(size_t maxPacketSize)
-		: 	GRCTcpSession(maxPacketSize),
+		: 	GRCConnectSession(maxPacketSize),
 			m_sendInfoThread(GRC_INVALID_THREAD)
 {
 	// TODO Auto-generated constructor stub

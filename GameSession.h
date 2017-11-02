@@ -8,10 +8,10 @@
 #ifndef GAMESESSION_H_
 #define GAMESESSION_H_
 
-#include "communication/GRCTcpSession.h"
+#include "communication/GRCConnectSession.h"
 #include "GameSessionDefines.h"
 
-class GameSession: public GRCTcpSession
+class GameSession: public GRCConnectSession
 {
 #define WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(cmd)			void on##cmd(const WAROIDROBOTGAME::cmd* rpacket);
 #define WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(cmd)	void GameSession::on##cmd(const WAROIDROBOTGAME::cmd* rpacket)

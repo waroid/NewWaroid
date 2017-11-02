@@ -15,12 +15,15 @@
 #define GAME_SERVER_PORT		5003
 
 #define MAX_CAMERA_MODE		6
-#define RECONNECT_SECONDS	5
 
 #define CONTROL_BOARD_DEVICE	"/dev/ttyS0"
 #define CONTROL_BOARD_BAUD		9600
 
+#ifdef __RPI__
 #define DATA_DIR	"/usr/local/share/waroid/"
+#else
+#define DATA_DIR	"/home/mirime/RaspberryPi/NewWaroid/json/"
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 //

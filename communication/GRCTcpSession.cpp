@@ -19,8 +19,7 @@
 #include "../core/GRCObject.h"
 
 GRCTcpSession::GRCTcpSession(size_t maxPacketSize)
-		: 	GRCBaseSession(maxPacketSize),
-			m_reconnect(false)
+		: GRCBaseSession(maxPacketSize)
 {
 	// TODO Auto-generated constructor stub
 }
@@ -28,56 +27,6 @@ GRCTcpSession::GRCTcpSession(size_t maxPacketSize)
 GRCTcpSession::~GRCTcpSession()
 {
 	// TODO Auto-generated destructor stub
-}
-
-void GRCTcpSession::accepted(int fd, const GRCSockAddr& localSockAddr, const GRCSockAddr& remoteSockAddr)
-{
-	GRC_CHECK_RETURN(fd != GRC_INVALID_FD);
-	GRC_CHECK_RETURN(localSockAddr.isValid());
-	GRC_CHECK_RETURN(remoteSockAddr.isValid());
-
-	{
-		GRCMutexAutoLock autoLock(&m_mutex);
-		GRC_CHECK_FUNC_RETURN(m_fd == GRC_INVALID_FD, ::close(fd));
-		m_fd = fd;
-		m_localSockAddr = localSockAddr;
-		m_remoteSockAddr = remoteSockAddr;
-	}
-
-	this->openning();
-
-	GRC_INFO("[%s]accepted.", getObjName());
-}
-
-bool GRCTcpSession::connect(const GRCSockAddr& targetSockAddr, bool reconnect)
-{
-	GRC_CHECK_RETFALSE(targetSockAddr.isValid());
-
-	{
-		GRCMutexAutoLock autoLock(&m_mutex);
-		m_reconnect = reconnect;
-		m_remoteSockAddr = targetSockAddr;
-	}
-
-	GRC_CHECK_RETFALSE(connecting());
-
-	this->openning();
-
-	GRC_INFO("[%s]connected.", getObjName());
-
-	return true;
-}
-
-void GRCTcpSession::reconnect()
-{
-	if (m_reconnect)
-	{
-		GRC_CHECK_RETURN(connecting());
-
-		this->openning();
-
-		GRC_INFO("[%s]reconnected.", getObjName());
-	}
 }
 
 void GRCTcpSession::onOpen()
@@ -90,7 +39,6 @@ void GRCTcpSession::onOpen()
 
 void GRCTcpSession::onClose()
 {
-	m_remoteSockAddr.clear();
 }
 
 bool GRCTcpSession::onSend(const void* data, size_t size)
@@ -141,21 +89,3 @@ void GRCTcpSession::onReceiving()
 	}
 }
 
-bool GRCTcpSession::connecting()
-{
-	GRC_CHECK_RETFALSE(m_remoteSockAddr.isValid());
-	GRC_CHECK_RETFALSE(m_fd == GRC_INVALID_FD);
-
-	int fd = socket(AF_INET, SOCK_STREAM, 0);
-	GRC_CHECK_RETFALSE(fd != GRC_INVALID_FD);
-	GRC_CHECK_FUNC_RETFALSE(::connect(fd, m_remoteSockAddr, GRCSockAddr::LEN) == 0, ::close(fd));
-
-	GRCMutexAutoLock autoLock(&m_mutex);
-	sockaddr sockAddr;
-	socklen_t len = sizeof(sockAddr);
-	::getsockname(m_fd, &sockAddr, &len);
-	m_localSockAddr.set(&sockAddr);
-	m_fd = fd;
-
-	return true;
-}

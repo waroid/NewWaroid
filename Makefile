@@ -5,7 +5,7 @@ DATADIR = /usr/local/share/waroid
 CC = gcc
 CXX = g++
 CFLAGS = 
-CXXFLAGS = 
+CXXFLAGS = -D__RPI__
 
 INCPATH = 
 LINK = g++
@@ -25,6 +25,8 @@ CPPSOURCES = main.cpp \
 	communication/GRCBaseSession.cpp \
 	communication/GRCSerialSession.cpp \
 	communication/GRCTcpSession.cpp \
+	communication/GRCAcceptSession.cpp \
+	communication/GRCConnectSession.cpp \
 	RobotData.cpp \
 	WeaponData.cpp \
 	ControlBoardSession.cpp \

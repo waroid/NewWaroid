@@ -5,7 +5,9 @@
  *      Author: mirime
  */
 
+#ifdef __RPI__
 #include <wiringPi.h>
+#endif
 #include <csignal>
 #include <cstdlib>
 
@@ -50,8 +52,10 @@ bool initialize()
 	signal(SIGQUIT, cleanup);
 	signal(SIGHUP, cleanup);
 
+#ifdef __RPI__
 	GRC_CHECK_RETFALSE(wiringPiSetupGpio() != -1);
 	GRC_DEV("setup gpio of wiringPi");
+#endif
 
 	GRC_INFO("initlaized.");
 

@@ -14,8 +14,9 @@
 #include <cstring>
 
 #include "GRCMutex.h"
+#include "GRCObject.h"
 
-class GRCWave
+class GRCWave : public GRCObject
 {
 public:
 	enum DEFAULT_DATA
@@ -64,11 +65,10 @@ private:
 	void playing();
 
 protected:
-	char m_name[100];
-	pthread_t m_thread;
+	GRCMutex m_mutex;
+	pthread_t m_playThread;
 	snd_pcm_t* m_pcm;
 	DATA* m_data;
-	GRCMutex m_mutex;
 	bool m_playing;
 	int m_count;
 

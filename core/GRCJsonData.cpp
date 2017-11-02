@@ -100,7 +100,7 @@ bool GRCJsonData::addData(BASEDATA* data)
 
 void GRCJsonData::loadBaseData(const RAPIDJSON_NAMESPACE::Value::ConstMemberIterator& iter, BASEDATA* data)
 {
-	SAFE_STR_COPY(data->name, sizeof(data->name), iter->name.GetString());
+	GRC_SAFE_STR_COPY(data->name, sizeof(data->name), iter->name.GetString());
 
 	const RAPIDJSON_NAMESPACE::Value& v = iter->value;
 

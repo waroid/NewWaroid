@@ -8,30 +8,32 @@
 #ifndef GRCSERIALSESSION_H_
 #define GRCSERIALSESSION_H_
 
+#include <stddef.h>
+
+#include "../core/GRCBuffer.h"
 #include "GRCBaseSession.h"
 
 class GRCSerialSession: public GRCBaseSession
 {
 public:
-	GRCSerialSession();
+	GRCSerialSession(size_t maxPacketSize);
 	virtual ~GRCSerialSession();
 
 public:
 	bool open(const char* device, int baud);
-	void send(const unsigned char* data, int size);
 
 protected:
+	virtual void onOpen() override;
+	virtual void onClose() override;
+	virtual bool onSend(const void* data, size_t size) override;
 	virtual void onReceiving() override;
-
-	virtual void onOpen()
-	{
-	}
 
 	virtual int onParsing(const char* data, int size, int& skipSize) = 0;
 	virtual void onPacket(const char* packet, int size) = 0;
 
 private:
-	int recv(char* buffer, int len);
+	void recv(GRCBuffer& buffer);
+
 };
 
 #endif /* GRCSERIALSESSION_H_ */

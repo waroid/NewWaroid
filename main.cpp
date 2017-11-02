@@ -15,28 +15,26 @@
 
 bool initialize();
 void cleanup(int s);
-void* woker(void* param);
 
 int main(int argc, char* argv[])
 {
-	if (argc < 2)
+	if (argc < 5)
 	{
-		GRC_LOG("usage: %s <dev 0 or 1>", argv[0]);
+		GRC_LOG("usage: %s <robot id> <robot type name> <game sever ip>  <dev 0 or 1>", argv[0]);
 		return -1;
 	}
 
-	GRCLogger::setDev(atoi(argv[1]) == 1);
+	GRCLogger::setDev(atoi(argv[4]) == 1);
 
 	GRC_LOG("[New Waroid] START");
 
 	GRC_CHECK_FUNC_RETMINUS(initialize(), cleanup(0));
 
-	int robotId = 0;
-	int robotType = 1;
-	const char* gameServerIp = "192.168.1.99";
-	const char* controlBoardDevice = "/dev/ttyS0";
+	int robotId = atoi(argv[1]);
+	const char* robotTypeName = argv[2];
+	const char* gameServerIp = argv[3];
 
-	Manager::start(robotId, robotType, gameServerIp, controlBoardDevice);
+	Manager::start(robotId, robotTypeName, gameServerIp);
 
 	cleanup(0);
 

@@ -7,13 +7,20 @@
 
 #include "GRCTcpSession.h"
 
-#include <unistd.h>
-#include <stdio.h>
 #include <netinet/tcp.h>
+#include <stddef.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <cstring>
 
+#include "../core/GRCBuffer.h"
 #include "../core/GRCCore.h"
+#include "../core/GRCMutex.h"
+#include "../core/GRCObject.h"
 
-GRCTcpSession::GRCTcpSession()
+GRCTcpSession::GRCTcpSession(size_t maxPacketSize)
+		: 	GRCBaseSession(maxPacketSize),
+			m_reconnect(false)
 {
 	// TODO Auto-generated constructor stub
 }
@@ -25,55 +32,57 @@ GRCTcpSession::~GRCTcpSession()
 
 void GRCTcpSession::accepted(int fd, const GRCSockAddr& localSockAddr, const GRCSockAddr& remoteSockAddr)
 {
-	GRC_CHECK_RETURN(fd!=INVALID_FD);
+	GRC_CHECK_RETURN(fd != GRC_INVALID_FD);
 	GRC_CHECK_RETURN(localSockAddr.isValid());
 	GRC_CHECK_RETURN(remoteSockAddr.isValid());
 
-	GRCMutexAutoLock autoLock(&m_mutex);
-	GRC_CHECK_FUNC_RETURN(m_fd == INVALID_FD, ::close(fd));
-
-	m_fd = fd;
+	{
+		GRCMutexAutoLock autoLock(&m_mutex);
+		GRC_CHECK_FUNC_RETURN(m_fd == GRC_INVALID_FD, ::close(fd));
+		m_fd = fd;
+		m_localSockAddr = localSockAddr;
+		m_remoteSockAddr = remoteSockAddr;
+	}
 
 	this->openning();
 
-	GRC_LOG("[%s]accepted.", m_name);
+	GRC_LOG("[%s]accepted.", getObjName());
 }
 
 bool GRCTcpSession::connect(const GRCSockAddr& targetSockAddr, bool reconnect)
 {
 	GRC_CHECK_RETFALSE(targetSockAddr.isValid());
 
-	GRCMutexAutoLock autoLock(&m_mutex);
-	m_reconnect = reconnect;
-	m_remoteSockAddr = targetSockAddr;
+	{
+		GRCMutexAutoLock autoLock(&m_mutex);
+		m_reconnect = reconnect;
+		m_remoteSockAddr = targetSockAddr;
+	}
 
 	GRC_CHECK_RETFALSE(connecting());
 
 	this->openning();
 
-	GRC_LOG("[%s]connected.", m_name);
+	GRC_LOG("[%s]connected.", getObjName());
 
 	return true;
 }
 
 void GRCTcpSession::reconnect()
 {
-	GRCMutexAutoLock autoLock(&m_mutex);
 	if (m_reconnect)
 	{
 		GRC_CHECK_RETURN(connecting());
 
 		this->openning();
 
-		GRC_LOG("[%s]reconnected.", m_name);
+		GRC_LOG("[%s]reconnected.", getObjName());
 	}
 }
 
 void GRCTcpSession::onOpen()
 {
-	GRCBaseSession::onOpen();
-
-	sprintf(m_name, "%s-%s", *m_localSockAddr, *m_remoteSockAddr);
+	updateObjName("%s-%s", *m_localSockAddr, *m_remoteSockAddr);
 
 	int optval = 1;
 	setsockopt(m_fd, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(optval));
@@ -82,49 +91,45 @@ void GRCTcpSession::onOpen()
 void GRCTcpSession::onClose()
 {
 	m_remoteSockAddr.clear();
+}
 
-	GRCBaseSession::onClose();
+bool GRCTcpSession::onSend(const void* data, size_t size)
+{
+	int len = ::send(m_fd, data, size, 0);
+	GRC_CHECKV_RETFALSE(len > 0, "invalid sent. size=%d:%d", len, size);
+
+	return true;
 }
 
 void GRCTcpSession::onReceiving()
 {
-	char buffer[1024];
-	int offset = 0;
-
-	auto efunc = [this](int len)
+	auto eclose = [this](int len)
 	{
 		if (len == 0) close("remote");
 		else close("failed recv");
 	};
 
+	GRCBuffer buffer(m_maxPacketSize * 100);
+	int offset = 0;
+
 	for (;;)
 	{
-		int len = ::recv(m_fd, buffer + offset, sizeof(buffer) - offset, 0);
-		GRC_CHECK_FUNC_RETURN(len > 0, efunc(len));
-
-		const char* data = buffer;
-		int dataSize = len + offset;
+		int len = ::recv(m_fd, buffer.getFreeBuffer(), buffer.getFreeBufferSize(), 0);
+		GRC_CHECK_FUNC_RETURN(len > 0, eclose(len));
+		GRC_CHECK_FUNC_RETURN(buffer.postAppend(len), eclose(-1));
+		offset = 0;
 
 		for (;;)
 		{
-			int packetSize = onParsing(data, dataSize);
+			int packetSize = onParsing(buffer.getData() + offset, buffer.getDataSize() - offset);
 			if (packetSize > 0)
 			{
-				onPacket(data, packetSize);
-				data += packetSize;
-				dataSize -= packetSize;
+				onPacket(buffer.getData() + offset, packetSize);
+				offset += packetSize;
 			}
 			else if (packetSize == 0)
 			{
-				if (dataSize > 0)
-				{
-					memmove(buffer, data + (len + offset - dataSize), dataSize);
-					offset = dataSize;
-				}
-				else
-				{
-					offset = 0;
-				}
+				buffer.truncate(offset);
 				break;
 			}
 			else
@@ -139,24 +144,18 @@ void GRCTcpSession::onReceiving()
 bool GRCTcpSession::connecting()
 {
 	GRC_CHECK_RETFALSE(m_remoteSockAddr.isValid());
+	GRC_CHECK_RETFALSE(m_fd == GRC_INVALID_FD);
 
-	auto efunc = [this]()
-	{
-		::close(m_fd);
-		m_fd = INVALID_FD;
-	};
+	int fd = socket(AF_INET, SOCK_STREAM, 0);
+	GRC_CHECK_RETFALSE(fd != GRC_INVALID_FD);
+	GRC_CHECK_FUNC_RETFALSE(::connect(fd, m_remoteSockAddr, GRCSockAddr::LEN) == 0, ::close(fd));
 
-	GRC_CHECK_RETFALSE(m_fd == INVALID_FD);
-
-	m_fd = socket(AF_INET, SOCK_STREAM, 0);
-	GRC_CHECK_RETFALSE(m_fd == INVALID_FD);
-
-	GRC_CHECK_FUNC_RETFALSE(::connect(m_fd, m_remoteSockAddr, GRCSockAddr::LEN) == 0, efunc());
-
+	GRCMutexAutoLock autoLock(&m_mutex);
 	sockaddr sockAddr;
 	socklen_t len = sizeof(sockAddr);
 	::getsockname(m_fd, &sockAddr, &len);
 	m_localSockAddr.set(&sockAddr);
+	m_fd = fd;
 
 	return true;
 }

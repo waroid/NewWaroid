@@ -21,7 +21,7 @@
 class Manager
 {
 public:
-	static bool start(int robotId, int robotType, const char* gameServerIp, const char* controlBoardDevice);
+	static bool start(int robotId, const char* robotTypeName, const char* gameServerIp);
 	static void stop();
 
 	static const RobotData& getRobotData()
@@ -39,14 +39,20 @@ public:
 		return s_robotInfo;
 	}
 
+	static GRCTcpListenerT<UserSession>& getUserListener()
+	{
+		return s_userListener;
+	}
+
 private:
 	static GRCMutex s_mutex;
 	static RobotData s_robotData;
 	static WeaponData s_weaponData;
+	static RobotInfo s_robotInfo;
 	static GRCTcpListenerT<UserSession> s_userListener;
 	static GRCTcpConnectorT<GameSession> s_gameConnector;
 	static GRCSerialOpenerT<ControlBoardSession> s_controlBoardOpener;
-	static RobotInfo s_robotInfo;
+
 };
 
 #endif /* MANAGER_H_ */

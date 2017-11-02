@@ -18,8 +18,13 @@ public:
 	virtual ~RobotInfo();
 
 public:
-	bool init(int id, int type);
-	bool equipSecondWeapon(int weaponId);
+	bool init(int id, const char* typeName);
+
+	void updateSecondWeapon(int weaponId);
+	void updateValidateKey(unsigned int validateKey)
+	{
+		m_validateKey = validateKey;
+	}
 
 	int getId() const
 	{
@@ -75,6 +80,7 @@ private:
 	bool m_ready;
 	int m_yaw;
 	int m_battery;
+	unsigned int m_validateKey;
 
 };
 

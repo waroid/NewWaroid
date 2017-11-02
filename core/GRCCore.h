@@ -12,13 +12,12 @@
 #include <string.h>
 #include <errno.h>
 #include "GRCLogger.h"
-#include "GRCMutex.h"
 
-#define INVALID_THREAD	(pthread_t)-1
-#define INVALID_INDEX	(int)-1
-#define INVALID_FD		(int)-1
+#define GRC_INVALID_THREAD	(pthread_t)-1
+#define GRC_INVALID_INDEX	(size_t)-1
+#define GRC_INVALID_FD		(int)-1
 
-#define SAFE_STR_COPY(dest,destsize,src)	strncpy(dest, src, destsize-1)
+#define GRC_SAFE_STR_COPY(dest,destsize,src)	strncpy(dest, src, destsize-1)
 
 #define GRC_ACTION_NONE
 #define GRC_ACTION_RETURN		return

@@ -8,23 +8,25 @@
 #ifndef GRCCOMMUNICATOR_H_
 #define GRCCOMMUNICATOR_H_
 
+#include <stddef.h>
 #include <vector>
 
-#include "../core/GRCCore.h"
+#include "../core/GRCMutex.h"
+#include "../core/GRCObject.h"
 
 template<class TSESSION>
-class GRCCommunicatorT
+class GRCCommunicatorT: public GRCObject
 {
 public:
 	typedef std::vector<TSESSION*> VecSession;
 
 public:
-	GRCCommunicatorT(const char* name, size_t maxSessionCount)
+	GRCCommunicatorT(const char* name, size_t maxSessionCount, size_t maxPacketSize)
 	{
-		SAFE_STR_COPY(m_name, sizeof(m_name), name);
+		updateObjName(name);
 		for (size_t i = 0; i < maxSessionCount; ++i)
 		{
-			m_sessions.push_back(new TSESSION());
+			m_sessions.push_back(new TSESSION(maxPacketSize));
 		}
 	}
 	virtual ~GRCCommunicatorT()
@@ -48,14 +50,14 @@ public:
 	}
 
 protected:
-	int findFreeIndex()
+	size_t findFreeIndex()
 	{
 		for (size_t i = 0; i < m_sessions.size(); ++i)
 		{
 			if (m_sessions[i]->isActivate() == false) return i;
 		}
 
-		return INVALID_INDEX ;
+		return GRC_INVALID_INDEX;
 	}
 
 	void closeAll()
@@ -67,7 +69,6 @@ protected:
 	}
 
 protected:
-	char m_name[100];
 	GRCMutex m_mutex;
 	VecSession m_sessions;
 };

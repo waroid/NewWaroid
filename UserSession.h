@@ -15,10 +15,10 @@ class UserSession: public GRCTcpSession
 {
 #define WAROID_USER_SESSION_COMMAND_FUNC_INTERFACE(cmd)			void on##cmd(const WAROIDUSERROBOT::cmd* rpacket)
 #define WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(cmd)	void UserSession::on##cmd(const WAROIDUSERROBOT::cmd* rpacket)
-#define WAROID_USER_SESSION_COMMAND_CASE(cmd,p)					case WAROIDUSERROBOT::COMMAND::cmd: on##cmd(static_cast<const WAROIDUSERROBOT::cmd*>(p)); break
+#define WAROID_USER_SESSION_COMMAND_CASE(cmd,p)					case WAROIDUSERROBOT::COMMAND::cmd: on##cmd(static_cast<const WAROIDUSERROBOT::cmd*>(p)); break;
 
 public:
-	UserSession();
+	UserSession(size_t maxPacketSize);
 	virtual ~UserSession();
 
 protected:

@@ -10,13 +10,17 @@
 #include <unistd.h>
 #include <cstring>
 
-#include "../core/GRCLogger.h"
+#include "../core/GRCCoreUtil.h"
 
-GRCBaseSession::GRCBaseSession()
-		: m_fd(INVALID_FD), m_reconnect(false), m_thread(INVALID_THREAD)
+GRCBaseSession::GRCBaseSession(size_t maxPacketSize)
+		: 	m_fd(GRC_INVALID_FD),
+			m_maxPacketSize(maxPacketSize),
+			m_pingMax(0),
+			m_pingAvg(0),
+			m_receiveThread(GRC_INVALID_THREAD)
+
 {
 	// TODO Auto-generated constructor stub
-	bzero(m_name, sizeof(m_name));
 }
 
 GRCBaseSession::~GRCBaseSession()
@@ -26,29 +30,57 @@ GRCBaseSession::~GRCBaseSession()
 
 void GRCBaseSession::close(const char* reason)
 {
-	GRCMutexAutoLock autoLock(&m_mutex);
-	if (m_fd != INVALID_FD)
+	m_mutex.lock();
+	int fd = m_fd;
+	m_fd = GRC_INVALID_FD;
+	m_mutex.unlock();
+
+	if (fd != GRC_INVALID_FD)
 	{
+		if (m_receiveThread != GRC_INVALID_THREAD)
+		{
+			if (pthread_cancel(m_receiveThread) == 0)
+			{
+				pthread_join(m_receiveThread, NULL);
+			}
+			GRC_DEV("[%s]cancel thread", getObjName());
+		}
 		onClose();
-		::close(m_fd);
-		GRC_LOG("[%s]closed. reason=%s", m_name, reason);
-		m_fd = INVALID_FD;
+		::close(fd);
+		GRC_LOG("[%s]closed. reason=%s", getObjName(), reason);
 	}
+}
+
+bool GRCBaseSession::send(const void* data, size_t size)
+{
+	GRC_CHECK_RETFALSE(data);
+	GRC_CHECK_RETFALSE(size > 0);
+	GRC_CHECK_RETFALSE(size <= m_maxPacketSize);
+
+	return onSend(data, size);
 }
 
 void GRCBaseSession::openning()
 {
 	onOpen();
-	pthread_create(&m_thread, NULL, recvWorker, this);
+	pthread_create(&m_receiveThread, NULL, receiveWorker, this);
 }
 
-void* GRCBaseSession::recvWorker(void* param)
+void GRCBaseSession::recvHeartbeat(unsigned int tick)
 {
-	GRCBaseSession* session = (GRCBaseSession*) param;
+	unsigned int ping = GRCCoreUtil::getTickCount() - tick;
+	if (m_pingMax < ping) m_pingMax = ping;
+	m_pingAvg = static_cast<unsigned int>(m_pingAvg * 0.75 + ping * 0.25);
+}
 
-	GRC_LOG("[%s]start recv thread(%u)", session->m_name, pthread_self());
+void* GRCBaseSession::receiveWorker(void* param)
+{
+	GRCBaseSession* session = (GRCBaseSession*)param;
+
+	GRC_LOG("[%s]start receive thread(0x%x)", session->getObjName(), pthread_self());
 	session->onReceiving();
-	GRC_LOG("[%s]stop recv thread(%u)", session->m_name, pthread_self());
+	GRC_LOG("[%s]stop receive thread(0x%x)", session->getObjName(), pthread_self());
 
 	return NULL;
 }
+

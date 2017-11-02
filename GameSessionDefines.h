@@ -8,6 +8,10 @@
 #ifndef GAMESESSIONEFINES_H_
 #define GAMESESSIONEFINES_H_
 
+//////////
+//
+#define WAROID_ROBOT_GAME_MAX_PACKET_SIZE	50
+
 namespace WAROIDROBOTGAME
 {
 	namespace COMMAND
@@ -42,8 +46,8 @@ namespace WAROIDROBOTGAME
 	{
 	public:
 		HEADER(COMMAND::ETYPE command, int packetSize)
-				: 	m_command(static_cast<char>(command)),
-					m_packetSize(static_cast<unsigned short>(packetSize))
+				: 	m_packetSize(static_cast<unsigned short>(packetSize)),
+					m_command(static_cast<char>(command))
 		{
 		}
 		;
@@ -69,7 +73,7 @@ namespace WAROIDROBOTGAME
 		}
 	};
 
-#define WAROID_ROBOT_GAME_PACKET_STRUCT_START(cmd)	struct cmd:public HEADER{cmd():HEADER(COMMAND::cmd, sizeof(*this)){}
+#define WAROID_ROBOT_GAME_PACKET_STRUCT_START(cmd)	struct cmd: public HEADER{cmd():HEADER(COMMAND::cmd, sizeof(*this)){}
 #define WAROID_ROBOT_GAME_PACKET_STRUCT_END			}
 	////////////////////
 	//	packet
@@ -94,6 +98,7 @@ namespace WAROIDROBOTGAME
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(R_G_INFO)
 		int yaw;
 		int battery;
+		unsigned char ready;
 	WAROID_ROBOT_GAME_PACKET_STRUCT_END;
 
 	WAROID_ROBOT_GAME_PACKET_STRUCT_START(G_R_ATTACHED)

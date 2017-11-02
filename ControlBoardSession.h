@@ -17,7 +17,7 @@
 class ControlBoardSession: public GRCSerialSession
 {
 public:
-	ControlBoardSession();
+	ControlBoardSession(size_t maxPacketSize);
 	virtual ~ControlBoardSession();
 
 public:
@@ -34,18 +34,15 @@ protected:
 
 private:
 	int getSkipSize(const char* data, int size);
-	void initializing();
+	void sendPacket(const WAROIDCONTROLBOARD::PACKET& packet);
 
-	void sendPacket(const WAROIDCONTROLBOARD::PACKET& packet)
-	{
-		send((const unsigned char*)&packet, sizeof(packet));
-	}
+	void onRequestinginit();
 
 private:
-	pthread_t m_thread;
+	pthread_t m_requestInfothread;
 
 private:
-	static void* initWorker(void* param);
+	static void* requestInitWorker(void* param);
 };
 
 #endif /* CONTROLBOARDSESSION_H_ */

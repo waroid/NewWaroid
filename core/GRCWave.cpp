@@ -23,14 +23,13 @@ namespace GRC_WAVE
 using namespace GRC_WAVE;
 
 GRCWave::GRCWave()
-		: 	m_thread(INVALID_THREAD),
+		: 	m_playThread(GRC_INVALID_THREAD),
 			m_pcm(NULL),
 			m_data(NULL),
 			m_playing(false),
 			m_count(0)
 {
 	// TODO Auto-generated constructor stub
-	bzero(m_name, sizeof(m_name));
 }
 
 GRCWave::~GRCWave()
@@ -96,23 +95,23 @@ bool GRCWave::load(const char* soundDir, const char* wavFilename)
 	free(buffer);
 	sf_close(file);
 
-	SAFE_STR_COPY(m_name, sizeof(m_name), wavFilename);
+	updateObjName(wavFilename);
 	m_pcm = pcm;
 
-	pthread_create(&m_thread, NULL, playWorker, this);
+	pthread_create(&m_playThread, NULL, playWorker, this);
 
 	return true;
 }
 
 void GRCWave::close()
 {
-	if (m_thread != INVALID_THREAD)
+	if (m_playThread != GRC_INVALID_THREAD)
 	{
-		if (pthread_cancel(m_thread) == 0)
+		if (pthread_cancel(m_playThread) == 0)
 		{
-			pthread_join(m_thread, NULL);
+			pthread_join(m_playThread, NULL);
 		}
-		GRC_DEV("[%s]cancel thread", m_name);
+		GRC_DEV("[%s]cancel thread", getObjName());
 	}
 
 	DATA* data = m_data;
@@ -189,9 +188,9 @@ void* GRCWave::playWorker(void* param)
 {
 	GRCWave* wave = (GRCWave*)param;
 
-	GRC_LOG("[%s]start thread(%d)", wave->m_name, pthread_self());
+	GRC_LOG("[%s]start play thread(0x%x)", wave->getObjName(), pthread_self());
 	wave->playing();
-	GRC_LOG("[%s]stop thread(%d)", wave->m_name, pthread_self());
+	GRC_LOG("[%s]stop play thread(0x%x)", wave->getObjName(), pthread_self());
 
 	return NULL;
 }

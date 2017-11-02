@@ -27,12 +27,11 @@ namespace WAROIDCONTROLBOARD
 		unsigned char postfix;
 
 		PACKET()
-				:
-						prefix(WAROID_CONTROLBOARD_PREFIX),
-						cmd(0),
-						hi(0),
-						low(0),
-						postfix(WAROID_CONTROLBOARD_POSTFIX)
+				: 	prefix(WAROID_CONTROLBOARD_PREFIX),
+					cmd(0),
+					hi(0),
+					low(0),
+					postfix(WAROID_CONTROLBOARD_POSTFIX)
 		{
 		}
 	};

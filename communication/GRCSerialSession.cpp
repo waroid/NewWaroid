@@ -7,17 +7,17 @@
 
 #include "GRCSerialSession.h"
 
-#include <pthread.h>
+#include <stddef.h>
 #include <unistd.h>
 #include <wiringSerial.h>
-#include <cerrno>
 #include <cstring>
 
+#include "../core/GRCBuffer.h"
 #include "../core/GRCCore.h"
-#include "../core/GRCLogger.h"
 #include "../core/GRCMutex.h"
 
-GRCSerialSession::GRCSerialSession()
+GRCSerialSession::GRCSerialSession(size_t maxPacketSize)
+		: GRCBaseSession(maxPacketSize)
 {
 	// TODO Auto-generated constructor stub
 }
@@ -32,91 +32,99 @@ bool GRCSerialSession::open(const char* device, int baud)
 	GRC_CHECK_RETFALSE(device);
 	GRC_CHECK_RETFALSE(baud > 0);
 
-	GRCMutexAutoLock autoLock(&m_mutex);
-	GRC_CHECK_RETFALSE(m_fd == INVALID_FD);
+	{
+		GRCMutexAutoLock autoLock(&m_mutex);
+		GRC_CHECK_RETFALSE(m_fd == GRC_INVALID_FD);
+		m_fd = serialOpen(device, baud);
+		GRC_CHECK_RETFALSE(m_fd != GRC_INVALID_FD);
+	}
 
-	m_fd = serialOpen(device, baud);
-	GRC_CHECK_RETFALSE(m_fd != INVALID_FD);
-
-	SAFE_STR_COPY(m_name, sizeof(m_name), device);
+	updateObjName(device);
 
 	this->openning();
 
 	return true;
 }
 
-void GRCSerialSession::send(const unsigned char* data, int size)
+void GRCSerialSession::onOpen()
 {
-	GRC_CHECK_RETURN(data);
-	GRC_CHECK_RETURN(size>0);
+}
 
-	for (int i = 0; i < size; ++ i)
+void GRCSerialSession::onClose()
+{
+}
+
+bool GRCSerialSession::onSend(const void* data, size_t size)
+{
+	GRCMutexAutoLock autoLock(&m_mutex);
+	const char* d = reinterpret_cast<const char*>(data);
+	for (size_t i = 0; i < size; ++i)
 	{
-		serialPutchar(m_fd, data[i]);
+		serialPutchar(m_fd, d[i]);
 	}
 	serialFlush(m_fd);
+
+	return true;
 }
 
 void GRCSerialSession::onReceiving()
 {
-	char buffer[1024];
+	GRCBuffer buffer(m_maxPacketSize * 100);
+
 	int offset = 0;
+	int skipSize = 0;
 
 	for (;;)
 	{
-		int len = recv(buffer + offset, sizeof(buffer) - offset);
+		recv(buffer);
 
-		const char* data = buffer;
-		int dataSize = len + offset;
+		offset = 0;
 
 		for (;;)
 		{
-			int skipSize = 0;
-			int packetSize = onParsing(data, dataSize, skipSize);
+			skipSize = 0;
+			int packetSize = onParsing(buffer.getData() + offset, buffer.getDataSize() - offset, skipSize);
 			if (packetSize > 0)
 			{
-				data += skipSize;
-				onPacket(data, packetSize);
-				data += packetSize;
-				dataSize -= (skipSize + packetSize);
+				offset += skipSize;
+				onPacket(buffer.getData() + offset, packetSize);
+				offset += packetSize;
 			}
 			else if (packetSize == 0)
 			{
-				dataSize -= skipSize;
-
-				if (dataSize > 0)
-				{
-					memmove(buffer, data + (len + offset - dataSize), dataSize);
-					offset = dataSize;
-				}
-				else
-				{
-					offset = 0;
-				}
+				offset += skipSize;
+				buffer.truncate(offset);
 				break;
 			}
 			else
 			{
-				data += skipSize;
-				dataSize -= skipSize;
+				offset += skipSize;
 			}
 		}
 	}
 }
 
-int GRCSerialSession::recv(char* buffer, int len)
+void GRCSerialSession::recv(GRCBuffer& buffer)
 {
-	int received = 0;
-	while (received == 0)
+	for (;;)
 	{
 		::usleep(100000);
 
-		while (serialDataAvail(m_fd))
 		{
-			buffer[received++] = serialGetchar(m_fd);
-			if (received >= len) return received;
+			GRCMutexAutoLock autolock(&m_mutex);
+			int received = 0;
+			while (serialDataAvail(m_fd))
+			{
+				if (buffer.isFull()) return;
+
+				buffer.append(serialGetchar(m_fd));
+				received++;
+			}
+			if (received > 0)
+			{
+				GRC_DEV("received. size=%d", received);
+				return;
+			}
 		}
 	}
-
-	return received;
 }

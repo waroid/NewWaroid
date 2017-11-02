@@ -24,18 +24,19 @@ template<class TTCPSESSION>
 class GRCTcpConnectorT: public GRCCommunicatorT<TTCPSESSION>
 {
 protected:
-	using GRCCommunicatorT<TTCPSESSION>::m_name;
 	using GRCCommunicatorT<TTCPSESSION>::m_mutex;
 	using GRCCommunicatorT<TTCPSESSION>::m_sessions;
 
 public:
-	GRCTcpConnectorT(const char* name, size_t maxSessionCount, int reconnectSeconds)
-			: GRCCommunicatorT<TTCPSESSION>(name, maxSessionCount), m_thread(INVALID_THREAD), m_reconnectSeconds(reconnectSeconds)
+	GRCTcpConnectorT(const char* name, size_t maxSessionCount, size_t reconnectSeconds, size_t maxPacketSize)
+			: 	GRCCommunicatorT<TTCPSESSION>(name, maxSessionCount, maxPacketSize),
+				m_reconnectSeconds(reconnectSeconds),
+				m_reconnectThread(GRC_INVALID_THREAD)
 	{
 		if (m_reconnectSeconds > 0)
 		{
 			//reconnect check thread
-			GRC_CHECK_RETURN(pthread_create(&m_thread, NULL, reconnectWorker, this) == 0);
+			GRC_CHECK_RETURN(pthread_create(&m_reconnectThread, NULL, reconnectWorker, this) == 0);
 		}
 	}
 	virtual ~GRCTcpConnectorT()
@@ -53,8 +54,8 @@ public:
 
 		GRCMutexAutoLock autoLock(&m_mutex);
 
-		int index = this->findFreeIndex();
-		GRC_CHECK_RETFALSE(index != INVALID_INDEX);
+		size_t index = this->findFreeIndex();
+		GRC_CHECK_RETFALSE(index != GRC_INVALID_INDEX);
 		GRC_CHECK_RETFALSE(m_sessions[index]->connect(sockAddr, reconnect));
 
 		return true;
@@ -62,15 +63,15 @@ public:
 
 	void stop()
 	{
-		GRC_LOG("[%s]stopping...", m_name);
+		GRC_LOG("[%s]stopping...", this->getObjName());
 
-		if (m_thread != INVALID_THREAD)
+		if (m_reconnectThread != GRC_INVALID_THREAD)
 		{
-			if (pthread_cancel(m_thread) == 0)
+			if (pthread_cancel(m_reconnectThread) == 0)
 			{
-				pthread_join(m_thread, NULL);
+				pthread_join(m_reconnectThread, NULL);
 			}
-			GRC_DEV("[%s]cancel thread", m_name);
+			GRC_DEV("[%s]cancel thread", this->getObjName());
 		}
 
 		this->closeAll();
@@ -91,17 +92,19 @@ private:
 	}
 
 protected:
-	pthread_t m_thread;
-	int m_reconnectSeconds;
+	size_t m_reconnectSeconds;
+
+private:
+	pthread_t m_reconnectThread;
 
 private:
 	static void* reconnectWorker(void* param)
 	{
-		GRCTcpConnectorT* tcpConnector = (GRCTcpConnectorT*) param;
+		GRCTcpConnectorT* tcpConnector = (GRCTcpConnectorT*)param;
 
-		GRC_LOG("[%s]start reconnect thread(%u)", tcpConnector->m_name, pthread_self());
+		GRC_LOG("[%s]start reconnect thread(0x%x)", tcpConnector->getObjName(), pthread_self());
 		tcpConnector->reconnecting();
-		GRC_LOG("[%s]stop reconnect thread(%u)", tcpConnector->m_name, pthread_self());
+		GRC_LOG("[%s]stop reconnect thread(0x%x)", tcpConnector->getObjName(), pthread_self());
 
 		return NULL;
 	}

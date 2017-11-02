@@ -15,8 +15,11 @@ LIBS = -lm -lpthread -lwiringPi -lasound -lsndfile
 CSOURCES = 
 
 CPPSOURCES = main.cpp \
+	core/GRCBuffer.cpp \
+	core/GRCCoreUtil.cpp \
 	core/GRCJsonData.cpp \
 	core/GRCLogger.cpp \
+	core/GRCObject.cpp \
 	core/GRCWave.cpp \
 	communication/GRCSockAddr.cpp \
 	communication/GRCBaseSession.cpp \

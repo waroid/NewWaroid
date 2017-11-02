@@ -11,7 +11,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-bool GRCLogger::s_dev = false;
+bool GRCLogger::s_dev = true;
 
 void GRCLogger::write(int level, const char* format, ...)
 {

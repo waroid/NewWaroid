@@ -137,19 +137,19 @@ void GameSession::onSendingInfo()
 	WAROIDROBOTGAME::R_G_INFO spacket;
 	int yaw = 0;
 	int battery = 0;
-	unsigned char ready = 0;
 
 	for (;;)
 	{
-		yaw = Manager::getRobotInfo().getYaw();
-		battery = Manager::getRobotInfo().getBattery();
-		ready = Manager::getRobotInfo().isReady() ? 1 : 0;
-		if (yaw != spacket.yaw || battery != spacket.battery || ready != spacket.ready)
+		if (Manager::getRobotInfo().isReady())
 		{
-			spacket.yaw = yaw;
-			spacket.battery = battery;
-			spacket.ready = ready;
-			sendPacket(&spacket);
+			yaw = Manager::getRobotInfo().getYaw();
+			battery = Manager::getRobotInfo().getBattery();
+			if (yaw != spacket.yaw || battery != spacket.battery)
+			{
+				spacket.yaw = yaw;
+				spacket.battery = battery;
+				sendPacket(&spacket);
+			}
 		}
 
 		::usleep(100000);

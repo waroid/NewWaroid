@@ -29,11 +29,15 @@ public:
 	virtual ~UserSession();
 
 protected:
+	virtual void onClose() override;
 	virtual int onParsing(const char* data, int size) override;
 	virtual void onPacket(const char* packet, int size) override;
 
 private:
 	void sendPacket(const WAROIDUSERROBOT::PACKET& packet);
+
+private:
+	bool m_logined;
 };
 
 #endif /* USERSESSION_H_ */

@@ -32,12 +32,16 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 	GRC_CHECK_FUNC_RETURN(rpacket->getId() == Manager::getRobotInfo().getId(), eclose("invalid robot id"));
 	GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));
 
+	m_logined = true;
+
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
 	sendPacket(spacket);
 }
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
 {
+	GRC_CHECK_RETURN(m_logined);
+
 	int width = 1280;
 	int height = 720;
 	int fps = 25;
@@ -57,6 +61,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
 {
+	GRC_CHECK_RETURN(m_logined);
 	GRC_CHECK_RETURN(rpacket->getDirection() >= WAROIDDIRECTION::NONE && rpacket->getDirection() < WAROIDDIRECTION::TOTAL);
 	GRC_CHECK_RETURN(rpacket->getSpeed() >= WAROIDSPEED::NONE && rpacket->getSpeed() < WAROIDSPEED::TOTAL);
 
@@ -68,6 +73,8 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 {
+	GRC_CHECK_RETURN(m_logined);
+
 	switch (rpacket->getWeaponIndex())
 	{
 		case 0:
@@ -94,7 +101,8 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 }
 
 UserSession::UserSession(size_t maxPacketSize)
-		: GRCAcceptSession(maxPacketSize)
+		: 	GRCAcceptSession(maxPacketSize),
+			m_logined(false)
 {
 	// TODO Auto-generated constructor stub
 
@@ -103,6 +111,15 @@ UserSession::UserSession(size_t maxPacketSize)
 UserSession::~UserSession()
 {
 	// TODO Auto-generated destructor stub
+}
+
+void UserSession::onClose()
+{
+	m_logined = false;
+	system("killall raspivid");
+	system("killall nc");
+
+	GRCAcceptSession::onClose();
 }
 
 int UserSession::onParsing(const char* data, int size)

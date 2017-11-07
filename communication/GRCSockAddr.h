@@ -66,7 +66,7 @@ public:
 
 private:
 	sockaddr_in m_sockAddrIn;
-	char m_address[100];
+	char m_address[250];
 };
 
 #endif /* GRCSOCKADDR_H_ */

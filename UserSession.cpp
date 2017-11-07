@@ -48,7 +48,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
 	int bitrate = 15000000;
 
 	char command[256] = { 0 };
-	sprintf(command, "raspivid -o - -t 0 -w %d -h %d -fps %d -b %d -hf -n | nc %s %d &", width, height, fps, bitrate, m_remoteSockAddr.getIp(), CAMERA_PORT);
+	sprintf(command, "raspivid -o - -t 0 -w %d -h %d -fps %d -b %d -vf -n | nc %s %d &", width, height, fps, bitrate, m_remoteSockAddr.getIp(), CAMERA_PORT);
 
 #ifdef __RPI__
 	system("killall raspivid");

@@ -23,7 +23,7 @@ public:
 	void updateObjName(const char* format, ...);
 
 private:
-	char m_objName[100];
+	char m_objName[250];
 };
 
 #endif /* SRC_CORE_GRCOBJECT_H_ */

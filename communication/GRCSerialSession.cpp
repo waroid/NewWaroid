@@ -39,6 +39,8 @@ bool GRCSerialSession::open(const char* device, int baud)
 		GRC_CHECK_RETFALSE(m_fd == GRC_INVALID_FD);
 #ifdef __RPI__
 		m_fd = serialOpen(device, baud);
+#else
+		m_fd = 999999;
 #endif
 		GRC_CHECK_RETFALSE(m_fd != GRC_INVALID_FD);
 	}
@@ -68,11 +70,9 @@ bool GRCSerialSession::onSend(const void* data, size_t size)
 		serialPutchar(m_fd, d[i]);
 	}
 	serialFlush(m_fd);
+#endif
 
 	return true;
-#else
-	return false;
-#endif
 }
 
 void GRCSerialSession::onReceiving()
@@ -82,7 +82,7 @@ void GRCSerialSession::onReceiving()
 	int offset = 0;
 	int skipSize = 0;
 
-	for (;;)
+	while (m_receiving)
 	{
 		recv(buffer);
 
@@ -114,7 +114,7 @@ void GRCSerialSession::onReceiving()
 
 void GRCSerialSession::recv(GRCBuffer& buffer)
 {
-	for (;;)
+	while (m_receiving)
 	{
 		::usleep(100000);
 

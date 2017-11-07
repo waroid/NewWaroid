@@ -26,6 +26,11 @@ public:
 		m_validateKey = validateKey;
 	}
 
+	unsigned int getValidateKey() const
+	{
+		return m_validateKey;
+	}
+
 	int getId() const
 	{
 		return m_id;

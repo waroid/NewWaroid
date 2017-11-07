@@ -29,10 +29,7 @@ bool Manager::start(int robotId, const char* robotTypeName, const char* gameServ
 
 	s_gameConnector.start();
 	GRC_CHECK_RETFALSE(s_userListener.listen(USER_PORT));
-#ifdef __RPI__
 	GRC_CHECK_RETFALSE(s_controlBoardOpener.open(CONTROL_BOARD_DEVICE, CONTROL_BOARD_BAUD));
-#endif
-
 	GRC_CHECK_RETFALSE(s_gameConnector.connect(gameServerIp, GAME_SERVER_PORT, true));
 
 	s_mutex.wait();

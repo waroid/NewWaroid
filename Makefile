@@ -21,18 +21,18 @@ CPPSOURCES = main.cpp \
 	core/GRCLogger.cpp \
 	core/GRCObject.cpp \
 	core/GRCWave.cpp \
-	communication/GRCSockAddr.cpp \
-	communication/GRCBaseSession.cpp \
-	communication/GRCSerialSession.cpp \
-	communication/GRCTcpSession.cpp \
 	communication/GRCAcceptSession.cpp \
+	communication/GRCBaseSession.cpp \
 	communication/GRCConnectSession.cpp \
-	RobotData.cpp \
-	WeaponData.cpp \
+	communication/GRCSerialSession.cpp \
+	communication/GRCSockAddr.cpp \
+	communication/GRCTcpSession.cpp \
 	ControlBoardSession.cpp \
 	GameSession.cpp \
-	UserSession.cpp \
+	RobotData.cpp \
 	RobotInfo.cpp \
+	UserSession.cpp \
+	WeaponData.cpp \
 	Manager.cpp
 
 OBJECTS = $(CSOURCES:%.c=%.o)

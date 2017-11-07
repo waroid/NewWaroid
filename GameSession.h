@@ -15,7 +15,7 @@ class GameSession: public GRCConnectSession
 {
 #define WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(cmd)			void on##cmd(const WAROIDROBOTGAME::cmd* rpacket);
 #define WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(cmd)	void GameSession::on##cmd(const WAROIDROBOTGAME::cmd* rpacket)
-#define WAROID_GAME_SESSION_COMMAND_CASE(cmd,p)					case WAROIDROBOTGAME::COMMAND::cmd: on##cmd(static_cast<const WAROIDROBOTGAME::cmd*>(p)); break;
+#define WAROID_GAME_SESSION_COMMAND_CASE(cmd,p)					case WAROIDROBOTGAME::COMMAND::cmd: GRC_DEV("[%s]received. cmd=WAROIDROBOTGAME::%s", getObjName(), #cmd); on##cmd(static_cast<const WAROIDROBOTGAME::cmd*>(p)); break;
 
 private:
 	WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(HEARTBEAT_1)

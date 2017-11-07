@@ -54,10 +54,7 @@ public:
 
 		if (m_reconnectThread != GRC_INVALID_THREAD)
 		{
-			if (pthread_cancel(m_reconnectThread) == 0)
-			{
-				pthread_join(m_reconnectThread, NULL);
-			}
+			pthread_cancel(m_reconnectThread);
 			GRC_DEV("[%s]cancel thread", this->getObjName());
 		}
 

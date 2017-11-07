@@ -7,8 +7,91 @@
 
 #include "UserSession.h"
 
+#include <stddef.h>
+
 #include "core/GRCCore.h"
 #include "Defines.h"
+#include "Manager.h"
+#include "RobotInfo.h"
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_2)
+{
+	this->recvHeartbeat(rpacket->getServerTicket());
+
+	WAROIDUSERROBOT::HEARTBEAT_3 spacket(rpacket->getClientTicket());
+	sendPacket(spacket);
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
+{
+	auto eclose = [this](const char* reason)
+	{
+		close(reason);
+	};
+
+	GRC_CHECK_FUNC_RETURN(rpacket->getId() == Manager::getRobotInfo().getId(), eclose("invalid robot id"));
+	GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));
+
+	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
+	sendPacket(spacket);
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
+{
+	int width = 1280;
+	int height = 720;
+	int fps = 25;
+	int bitrate = 15000000;
+
+	char command[256] = { 0 };
+	sprintf(command, "raspivid -o - -t 0 -w %d -h %d -fps %d -b %d -hf -n | nc %s %d &", width, height, fps, bitrate, m_remoteSockAddr.getIp(), CAMERA_PORT);
+
+#ifdef __RPI__
+	system("killall raspivid");
+	system("killall nc");
+
+	system(command);
+#endif
+	GRC_INFO("opend camera. system=%s", command);
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
+{
+	GRC_CHECK_RETURN(rpacket->getDirection() >= WAROIDDIRECTION::NONE && rpacket->getDirection() < WAROIDDIRECTION::TOTAL);
+	GRC_CHECK_RETURN(rpacket->getSpeed() >= WAROIDSPEED::NONE && rpacket->getSpeed() < WAROIDSPEED::TOTAL);
+
+	//send serial
+	Manager::getControlBoardOpener().getFirstOpenedSession()->sendMove(rpacket->getDirection(), rpacket->getSpeed());
+
+	GRC_INFO("move. dir=%d speed=%d", rpacket->getDirection(), rpacket->getSpeed());
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
+{
+	switch (rpacket->getWeaponIndex())
+	{
+		case 0:
+		{
+			const WeaponData::DATA* weaponData = Manager::getRobotInfo().getFirstWeaponData();
+			GRC_CHECK_RETURN(weaponData);
+			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(rpacket->getOn() == 1);
+
+			//play sound;
+		}
+			break;
+
+		case 1:
+		{
+			const WeaponData::DATA* weaponData = Manager::getRobotInfo().getSecondWeaponData();
+			GRC_CHECK_RETURN(weaponData);
+
+			//play sound;
+		}
+			break;
+	}
+
+	GRC_INFO("fire. weapon=%d on=%d", rpacket->getWeaponIndex(), rpacket->getOn());
+}
 
 UserSession::UserSession(size_t maxPacketSize)
 		: GRCAcceptSession(maxPacketSize)
@@ -44,39 +127,12 @@ void UserSession::onPacket(const char* packet, int size)
 		{
 			GRC_ERR("invalid packet. cmd=%d", urp->getCommand());
 		}
+			break;
 	}
 }
 
-WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_2)
+void UserSession::sendPacket(const WAROIDUSERROBOT::PACKET& packet)
 {
+	send(&packet, WAROIDUSERROBOT::PACKET::getSize());
 }
 
-WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
-{
-}
-
-WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
-{
-}
-
-WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
-{
-	GRC_CHECK_RETURN(rpacket->getDirection() >= WAROIDDIRECTION::NONE && rpacket->getDirection() < WAROIDDIRECTION::TOTAL);
-	GRC_CHECK_RETURN(rpacket->getSpeed() >= WAROIDSPEED::NONE && rpacket->getSpeed() < WAROIDSPEED::TOTAL);
-
-	//send serial
-}
-
-WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
-{
-	//	const WeaponData::DATA* data = Manager::getWeaponData().find(weaponId);
-	//	GRC_CHECKV_RETURN(data, "invalid weaponid. id=%d", weaponId);
-
-	//	if (data->secondid == 0)
-	//	{
-	//send fire to arduino
-	//	}
-
-	//play fire sound
-
-}

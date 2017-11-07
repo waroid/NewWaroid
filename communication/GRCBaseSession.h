@@ -48,6 +48,7 @@ protected:
 	GRCMutex m_mutex;
 	int m_fd;
 	size_t m_maxPacketSize;
+	bool m_receiving;
 	unsigned int m_pingMax;
 	unsigned int m_pingAvg;
 

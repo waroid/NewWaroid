@@ -78,10 +78,7 @@ public:
 
 		if (m_acceptThread != GRC_INVALID_THREAD)
 		{
-			if (pthread_cancel(m_acceptThread) == 0)
-			{
-				pthread_join(m_acceptThread, NULL);
-			}
+			pthread_cancel(m_acceptThread);
 			GRC_INFO("[%s]cancel thread", this->getObjName());
 		}
 

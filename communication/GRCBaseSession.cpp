@@ -15,6 +15,7 @@
 GRCBaseSession::GRCBaseSession(size_t maxPacketSize)
 		: 	m_fd(GRC_INVALID_FD),
 			m_maxPacketSize(maxPacketSize),
+			m_receiving(false),
 			m_pingMax(0),
 			m_pingAvg(0),
 			m_receiveThread(GRC_INVALID_THREAD)
@@ -37,14 +38,7 @@ void GRCBaseSession::close(const char* reason)
 
 	if (fd != GRC_INVALID_FD)
 	{
-		if (m_receiveThread != GRC_INVALID_THREAD)
-		{
-			if (pthread_cancel(m_receiveThread) == 0)
-			{
-				pthread_join(m_receiveThread, NULL);
-			}
-			GRC_INFO("[%s]cancel thread", getObjName());
-		}
+		m_receiving = false;
 		onClose();
 		::close(fd);
 		GRC_INFO("[%s]closed. reason=%s", getObjName(), reason);
@@ -63,6 +57,7 @@ bool GRCBaseSession::send(const void* data, size_t size)
 void GRCBaseSession::openning()
 {
 	onOpen();
+	m_receiving = true;
 	pthread_create(&m_receiveThread, NULL, receiveWorker, this);
 }
 

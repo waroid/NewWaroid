@@ -29,6 +29,7 @@ public:
 
 protected:
 	virtual void onOpen() override;
+	virtual void onClose() override;
 	virtual int onParsing(const char* data, int size, int& skipSize) override;
 	virtual void onPacket(const char* packet, int size) override;
 

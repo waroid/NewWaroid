@@ -81,6 +81,17 @@ void ControlBoardSession::onOpen()
 	pthread_create(&m_requestInfothread, NULL, requestInitWorker, this);
 }
 
+void ControlBoardSession::onClose()
+{
+	if (m_requestInfothread != GRC_INVALID_THREAD)
+	{
+		pthread_cancel(m_requestInfothread);
+		GRC_DEV("[%s]cancel request info thread.", getObjName());
+	}
+
+	GRCSerialSession::onClose();
+}
+
 int ControlBoardSession::onParsing(const char* data, int size, int& skipSize)
 {
 	skipSize = getSkipSize(data, size);
@@ -99,8 +110,9 @@ int ControlBoardSession::onParsing(const char* data, int size, int& skipSize)
 
 void ControlBoardSession::onPacket(const char* packet, int size)
 {
-	WAROIDCONTROLBOARD::PACKET* wsp = (WAROIDCONTROLBOARD::PACKET*)packet;
-	switch (wsp->cmd)
+	WAROIDCONTROLBOARD::PACKET* cbp = (WAROIDCONTROLBOARD::PACKET*)packet;
+	GRC_DEV("[%s]received. cmd=%d", getObjName(), cbp->cmd);
+	switch (cbp->cmd)
 	{
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_INIT_OK:
 		{
@@ -109,12 +121,12 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_YAW:
 		{
-			Manager::getRobotInfo().updateYaw((int)wsp->hi << 8 | wsp->low);
+			Manager::getRobotInfo().updateYaw((int)cbp->hi << 8 | cbp->low);
 		}
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_BATTERY:
 		{
-			Manager::getRobotInfo().updateBattery((int)wsp->hi << 8 | wsp->low);
+			Manager::getRobotInfo().updateBattery((int)cbp->hi << 8 | cbp->low);
 		}
 			break;
 	}

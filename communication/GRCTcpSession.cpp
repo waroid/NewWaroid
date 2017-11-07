@@ -53,14 +53,16 @@ void GRCTcpSession::onReceiving()
 {
 	auto eclose = [this](int len)
 	{
-		if (len == 0) close("remote");
-		else close("failed recv");
+		if (len == 0)
+			close("remote");
+		else
+			close("failed recv");
 	};
 
 	GRCBuffer buffer(m_maxPacketSize * 100);
 	int offset = 0;
 
-	for (;;)
+	while (m_receiving)
 	{
 		int len = ::recv(m_fd, buffer.getFreeBuffer(), buffer.getFreeBufferSize(), 0);
 		GRC_CHECK_FUNC_RETURN(len > 0, eclose(len));

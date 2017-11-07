@@ -44,6 +44,11 @@ public:
 		return s_userListener;
 	}
 
+	static GRCSerialOpenerT<ControlBoardSession>& getControlBoardOpener()
+	{
+		return s_controlBoardOpener;
+	}
+
 private:
 	static GRCMutex s_mutex;
 	static RobotData s_robotData;

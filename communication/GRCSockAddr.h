@@ -10,16 +10,16 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <string.h>
+#include <stddef.h>
 #include <sys/socket.h>
+#include <cstring>
+
+#include "../core/GRCString.h"
 
 class GRCSockAddr
 {
 public:
-	enum DATA
-	{
-		LEN = sizeof(sockaddr_in),
-	};
+	static const size_t LEN = sizeof(sockaddr_in);
 
 public:
 	GRCSockAddr();
@@ -51,7 +51,7 @@ public:
 		return (const sockaddr*) &m_sockAddrIn;
 	}
 
-	const char* operator*() const
+	GRCCSTR operator*() const
 	{
 		return m_address;
 	}
@@ -59,7 +59,7 @@ public:
 	GRCSockAddr& operator= (const GRCSockAddr& sockAddr)
 	{
 		memcpy(&m_sockAddrIn, &sockAddr.m_sockAddrIn, sizeof(m_sockAddrIn));
-		memcpy(m_address, sockAddr.m_address, sizeof(m_address));
+		m_address = sockAddr.m_address;
 
 		return *this;
 	}

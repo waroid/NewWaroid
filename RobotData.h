@@ -8,9 +8,8 @@
 #ifndef ROBOTDATA_H_
 #define ROBOTDATA_H_
 
-#include <cstring>
-
 #include "core/GRCJsonData.h"
+#include "core/GRCString.h"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 
@@ -19,22 +18,18 @@ class RobotData: public GRCJsonData
 public:
 	struct DATA: BASEDATA
 	{
-		char weaponname[100];
-		char attackedsoundfilename[100];
-		char deathsoundfilename[100];
-		char revivesoundfilename[100];
+		GRCString weaponname;
+		GRCString attackedsoundfilename;
+		GRCString deathsoundfilename;
+		GRCString revivesoundfilename;
 
 		DATA()
 		{
-			bzero(weaponname, sizeof(weaponname));
-			bzero(attackedsoundfilename, sizeof(attackedsoundfilename));
-			bzero(deathsoundfilename, sizeof(deathsoundfilename));
-			bzero(revivesoundfilename, sizeof(revivesoundfilename));
 		}
 
 		virtual bool isValid() const override
 		{
-			return BASEDATA::isValid() && weaponname[0] != 0;
+			return BASEDATA::isValid() && weaponname.isEmpty() == false;
 		}
 
 	};
@@ -50,7 +45,7 @@ public:
 	{
 		return (const DATA*) findData(id);
 	}
-	const DATA* find(const char* name) const
+	const DATA* find(GRCCSTR name) const
 	{
 		return (const DATA*) findData(name);
 	}

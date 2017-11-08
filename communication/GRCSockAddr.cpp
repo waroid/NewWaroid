@@ -46,7 +46,7 @@ void GRCSockAddr::set(const char* ip, int port)
 	m_sockAddrIn.sin_addr.s_addr = ip ? inet_addr(ip) : htonl(INADDR_ANY);
 	m_sockAddrIn.sin_port = htons(port);
 
-	sprintf(m_address, "%s:%d", inet_ntoa(m_sockAddrIn.sin_addr), ntohs(m_sockAddrIn.sin_port));
+	m_address.format("%s:%d", inet_ntoa(m_sockAddrIn.sin_addr), ntohs(m_sockAddrIn.sin_port));
 }
 
 void GRCSockAddr::set(const sockaddr* sockAddr)
@@ -57,11 +57,11 @@ void GRCSockAddr::set(const sockaddr* sockAddr)
 
 	memcpy(&m_sockAddrIn, sockAddr, sizeof(sockaddr));
 
-	sprintf(m_address, "%s:%d", inet_ntoa(m_sockAddrIn.sin_addr), ntohs(m_sockAddrIn.sin_port));
+	m_address.format(m_address, "%s:%d", inet_ntoa(m_sockAddrIn.sin_addr), ntohs(m_sockAddrIn.sin_port));
 }
 
 void GRCSockAddr::clear()
 {
 	bzero(&m_sockAddrIn, sizeof(m_sockAddrIn));
-	bzero(m_address, sizeof(m_address));
+	m_address.clear();
 }

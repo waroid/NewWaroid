@@ -18,8 +18,6 @@
 #define GRC_INVALID_INDEX	(size_t)-1
 #define GRC_INVALID_FD		(int)-1
 
-#define GRC_SAFE_STR_COPY(dest,destsize,src)	strncpy(dest, src, destsize-1)
-
 #define GRC_ACTION_NONE
 #define GRC_ACTION_RETURN		return
 #define GRC_ACTION_RETVAL(x)	return (x)

@@ -101,7 +101,7 @@ void GRCSerialSession::onReceiving()
 			else if (packetSize == 0)
 			{
 				offset += skipSize;
-				buffer.truncate(offset);
+				buffer.truncateLeft(offset);
 				break;
 			}
 			else

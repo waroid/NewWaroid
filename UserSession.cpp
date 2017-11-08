@@ -8,11 +8,20 @@
 #include "UserSession.h"
 
 #include <stddef.h>
+#include <cstdio>
+#include <cstdlib>
 
+#include "communication/GRCCommunicator.h"
+#include "communication/GRCSerialOpener.h"
+#include "communication/GRCSockAddr.h"
 #include "core/GRCCore.h"
+#include "core/GRCString.h"
+#include "ControlBoardSession.h"
 #include "Defines.h"
 #include "Manager.h"
 #include "RobotInfo.h"
+#include "sound/GRCSoundWorker.h"
+#include "WeaponData.h"
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_2)
 {
@@ -33,6 +42,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 	GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));
 
 	m_logined = true;
+	Manager::loginUser();
 
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
 	sendPacket(spacket);
@@ -75,15 +85,27 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 {
 	GRC_CHECK_RETURN(m_logined);
 
+	bool on = rpacket->getOn() == 1;
+
 	switch (rpacket->getWeaponIndex())
 	{
 		case 0:
 		{
 			const WeaponData::DATA* weaponData = Manager::getRobotInfo().getFirstWeaponData();
 			GRC_CHECK_RETURN(weaponData);
-			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(rpacket->getOn() == 1);
+			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(on);
 
-			//play sound;
+			if (on)
+			{
+				GRCSoundWorker::startPlay(weaponData->soundfilename);
+			}
+			else
+			{
+				if (weaponData->repeat)
+				{
+					GRCSoundWorker::endPlay(weaponData->soundfilename);
+				}
+			}
 		}
 			break;
 
@@ -92,7 +114,14 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 			const WeaponData::DATA* weaponData = Manager::getRobotInfo().getSecondWeaponData();
 			GRC_CHECK_RETURN(weaponData);
 
-			//play sound;
+			if (on)
+			{
+				GRCSoundWorker::startPlay(weaponData->soundfilename);
+			}
+			else
+			{
+				//GRCSoundWorker::endPlay(weaponData->soundfilename);
+			}
 		}
 			break;
 	}

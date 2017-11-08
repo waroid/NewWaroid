@@ -8,6 +8,8 @@
 #ifndef GRCLOGGER_H_
 #define GRCLOGGER_H_
 
+#include "GRCString.h"
+
 class GRCLogger
 {
 public:
@@ -20,7 +22,7 @@ public:
 		s_dev = dev;
 	}
 
-	static void write(int level, const char* format, ...);
+	static void write(int level, GRCCSTR format, ...);
 
 private:
 	static bool s_dev;

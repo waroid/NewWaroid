@@ -21,9 +21,6 @@
 class Manager
 {
 public:
-	static bool start(int robotId, const char* robotTypeName, const char* gameServerIp);
-	static void stop();
-
 	static const RobotData& getRobotData()
 	{
 		return s_robotData;
@@ -48,6 +45,15 @@ public:
 	{
 		return s_controlBoardOpener;
 	}
+
+	static bool start(int robotId, const char* robotTypeName, const char* gameServerIp);
+	static void stop();
+
+	static void loginUser();
+
+private:
+	static void mosDot();
+	static void mosDash();
 
 private:
 	static GRCMutex s_mutex;

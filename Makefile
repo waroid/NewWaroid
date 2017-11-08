@@ -15,18 +15,20 @@ LIBS = -lm -lpthread -lwiringPi -lasound -lsndfile
 CSOURCES = 
 
 CPPSOURCES = main.cpp \
-	core/GRCBuffer.cpp \
-	core/GRCCoreUtil.cpp \
-	core/GRCJsonData.cpp \
-	core/GRCLogger.cpp \
-	core/GRCObject.cpp \
-	core/GRCWave.cpp \
 	communication/GRCAcceptSession.cpp \
 	communication/GRCBaseSession.cpp \
 	communication/GRCConnectSession.cpp \
 	communication/GRCSerialSession.cpp \
 	communication/GRCSockAddr.cpp \
 	communication/GRCTcpSession.cpp \
+	core/GRCBuffer.cpp \
+	core/GRCCoreUtil.cpp \
+	core/GRCJsonData.cpp \
+	core/GRCLogger.cpp \
+	core/GRCObject.cpp \
+	core/GRCString.cpp \
+	sound/GRCSoundWorker.cpp \
+	sound/GRCWave.cpp \
 	ControlBoardSession.cpp \
 	GameSession.cpp \
 	RobotData.cpp \

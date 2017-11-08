@@ -25,6 +25,8 @@
 #define DATA_DIR	"/home/mirime/RaspberryPi/NewWaroid/json/"
 #endif
 
+#define BOOT_SOUND_FILENAME	"Common_Booting_Sound.wav"
+
 //////////////////////////////////////////////////////////////////////////
 //
 namespace WAROIDTEAM {

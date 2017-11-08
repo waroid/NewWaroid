@@ -8,14 +8,12 @@
 #include "GRCObject.h"
 
 #include <cstdarg>
-#include <cstdio>
-#include <cstring>
 
 
 GRCObject::GRCObject()
+:m_objName(250)
 {
 	// TODO Auto-generated constructor stub
-	bzero(m_objName, sizeof(m_objName));
 }
 
 GRCObject::~GRCObject()
@@ -23,13 +21,11 @@ GRCObject::~GRCObject()
 	// TODO Auto-generated destructor stub
 }
 
-void GRCObject::updateObjName(const char* format, ...)
+void GRCObject::updateObjName(GRCCSTR format, ...)
 {
 	va_list vl;
 	va_start(vl, format);
-	int len = vsnprintf(m_objName, sizeof(m_objName) - 2, format, vl);
+	m_objName.vformat(format, vl);
 	va_end(vl);
-	if (len < 0) len = 0;
-	m_objName[len] = 0;
 }
 

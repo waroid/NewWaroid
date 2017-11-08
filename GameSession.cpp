@@ -16,9 +16,11 @@
 #include "core/GRCCore.h"
 #include "core/GRCCoreUtil.h"
 #include "core/GRCObject.h"
+#include "core/GRCString.h"
 #include "Manager.h"
 #include "RobotData.h"
 #include "RobotInfo.h"
+#include "sound/GRCSoundWorker.h"
 #include "UserSession.h"
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_1)
@@ -58,14 +60,17 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_UPDATE_SECOND_WEAPON)
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_ATTACKED)
 {
+	GRCSoundWorker::startPlay(Manager::getRobotInfo().getRobotData()->attackedsoundfilename);
 }
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_DEATH)
 {
+	GRCSoundWorker::startPlay(Manager::getRobotInfo().getRobotData()->deathsoundfilename);
 }
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_REVIVE)
 {
+	GRCSoundWorker::startPlay(Manager::getRobotInfo().getRobotData()->revivesoundfilename);
 }
 
 GameSession::GameSession(size_t maxPacketSize)

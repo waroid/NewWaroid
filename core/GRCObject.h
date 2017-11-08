@@ -8,6 +8,8 @@
 #ifndef SRC_CORE_GRCOBJECT_H_
 #define SRC_CORE_GRCOBJECT_H_
 
+#include "GRCString.h"
+
 class GRCObject
 {
 public:
@@ -15,15 +17,15 @@ public:
 	virtual ~GRCObject();
 
 public:
-	const char* getObjName() const
+	GRCCSTR getObjName() const
 	{
 		return m_objName;
 	}
 
-	void updateObjName(const char* format, ...);
+	void updateObjName(GRCCSTR format, ...);
 
 private:
-	char m_objName[250];
+	GRCString m_objName;
 };
 
 #endif /* SRC_CORE_GRCOBJECT_H_ */

@@ -80,11 +80,11 @@ const GRCJsonData::BASEDATA* GRCJsonData::findData(int id) const
 	return iter->second;
 }
 
-const GRCJsonData::BASEDATA* GRCJsonData::findData(const char* name) const
+const GRCJsonData::BASEDATA* GRCJsonData::findData(GRCCSTR name) const
 {
 	for (auto& it : m_datas)
 	{
-		if (strcmp(it.second->name, name) == 0) return it.second;
+		if (it.second->name.compareNoCase(name) == 0) return it.second;
 	}
 
 	return NULL;
@@ -100,7 +100,7 @@ bool GRCJsonData::addData(BASEDATA* data)
 
 void GRCJsonData::loadBaseData(const RAPIDJSON_NAMESPACE::Value::ConstMemberIterator& iter, BASEDATA* data)
 {
-	GRC_SAFE_STR_COPY(data->name, sizeof(data->name), iter->name.GetString());
+	data->name = iter->name.GetString();
 
 	const RAPIDJSON_NAMESPACE::Value& v = iter->value;
 

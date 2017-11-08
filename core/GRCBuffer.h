@@ -14,6 +14,10 @@
 
 class GRCBuffer
 {
+private:
+	GRCBuffer(const GRCBuffer&);
+	GRCBuffer& operator=(const GRCBuffer&);
+
 public:
 	GRCBuffer(size_t bufferSize);
 	virtual ~GRCBuffer();
@@ -30,7 +34,7 @@ public:
 
 	const char* getData() const
 	{
-		return reinterpret_cast<const char*>(m_buffer);
+		return m_buffer;
 	}
 
 	size_t getDataSize() const
@@ -45,7 +49,7 @@ public:
 
 	void* getFreeBuffer()
 	{
-		return (reinterpret_cast<char*>(m_buffer) + m_dataSize);
+		return (m_buffer + m_dataSize);
 	}
 
 	size_t getFreeBufferSize() const
@@ -57,12 +61,13 @@ public:
 	bool copy(const void* data, size_t dataSize);
 	bool append(const void* data, size_t dataSize);
 	bool append(char ch);
-	bool truncate(size_t dataSize);
+	bool truncateLeft(size_t dataSize);
+	bool truncateRight(size_t dataSize);
 	bool postAppend(size_t dataSize);
 
 private:
 	GRCMutex m_mutex;
-	void* m_buffer;
+	char* m_buffer;
 	size_t m_bufferSize;
 	size_t m_dataSize;
 };

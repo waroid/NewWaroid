@@ -13,7 +13,7 @@
 
 bool GRCLogger::s_dev = true;
 
-void GRCLogger::write(int level, const char* format, ...)
+void GRCLogger::write(int level, GRCCSTR format, ...)
 {
 	{
 		va_list vl;

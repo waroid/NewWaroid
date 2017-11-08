@@ -5,6 +5,9 @@
  *      Author: mirime
  */
 
+#include "Defines.h"
+#include "sound/GRCSoundWorker.h"
+
 #ifdef __RPI__
 #include <wiringPi.h>
 #endif
@@ -57,6 +60,8 @@ bool initialize()
 	GRC_DEV("setup gpio of wiringPi");
 #endif
 
+	GRC_CHECK_RETFALSE(GRCSoundWorker::start(DATA_DIR));
+
 	GRC_INFO("initlaized.");
 
 	return true;
@@ -65,6 +70,9 @@ bool initialize()
 void cleanup(int s)
 {
 	Manager::stop();
+
+	GRCSoundWorker::stop();
+
 	if (s != 0)
 	{
 		GRC_ERR("caught signal %d", s);

@@ -79,7 +79,7 @@ void GRCTcpSession::onReceiving()
 			}
 			else if (packetSize == 0)
 			{
-				buffer.truncate(offset);
+				buffer.truncateLeft(offset);
 				break;
 			}
 			else

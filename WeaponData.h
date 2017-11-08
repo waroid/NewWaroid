@@ -11,6 +11,9 @@
 #include <cstring>
 
 #include "core/GRCJsonData.h"
+#include "core/GRCString.h"
+#include "rapidjson/document.h"
+#include "rapidjson/rapidjson.h"
 
 class WeaponData: public GRCJsonData
 {
@@ -19,12 +22,11 @@ public:
 	{
 		int secondid;
 		bool repeat;
-		char soundfilename[100];
+		GRCString soundfilename;
 
 		DATA()
 				: secondid(0), repeat(false)
 		{
-			bzero(soundfilename, sizeof(soundfilename));
 		}
 	};
 
@@ -39,7 +41,7 @@ public:
 	{
 		return (const DATA*) findData(id);
 	}
-	const DATA* find(const char* name) const
+	const DATA* find(GRCCSTR name) const
 	{
 		return (const DATA*) findData(name);
 	}

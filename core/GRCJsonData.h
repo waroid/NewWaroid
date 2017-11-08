@@ -14,19 +14,19 @@
 
 #include "../rapidjson/document.h"
 #include "../rapidjson/rapidjson.h"
+#include "GRCString.h"
 
 class GRCJsonData
 {
 public:
 	struct BASEDATA
 	{
-		char name[100];
+		GRCString name;
 		int id;
 
 		BASEDATA()
 				: id(0)
 		{
-			bzero(name, sizeof(name));
 		}
 		virtual ~BASEDATA()
 		{
@@ -34,7 +34,7 @@ public:
 
 		virtual bool isValid() const
 		{
-			return name[0] != 0 && id >= 0;
+			return name.isEmpty() == false && id >= 0;
 		}
 	};
 	typedef std::map<int, BASEDATA*> MapData;
@@ -51,7 +51,7 @@ protected:
 	virtual bool onLoad(const RAPIDJSON_NAMESPACE::Value& data) = 0;
 
 	const BASEDATA* findData(int id) const;
-	const BASEDATA* findData(const char* name) const;
+	const BASEDATA* findData(GRCCSTR name) const;
 
 	void loadBaseData(const RAPIDJSON_NAMESPACE::Value::ConstMemberIterator& iter, BASEDATA* data);
 	bool addData(BASEDATA* data);

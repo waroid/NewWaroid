@@ -57,7 +57,7 @@ bool WeaponData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 		{
 			auto siter = v.FindMember("soundfilename");
 			if (siter != v.MemberEnd())
-				GRC_SAFE_STR_COPY(data->soundfilename, sizeof(data->soundfilename), siter->value.GetString());
+				data->soundfilename = siter->value.GetString();
 		}
 
 		GRC_CHECK_RETFALSE(addData(data));

@@ -45,25 +45,25 @@ bool RobotData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 		{
 			auto siter = v.FindMember("weaponname");
 			if (siter != v.MemberEnd())
-				GRC_SAFE_STR_COPY(data->weaponname, sizeof(data->weaponname), siter->value.GetString());
+				data->weaponname = siter->value.GetString();
 		}
 
 		{
 			auto siter = v.FindMember("attackedsoundfilename");
 			if (siter != v.MemberEnd())
-				GRC_SAFE_STR_COPY(data->attackedsoundfilename, sizeof(data->attackedsoundfilename), siter->value.GetString());
+				data->attackedsoundfilename = siter->value.GetString();
 		}
 
 		{
 			auto siter = v.FindMember("deathsoundfilename");
 			if (siter != v.MemberEnd())
-				GRC_SAFE_STR_COPY(data->deathsoundfilename, sizeof(data->deathsoundfilename), siter->value.GetString());
+				data->deathsoundfilename = siter->value.GetString();
 		}
 
 		{
 			auto siter = v.FindMember("revivesoundfilename");
 			if (siter != v.MemberEnd())
-				GRC_SAFE_STR_COPY(data->revivesoundfilename, sizeof(data->revivesoundfilename), siter->value.GetString());
+				data->revivesoundfilename = siter->value.GetString();
 		}
 
 		GRC_CHECK_RETFALSE(addData(data));

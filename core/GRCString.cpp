@@ -18,7 +18,8 @@ namespace GRC_STRING
 {
 	const size_t MIN_SIZE = 64;
 	const size_t FORMAT_MIN_SIZE = 255;
-};
+}
+;
 using namespace GRC_STRING;
 
 GRCString::GRCString(const GRCString& str)
@@ -115,16 +116,18 @@ int GRCString::compareNoCase(GRCCSTR str) const
 
 void GRCString::resize(size_t size)
 {
-	size =  GRCMath::Max<size_t>(size + 1, MIN_SIZE);
+	size = GRCMath::Max<size_t>(size + 1, MIN_SIZE);
 	if (m_size < size)
 	{
 		char* temp = reinterpret_cast<char*>(malloc(size));
 		memset(temp, 0, size);
-		strncpy(temp, m_str, size - 1);
-		free(m_str);
+		if (m_str)
+		{
+			strncpy(temp, m_str, size - 1);
+			free(m_str);
+		}
 		m_str = temp;
 		m_size = size;
-		m_str[size - 1] = 0;
 	}
 }
 

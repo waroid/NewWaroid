@@ -28,7 +28,7 @@ WeaponData::~WeaponData()
 bool WeaponData::load()
 {
 	char path[256];
-	sprintf(path, "%s%s", DATA_DIR, "WaroidWeaponData.json");
+	sprintf(path, "%s%s", JSON_DATA_DIR, "WaroidWeaponData.json");
 
 	return loadFile(path);
 }

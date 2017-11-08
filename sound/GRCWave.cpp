@@ -54,7 +54,9 @@ GRCWave::GRCWave(GRCCSTR dir, GRCCSTR filename, bool repeat, int priority)
 	snd_pcm_uframes_t frames = 32;
 	GRC_CHECK_RETURN(snd_pcm_hw_params_set_period_size_near(m_pcm, m_params, &frames, NULL)>=0);
 
-	GRC_CHECK_RETURN(snd_pcm_hw_params_set_channels(m_pcm, m_params, info.channels) >= 0);
+	//GRC_CHECK_RETURN(snd_pcm_hw_params_set_channels(m_pcm, m_params, info.channels) >= 0);
+	int ret = snd_pcm_hw_params_set_channels(m_pcm, m_params, info.channels);
+	GRC_CHECKV_RETURN(ret==0, "err=%s(%d)", snd_strerror(ret), ret);
 
 	GRC_CHECK_RETURN(snd_pcm_hw_params(m_pcm, m_params) >= 0);
 

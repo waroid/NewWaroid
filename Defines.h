@@ -20,9 +20,11 @@
 #define CONTROL_BOARD_BAUD		9600
 
 #ifdef __RPI__
-#define DATA_DIR	"/usr/local/share/waroid/"
+#define SOUND_DATA_DIR	"/usr/local/share/waroid/"
+#define JSON_DATA_DIR	"/usr/local/share/waroid/"
 #else
-#define DATA_DIR	"/home/mirime/RaspberryPi/NewWaroid/json/"
+#define SOUND_DATA_DIR	"/home/mirime/RaspberryPi/NewWaroid/data/sound/"
+#define JSON_DATA_DIR	"/home/mirime/RaspberryPi/NewWaroid/data/json/"
 #endif
 
 #define BOOT_SOUND_FILENAME	"Common_Booting_Sound.wav"

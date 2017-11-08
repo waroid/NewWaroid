@@ -60,7 +60,7 @@ bool initialize()
 	GRC_DEV("setup gpio of wiringPi");
 #endif
 
-	GRC_CHECK_RETFALSE(GRCSoundWorker::start(DATA_DIR));
+	GRC_CHECK_RETFALSE(GRCSoundWorker::start(SOUND_DATA_DIR));
 
 	GRC_INFO("initlaized.");
 

@@ -28,7 +28,7 @@ RobotData::~RobotData()
 bool RobotData::load()
 {
 	char path[256];
-	sprintf(path, "%s%s", DATA_DIR, "WaroidRobotData.json");
+	sprintf(path, "%s%s", JSON_DATA_DIR, "WaroidRobotData.json");
 
 	return loadFile(path);
 }

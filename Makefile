@@ -40,22 +40,22 @@ CPPSOURCES = main.cpp \
 OBJECTS = $(CSOURCES:%.c=%.o)
 OBJECTS += $(CPPSOURCES:%.cpp=%.o)
 
-SOUNDS = sound/Common_Booting_Sound.wav \
-	sound/12.7mm_GAU-19B_HMG.wav \
-	sound/2_c_Hit.wav \
-	sound/20mm_M134D_Minigun.wav \
-	sound/20mm_M61_Vulcan.wav \
-	sound/25mm_M242_Chaingun.wav \
-	sound/3_c_destruction.wav \
-	sound/30mm_2A72_Autocannon.wav \
-	sound/4_c_revival.wav \
-	sound/5_2nd_Weapon.wav \
-	sound/6_2nd_Weapon.wav \
-	sound/7_2nd_Weapon.wav
+SOUNDS = data/sound/Common_Booting_Sound.wav \
+	data/sound/12.7mm_GAU-19B_HMG.wav \
+	data/sound/2_c_Hit.wav \
+	data/sound/20mm_M134D_Minigun.wav \
+	data/sound/20mm_M61_Vulcan.wav \
+	data/sound/25mm_M242_Chaingun.wav \
+	data/sound/3_c_destruction.wav \
+	data/sound/30mm_2A72_Autocannon.wav \
+	data/sound/4_c_revival.wav \
+	data/sound/5_2nd_Weapon.wav \
+	data/sound/6_2nd_Weapon.wav \
+	data/sound/7_2nd_Weapon.wav
 
 	
-JSONS = json/WaroidRobotData.json \
-	json/WaroidWeaponData.json
+JSONS = data/json/WaroidRobotData.json \
+	data/json/WaroidWeaponData.json
 
 TARGET = NewWaroidServer
 
@@ -82,18 +82,18 @@ depend:
 rebuild: clean depend all
 
 install:
-	mkdir -p $(DATADIR)
-	cp -f $(TARGET) $(BINDIR)
-	cp -f $(SOUNDS) $(DATADIR)
-	cp -f $(JSONS) $(DATADIR)
+	sudo mkdir -p $(DATADIR)
+	sudo cp -f $(TARGET) $(BINDIR)
+	sudo cp -f $(SOUNDS) $(DATADIR)
+	sudo cp -f $(JSONS) $(DATADIR)
 
 uninstall:
-	- killall $(TARGET)
-	rm -fr $(DATADIR)
-	rm -f $(BINDIR)/$(TARGET)
+	- sudo killall $(TARGET)
+	sudo rm -fr $(DATADIR)
+	sudo rm -f $(BINDIR)/$(TARGET)
 
 kill:
-	- killall $(TARGET)
+	- sudo killall $(TARGET)
 
 ifneq ($(MAKECMDGOALS), clean)
 ifneq ($(MAKECMDGOALS), depend)

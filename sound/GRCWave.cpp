@@ -46,7 +46,9 @@ GRCWave::GRCWave(GRCCSTR dir, GRCCSTR filename, bool repeat, int priority)
 
 	snd_pcm_hw_params_alloca(&m_params);
 	GRC_CHECK_RETURN(m_params);
-	GRC_CHECK_RETURN(snd_pcm_hw_params_any(m_pcm, m_params) != 0);
+
+	ret = snd_pcm_hw_params_any(m_pcm, m_params);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_any(). error=%s(%d)", snd_strerror(ret), ret);
 
 	ret = snd_pcm_hw_params_set_access(m_pcm, m_params, SND_PCM_ACCESS_RW_INTERLEAVED);
 	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_access(). error=%s(%d)", snd_strerror(ret), ret);
@@ -62,8 +64,8 @@ GRCWave::GRCWave(GRCCSTR dir, GRCCSTR filename, bool repeat, int priority)
 	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_rate_near(). error=%s(%d)", snd_strerror(ret), ret);
 
 	snd_pcm_uframes_t frames = 32;
-	ret = snd_pcm_hw_params_set_period_size_near(m_pcm, m_params, &frames, NULL);
-	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_period_size_near(). error=%s(%d)", snd_strerror(ret), ret);
+	//ret = snd_pcm_hw_params_set_period_size_near(m_pcm, m_params, &frames, NULL);
+	//GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_period_size_near(). error=%s(%d)", snd_strerror(ret), ret);
 
 	ret = snd_pcm_hw_params(m_pcm, m_params);
 	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params(). error=%s(%d)", snd_strerror(ret), ret);
@@ -72,6 +74,7 @@ GRCWave::GRCWave(GRCCSTR dir, GRCCSTR filename, bool repeat, int priority)
 	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_get_period_size(). error=%s(%d)", snd_strerror(ret), ret);
 
 	size_t dataSize = frames * info.channels * sizeof(short);
+	GRC_INFO("%s: channels=%d rate=%d frames=%d data=%d", filename, info.channels, info.samplerate, frames, dataSize);
 
 	sf_count_t count = frames;
 	short* data = reinterpret_cast<short*>(malloc(dataSize));
@@ -107,8 +110,8 @@ void GRCWave::play()
 	GRC_CHECK_RETURN(m_params);
 
 	m_playing = true;
-	int ret = snd_pcm_hw_params(m_pcm, m_params);
-	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params(). error=%s(%d)", snd_strerror(ret), ret);
+	//int ret = snd_pcm_hw_params(m_pcm, m_params);
+	//GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params(). error=%s(%d)", snd_strerror(ret), ret);
 
 	snd_pcm_sframes_t written = 0;
 

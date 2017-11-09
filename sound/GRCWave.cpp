@@ -34,44 +34,54 @@ GRCWave::GRCWave(GRCCSTR dir, GRCCSTR filename, bool repeat, int priority)
 	path.format("%s%s", dir, filename);
 
 	SF_INFO info;
+	bzero(&info, sizeof(info));
 	SNDFILE* file = sf_open(path, SFM_READ, &info);
-	GRC_CHECK_RETURN(file);
+	GRC_CHECKV_RETURN(file, "error=%s", sf_strerror(file));
 
 	GRC_CHECK_RETURN((info.format & SF_FORMAT_WAV) == SF_FORMAT_WAV);
 
-	GRC_CHECK_RETURN(snd_pcm_open(&m_pcm, "default", SND_PCM_STREAM_PLAYBACK, 0) >= 0);
+	int ret = snd_pcm_open(&m_pcm, "default", SND_PCM_STREAM_PLAYBACK, 0);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_open(). error=%s(%d)", snd_strerror(ret), ret);
 	GRC_CHECK_RETURN(m_pcm);
 
-	GRC_CHECK_RETURN(snd_pcm_hw_params_malloc(&m_params) >= 0);
-	GRC_CHECK_RETURN(snd_pcm_hw_params_any(m_pcm, m_params) >= 0);
+	snd_pcm_hw_params_alloca(&m_params);
+	GRC_CHECK_RETURN(m_params);
+	GRC_CHECK_RETURN(snd_pcm_hw_params_any(m_pcm, m_params) != 0);
 
-	GRC_CHECK_RETURN(snd_pcm_hw_params_set_access(m_pcm, m_params, SND_PCM_ACCESS_RW_INTERLEAVED) >= 0);
-	GRC_CHECK_RETURN(snd_pcm_hw_params_set_format(m_pcm, m_params, SND_PCM_FORMAT_S16_LE) >= 0);
+	ret = snd_pcm_hw_params_set_access(m_pcm, m_params, SND_PCM_ACCESS_RW_INTERLEAVED);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_access(). error=%s(%d)", snd_strerror(ret), ret);
+
+	ret = snd_pcm_hw_params_set_format(m_pcm, m_params, SND_PCM_FORMAT_S16_LE);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_format(). error=%s(%d)", snd_strerror(ret), ret);
+
+	ret = snd_pcm_hw_params_set_channels(m_pcm, m_params, info.channels);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_channels(). error=%s(%d)", snd_strerror(ret), ret);
 
 	unsigned int rate = info.samplerate;
-	GRC_CHECK_RETURN(snd_pcm_hw_params_set_rate_near(m_pcm, m_params, &rate, NULL)>=0);
+	ret = snd_pcm_hw_params_set_rate_near(m_pcm, m_params, &rate, NULL);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_rate_near(). error=%s(%d)", snd_strerror(ret), ret);
 
 	snd_pcm_uframes_t frames = 32;
-	GRC_CHECK_RETURN(snd_pcm_hw_params_set_period_size_near(m_pcm, m_params, &frames, NULL)>=0);
+	ret = snd_pcm_hw_params_set_period_size_near(m_pcm, m_params, &frames, NULL);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_set_period_size_near(). error=%s(%d)", snd_strerror(ret), ret);
 
-	//GRC_CHECK_RETURN(snd_pcm_hw_params_set_channels(m_pcm, m_params, info.channels) >= 0);
-	int ret = snd_pcm_hw_params_set_channels(m_pcm, m_params, info.channels);
-	GRC_CHECKV_RETURN(ret==0, "err=%s(%d)", snd_strerror(ret), ret);
+	ret = snd_pcm_hw_params(m_pcm, m_params);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params(). error=%s(%d)", snd_strerror(ret), ret);
 
-	GRC_CHECK_RETURN(snd_pcm_hw_params(m_pcm, m_params) >= 0);
-
-	GRC_CHECK_RETURN(snd_pcm_hw_params_get_period_size(m_params, &frames, NULL)>=0);
+	ret = snd_pcm_hw_params_get_period_size(m_params, &frames, NULL);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params_get_period_size(). error=%s(%d)", snd_strerror(ret), ret);
 
 	size_t dataSize = frames * info.channels * sizeof(short);
 
+	sf_count_t count = frames;
 	short* data = reinterpret_cast<short*>(malloc(dataSize));
-	sf_count_t read = sf_readf_short(file, data, frames);
+	sf_count_t read = sf_readf_short(file, data, count);
 	while (read > 0)
 	{
 		m_datas.push_back(new DATA(data, read));
 
 		data = reinterpret_cast<short*>(malloc(dataSize));
-		read = sf_readf_short(file, data, frames);
+		read = sf_readf_short(file, data, count);
 	}
 	free(data);
 	sf_close(file);
@@ -93,8 +103,12 @@ GRCWave::~GRCWave()
 
 void GRCWave::play()
 {
+	GRC_CHECK_RETURN(m_pcm);
+	GRC_CHECK_RETURN(m_params);
+
 	m_playing = true;
-	GRC_CHECK_RETURN(snd_pcm_hw_params(m_pcm, m_params) >= 0);
+	int ret = snd_pcm_hw_params(m_pcm, m_params);
+	GRC_CHECKV_RETURN(ret == 0, "failed snd_pcm_hw_params(). error=%s(%d)", snd_strerror(ret), ret);
 
 	snd_pcm_sframes_t written = 0;
 
@@ -102,14 +116,13 @@ void GRCWave::play()
 	{
 		for (auto* d : m_datas)
 		{
-			if (m_playing == false)
-				return;
+			if (m_playing == false) return;
 
 			written = snd_pcm_writei(m_pcm, d->buffer, d->frames);
 			if (written == -EPIPE)
 			{
 				GRC_ERR("Underrun");
-				snd_pcm_prepare (m_pcm);
+				snd_pcm_prepare(m_pcm);
 			}
 			else if (written < 0)
 			{

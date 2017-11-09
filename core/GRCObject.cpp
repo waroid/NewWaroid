@@ -11,7 +11,6 @@
 
 
 GRCObject::GRCObject()
-:m_objName(250)
 {
 	// TODO Auto-generated constructor stub
 }

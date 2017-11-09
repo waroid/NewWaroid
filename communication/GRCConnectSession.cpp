@@ -87,8 +87,9 @@ bool GRCConnectSession::connecting()
 
 	GRCMutexAutoLock autoLock(&m_mutex);
 	sockaddr sockAddr;
+	bzero(&sockAddr, sizeof(sockAddr));
 	socklen_t len = sizeof(sockAddr);
-	::getsockname(m_fd, &sockAddr, &len);
+	::getsockname(fd, &sockAddr, &len);
 	m_localSockAddr.set(&sockAddr);
 	m_fd = fd;
 

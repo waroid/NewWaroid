@@ -22,27 +22,34 @@ namespace GRC_STRING
 ;
 using namespace GRC_STRING;
 
+GRCString::GRCString()
+		: 	m_str(NULL),
+			m_size(0)
+{
+	// TODO Auto-generated constructor stub
+	resize(0);
+}
 GRCString::GRCString(const GRCString& str)
 		: 	m_str(NULL),
 			m_size(0)
 {
 	// TODO Auto-generated constructor stub
-	assign(str);
+	str.isEmpty() ? resize(0) : assign(str);
 
 }
-GRCString::GRCString(size_t size)
+GRCString::GRCString(GRCCSTR str)
 		: 	m_str(NULL),
 			m_size(0)
 {
 	// TODO Auto-generated constructor stub
-	resize(size);
+	str ? assign(str) : resize(0);
 }
 GRCString::GRCString(GRCCSTR str, size_t count)
 		: 	m_str(NULL),
 			m_size(0)
 {
 	// TODO Auto-generated constructor stub
-	assign(str, count);
+	str ? assign(str, count) : resize(count);
 }
 
 GRCString::~GRCString()

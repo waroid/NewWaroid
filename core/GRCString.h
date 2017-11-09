@@ -20,9 +20,10 @@ public:
 	static const size_t TRUNCATE = (size_t)-1;
 
 public:
+	GRCString();
 	GRCString(const GRCString& str);
-	explicit GRCString(size_t size = 0);
-	GRCString(GRCCSTR str, size_t count = TRUNCATE);
+	GRCString(GRCCSTR str);
+	explicit GRCString(GRCCSTR str, size_t count);
 	virtual ~GRCString();
 
 public:

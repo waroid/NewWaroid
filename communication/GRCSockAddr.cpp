@@ -57,7 +57,7 @@ void GRCSockAddr::set(const sockaddr* sockAddr)
 
 	memcpy(&m_sockAddrIn, sockAddr, sizeof(sockaddr));
 
-	m_address.format(m_address, "%s:%d", inet_ntoa(m_sockAddrIn.sin_addr), ntohs(m_sockAddrIn.sin_port));
+	m_address.format("%s:%d", inet_ntoa(m_sockAddrIn.sin_addr), ntohs(m_sockAddrIn.sin_port));
 }
 
 void GRCSockAddr::clear()

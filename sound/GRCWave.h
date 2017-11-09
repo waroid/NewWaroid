@@ -37,7 +37,7 @@ public:
 public:
 	bool isValid() const
 	{
-		return m_pcm && m_datas.empty() == false;
+		return m_datas.empty() == false;
 	}
 
 	GRCCSTR getFilename() const
@@ -54,11 +54,14 @@ public:
 	void stop();
 
 private:
+	bool updateParams(snd_pcm_t* pcm, snd_pcm_uframes_t* frames);
+
+private:
 	GRCString m_filename;
 	bool m_repeat;
 	int m_priority;
-	snd_pcm_t* m_pcm;
-	snd_pcm_hw_params_t* m_params;
+	int m_channels;
+	int m_sampleRate;
 	VecData m_datas;
 	bool m_playing;
 };

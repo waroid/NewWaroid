@@ -46,7 +46,7 @@ bool RobotInfo::init(int id, const char* typeName)
 	GRC_CHECK_RETFALSE(GRCSoundWorker::add(m_robotData->revivesoundfilename, false, 5));
 
 	m_firstWeaponData = Manager::getWeaponData().find(m_robotData->weaponname);
-	GRC_CHECKV_RETFALSE(m_firstWeaponData, "invalid weapon. name=%s", m_robotData->weaponname);
+	GRC_CHECKV_RETFALSE(m_firstWeaponData, "invalid weapon. name=%s", *m_robotData->weaponname);
 	GRC_CHECK_RETFALSE(GRCSoundWorker::add(m_firstWeaponData->soundfilename, m_firstWeaponData->repeat, 3));
 
 	return true;

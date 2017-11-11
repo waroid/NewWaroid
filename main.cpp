@@ -5,7 +5,6 @@
  *      Author: mirime
  */
 
-#include "Defines.h"
 #include "sound/GRCSoundWorker.h"
 
 #ifdef __RPI__

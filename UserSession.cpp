@@ -48,27 +48,6 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 	sendPacket(spacket);
 }
 
-WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
-{
-	GRC_CHECK_RETURN(m_logined);
-
-	int width = 1280;
-	int height = 720;
-	int fps = 25;
-	int bitrate = 15000000;
-
-	char command[256] = { 0 };
-	sprintf(command, "raspivid -o - -t 0 -w %d -h %d -fps %d -b %d -vf -n | nc %s %d &", width, height, fps, bitrate, m_remoteSockAddr.getIp(), CAMERA_PORT);
-
-#ifdef __RPI__
-	system("killall raspivid");
-	system("killall nc");
-
-	system(command);
-#endif
-	GRC_INFO("opend camera. system=%s", command);
-}
-
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
 {
 	GRC_CHECK_RETURN(m_logined);
@@ -145,8 +124,6 @@ UserSession::~UserSession()
 void UserSession::onClose()
 {
 	m_logined = false;
-	system("killall raspivid");
-	system("killall nc");
 
 	GRCAcceptSession::onClose();
 }
@@ -166,12 +143,11 @@ void UserSession::onPacket(const char* packet, int size)
 	{
 		WAROID_USER_SESSION_COMMAND_CASE(HEARTBEAT_2, urp)
 		WAROID_USER_SESSION_COMMAND_CASE(U_R_LOGIN, urp)
-		WAROID_USER_SESSION_COMMAND_CASE(U_R_CAMERA, urp)
 		WAROID_USER_SESSION_COMMAND_CASE(U_R_MOVE, urp)
 		WAROID_USER_SESSION_COMMAND_CASE(U_R_FIRE, urp)
 		default:
 		{
-			GRC_ERR("invalid packet. cmd=%d", urp->getCommand());
+			GRC_ERR("invalid packet. cmd=WAROIDUSERROBOT::%d", urp->getCommand());
 		}
 			break;
 	}

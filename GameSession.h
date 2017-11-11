@@ -20,6 +20,7 @@ class GameSession: public GRCConnectSession
 private:
 	WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(HEARTBEAT_1)
 	WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(HEARTBEAT_3)
+	WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(G_R_CAMERA)
 	WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(G_R_ATTACHED)
 	WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(G_R_DETACHED)
 	WAROID_GAME_SESSION_COMMAND_FUNC_INTERFACE(G_R_UPDATE_SECOND_WEAPON)
@@ -33,6 +34,7 @@ public:
 
 protected:
 	virtual void onOpen() override;
+	virtual void onClose() override;
 	virtual int onParsing(const char* data, int size) override;
 	virtual void onPacket(const char* packet, int size) override;
 

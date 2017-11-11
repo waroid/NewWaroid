@@ -36,6 +36,24 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_3)
 	recvHeartbeat(rpacket->clientTick);
 }
 
+WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CAMERA)
+{
+	system("killall nc");
+
+	char command[256] = { 0 };
+
+#ifdef __RPI__
+	system("killall raspivid");
+
+	sprintf(command, "raspivid -o - -t 0 -w 1280 -h 720 -fps %d -b %d -vf -n | nc -k -l -p %d &", rpacket->fps, rpacket->bitRate, CAMERA_PORT);
+	system(command);
+#else
+	sprintf(command, "nc -k -l -p %d &", CAMERA_PORT);
+	system(command);
+#endif
+	GRC_INFO("opened camera. system=%s", command);
+}
+
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_ATTACHED)
 {
 	Manager::getRobotInfo().updateValidateKey(rpacket->validateKey);
@@ -96,6 +114,16 @@ void GameSession::onOpen()
 	sendPacket(&spacket);
 }
 
+void GameSession::onClose()
+{
+	system("killall nc");
+#ifdef __RPI__
+	system("killall raspivid");
+#endif
+
+	GRCTcpSession::onClose();
+}
+
 int GameSession::onParsing(const char* data, int size)
 {
 	GRC_CHECK_RETMINUS(data);
@@ -120,6 +148,7 @@ void GameSession::onPacket(const char* packet, int size)
 	{
 		WAROID_GAME_SESSION_COMMAND_CASE(HEARTBEAT_1, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(HEARTBEAT_3, rgh)
+		WAROID_GAME_SESSION_COMMAND_CASE(G_R_CAMERA, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_ATTACHED, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_DETACHED, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_UPDATE_SECOND_WEAPON, rgh)
@@ -127,7 +156,7 @@ void GameSession::onPacket(const char* packet, int size)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_DEATH, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_REVIVE, rgh)
 		default:
-			GRC_ERR("invalid packet. cmd=%d", rgh->getCommand());
+			GRC_ERR("invalid packet. cmd=WAROIDROBOTGAME::%d", rgh->getCommand());
 			break;
 	}
 }

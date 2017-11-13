@@ -47,11 +47,12 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CAMERA)
 
 	sprintf(command, "raspivid -o - -t 0 -w 1280 -h 720 -fps %d -b %d -vf -n | nc -k -l -p %d &", rpacket->fps, rpacket->bitRate, CAMERA_PORT);
 	system(command);
+	GRC_INFO("opened camera. system=%s", command);
 #else
 	sprintf(command, "nc -k -l -p %d &", CAMERA_PORT);
 	system(command);
+	GRC_INFO("opened camera. fps=%d bitrate=%d system=%s", rpacket->fps, rpacket->bitRate, command);
 #endif
-	GRC_INFO("opened camera. system=%s", command);
 }
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_ATTACHED)

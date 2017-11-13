@@ -15,7 +15,8 @@ class UserSession: public GRCAcceptSession
 {
 #define WAROID_USER_SESSION_COMMAND_FUNC_INTERFACE(cmd)			void on##cmd(const WAROIDUSERROBOT::cmd* rpacket);
 #define WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(cmd)	void UserSession::on##cmd(const WAROIDUSERROBOT::cmd* rpacket)
-#define WAROID_USER_SESSION_COMMAND_CASE(cmd,p)					case WAROIDUSERROBOT::COMMAND::cmd: GRC_DEV("[%s]received. cmd=WAROIDUSERROBOT::%s", getObjName(), #cmd); on##cmd(static_cast<const WAROIDUSERROBOT::cmd*>(p)); break;
+#define WAROID_USER_SESSION_COMMAND_CASE(cmd,p)					case WAROIDUSERROBOT::COMMAND::cmd: GRC_INFO("[%s]received. cmd=WAROIDUSERROBOT::%s", getObjName(), #cmd); on##cmd(static_cast<const WAROIDUSERROBOT::cmd*>(p)); break;
+#define WAROID_USER_SESSION_COMMAND_CASE_LOG(cnt,cmd,p)			case WAROIDUSERROBOT::COMMAND::cmd: GRC_INFO_COUNT(cnt,"[%s]received. cmd=WAROIDUSERROBOT::%s", getObjName(), #cmd); on##cmd(static_cast<const WAROIDUSERROBOT::cmd*>(p)); break;
 
 private:
 	WAROID_USER_SESSION_COMMAND_FUNC_INTERFACE(HEARTBEAT_2)

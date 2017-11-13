@@ -141,14 +141,12 @@ void UserSession::onPacket(const char* packet, int size)
 
 	switch (urp->getCommand())
 	{
-		WAROID_USER_SESSION_COMMAND_CASE(HEARTBEAT_2, urp)
+		WAROID_USER_SESSION_COMMAND_CASE_LOG(3,HEARTBEAT_2, urp)
 		WAROID_USER_SESSION_COMMAND_CASE(U_R_LOGIN, urp)
-		WAROID_USER_SESSION_COMMAND_CASE(U_R_MOVE, urp)
-		WAROID_USER_SESSION_COMMAND_CASE(U_R_FIRE, urp)
+		WAROID_USER_SESSION_COMMAND_CASE_LOG(3,U_R_MOVE, urp)
+		WAROID_USER_SESSION_COMMAND_CASE_LOG(3,U_R_FIRE, urp)
 		default:
-		{
 			GRC_ERR("invalid packet. cmd=WAROIDUSERROBOT::%d", urp->getCommand());
-		}
 			break;
 	}
 }

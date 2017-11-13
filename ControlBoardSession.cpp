@@ -111,23 +111,22 @@ int ControlBoardSession::onParsing(const char* data, int size, int& skipSize)
 void ControlBoardSession::onPacket(const char* packet, int size)
 {
 	WAROIDCONTROLBOARD::PACKET* cbp = (WAROIDCONTROLBOARD::PACKET*)packet;
-	GRC_DEV("[%s]received. cmd=%d", getObjName(), cbp->cmd);
 	switch (cbp->cmd)
 	{
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_INIT_OK:
-		{
 			Manager::getRobotInfo().setReady();
-		}
+			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_INIT_OK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_YAW:
-		{
 			Manager::getRobotInfo().updateYaw((int)cbp->hi << 8 | cbp->low);
-		}
+			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_YAW hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_BATTERY:
-		{
 			Manager::getRobotInfo().updateBattery((int)cbp->hi << 8 | cbp->low);
-		}
+			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_BATTERY hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
+			break;
+		default:
+			GRC_ERR("invalid packet. cmd=WAROIDCONTROLBOARD::%d hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
 			break;
 	}
 }

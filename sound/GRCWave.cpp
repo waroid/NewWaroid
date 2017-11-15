@@ -94,7 +94,11 @@ void GRCWave::play()
 	{
 		for (auto* d : m_datas)
 		{
-			if (m_playing == false) return;
+			if (m_playing == false)
+			{
+				snd_pcm_drain(pcm);
+				return;
+			}
 
 			written = snd_pcm_writei(pcm, d->buffer, d->frames);
 			if (written == -EPIPE)
@@ -116,6 +120,8 @@ void GRCWave::play()
 		}
 	}
 	while (m_repeat);
+
+	snd_pcm_drain(pcm);
 }
 
 void GRCWave::stop()

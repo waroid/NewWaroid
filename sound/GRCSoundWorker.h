@@ -25,8 +25,11 @@ public:
 
 	static bool add(GRCCSTR filename, bool repeat, int priority);
 
+	static bool isPlaying();
 	static void startPlay(GRCCSTR filename);
 	static void endPlay(GRCCSTR filename);
+
+	static void playTts(GRCCSTR fmt, ...);
 
 private:
 	static void* worker(void* param);

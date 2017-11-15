@@ -30,6 +30,11 @@ bool Manager::start(int robotId, const char* robotTypeName, const char* gameServ
 	GRC_CHECK_RETFALSE(gameServerIp);
 
 	GRC_CHECK_RETFALSE(GRCSoundWorker::add(BOOT_SOUND_FILENAME, false, 1));
+	GRCSoundWorker::startPlay(BOOT_SOUND_FILENAME);
+	while (GRCSoundWorker::isPlaying())
+	{
+		sleep(1);
+	}
 
 	GRC_CHECK_RETFALSE(s_robotData.load());
 	GRC_CHECK_RETFALSE(s_weaponData.load());
@@ -40,7 +45,7 @@ bool Manager::start(int robotId, const char* robotTypeName, const char* gameServ
 	GRC_CHECK_RETFALSE(s_controlBoardOpener.open(CONTROL_BOARD_DEVICE, CONTROL_BOARD_BAUD));
 	GRC_CHECK_RETFALSE(s_gameConnector.connect(gameServerIp, GAME_SERVER_PORT, true));
 
-	GRCSoundWorker::startPlay(BOOT_SOUND_FILENAME);
+
 
 	s_mutex.wait();
 

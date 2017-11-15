@@ -53,6 +53,19 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CAMERA)
 	system(command);
 	GRC_INFO("opened camera. fps=%d bitrate=%d system=%s", rpacket->fps, rpacket->bitRate, command);
 #endif
+
+	GRCSoundWorker::playTts("Camera on");
+
+#ifdef __TEST__
+	const WeaponData::DATA* weaponData = Manager::getRobotInfo().getFirstWeaponData();
+	GRC_CHECK_RETURN(weaponData);
+	GRCSoundWorker::startPlay(weaponData->soundfilename);
+	if (weaponData->repeat)
+	{
+		sleep(1);
+		GRCSoundWorker::endPlay(weaponData->soundfilename);
+	}
+#endif
 }
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_ATTACHED)

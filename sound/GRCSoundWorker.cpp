@@ -81,6 +81,12 @@ bool GRCSoundWorker::add(GRCCSTR filename, bool repeat, int priority)
 	return true;
 }
 
+bool GRCSoundWorker::isPlaying()
+{
+	GRCMutexAutoLock autoLock(&mutex);
+	return currentWave != nullptr;
+}
+
 void GRCSoundWorker::startPlay(GRCCSTR filename)
 {
 	GRC_CHECK_RETURN(filename);
@@ -114,6 +120,21 @@ void GRCSoundWorker::endPlay(GRCCSTR filename)
 			currentWave = NULL;
 		}
 	}
+}
+
+void GRCSoundWorker::playTts(GRCCSTR fmt, ...)
+{
+	GRCString str;
+
+	va_list vl;
+	va_start(vl, fmt);
+	str.vformat(fmt, vl);
+	va_end(vl);
+
+	GRCString command;
+	command.format("pico2wave -w /tmp/tts.wav \"%s\" && aplay /tmp/tts.wav", *str);
+	system(command);
+	GRC_INFO("play tts. str=%s", *str);
 }
 
 void* GRCSoundWorker::worker(void* param)

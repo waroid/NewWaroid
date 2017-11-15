@@ -48,6 +48,8 @@ bool RobotInfo::init(int id, const char* typeName)
 	GRC_CHECKV_RETFALSE(m_firstWeaponData, "invalid weapon. name=%s", *m_robotData->weaponname);
 	GRC_CHECK_RETFALSE(GRCSoundWorker::add(m_firstWeaponData->soundfilename, m_firstWeaponData->repeat, 3));
 
+	GRCSoundWorker::playTts("I'm %s number %d", *m_robotData->name, m_id);
+
 	return true;
 }
 

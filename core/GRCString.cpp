@@ -37,19 +37,12 @@ GRCString::GRCString(const GRCString& str)
 	str.isEmpty() ? resize(0) : assign(str);
 
 }
-GRCString::GRCString(GRCCSTR str)
-		: 	m_str(NULL),
-			m_size(0)
-{
-	// TODO Auto-generated constructor stub
-	str ? assign(str) : resize(0);
-}
 GRCString::GRCString(GRCCSTR str, size_t count)
 		: 	m_str(NULL),
 			m_size(0)
 {
 	// TODO Auto-generated constructor stub
-	str ? assign(str, count) : resize(count);
+	str ? assign(str, count) : resize(0);
 }
 
 GRCString::~GRCString()

@@ -7,10 +7,8 @@
 
 #include "GRCWave.h"
 
-#include <alsa/error.h>
-#include <alsa/pcm.h>
-#include <asm-generic/errno-base.h>
 #include <sndfile.h>
+#include <alsa/asoundlib.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -96,7 +94,7 @@ void GRCWave::play()
 		{
 			if (m_playing == false)
 			{
-				snd_pcm_drain(pcm);
+				snd_pcm_drop(pcm);
 				return;
 			}
 
@@ -127,7 +125,6 @@ void GRCWave::play()
 void GRCWave::stop()
 {
 	m_playing = false;
-	snd_pcm_drop(GRCSoundWorker::getPcm());
 }
 
 bool GRCWave::updateParams(snd_pcm_t* pcm, snd_pcm_uframes_t* frames)

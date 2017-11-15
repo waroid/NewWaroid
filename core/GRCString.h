@@ -22,8 +22,7 @@ public:
 public:
 	GRCString();
 	GRCString(const GRCString& str);
-	GRCString(GRCCSTR str);
-	explicit GRCString(GRCCSTR str, size_t count);
+	GRCString(GRCCSTR str, size_t count=TRUNCATE);
 	virtual ~GRCString();
 
 public:

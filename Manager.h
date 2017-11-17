@@ -49,12 +49,6 @@ public:
 	static bool start(int robotId, const char* robotTypeName, const char* gameServerIp);
 	static void stop();
 
-	static void loginUser();
-
-private:
-	static void mosDot();
-	static void mosDash();
-
 private:
 	static GRCMutex s_mutex;
 	static RobotData s_robotData;

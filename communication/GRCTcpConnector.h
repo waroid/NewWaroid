@@ -10,12 +10,9 @@
 
 #include <pthread.h>
 #include <stddef.h>
-#include <unistd.h>
-#include <cerrno>
-#include <cstring>
 
 #include "../core/GRCCore.h"
-#include "../core/GRCLogger.h"
+#include "../core/GRCCoreUtil.h"
 #include "../core/GRCMutex.h"
 #include "GRCCommunicator.h"
 #include "GRCSockAddr.h"
@@ -91,9 +88,9 @@ private:
 			for (size_t i = 0; i < m_sessions.size(); ++i)
 			{
 				m_sessions[i]->reconnect();
-				usleep(10000);
+				GRCCoreUtil::sleep(0.01);
 			}
-			sleep(m_reconnectSeconds);
+			GRCCoreUtil::sleep(m_reconnectSeconds);
 		}
 	}
 

@@ -8,19 +8,17 @@
 #include "UserSession.h"
 
 #include <stddef.h>
-#include <cstdio>
-#include <cstdlib>
+#include <unistd.h>
 
+#include "common/GRCSoundWorker.h"
 #include "communication/GRCCommunicator.h"
 #include "communication/GRCSerialOpener.h"
-#include "communication/GRCSockAddr.h"
 #include "core/GRCCore.h"
 #include "core/GRCString.h"
 #include "ControlBoardSession.h"
 #include "Defines.h"
 #include "Manager.h"
 #include "RobotInfo.h"
-#include "sound/GRCSoundWorker.h"
 #include "WeaponData.h"
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_2)
@@ -42,7 +40,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 	GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));
 
 	m_logined = true;
-	Manager::loginUser();
+	GRCSoundWorker::playTts("rider on");
 
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
 	sendPacket(spacket);

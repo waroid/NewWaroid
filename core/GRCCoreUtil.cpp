@@ -8,6 +8,7 @@
 #include "GRCCoreUtil.h"
 
 #include <sys/time.h>
+#include <unistd.h>
 
 unsigned int GRCCoreUtil::getTickCount()
 {
@@ -15,4 +16,9 @@ unsigned int GRCCoreUtil::getTickCount()
 	gettimeofday(&tick, 0);
 
 	return tick.tv_sec * 1000 + tick.tv_usec / 1000;
+}
+
+void GRCCoreUtil::sleep(double seconds)
+{
+	usleep(static_cast<__useconds_t>(seconds * 1000000));
 }

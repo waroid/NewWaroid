@@ -10,11 +10,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-#define CAMERA_PORT				5001
-#define USER_PORT				5002
-#define GAME_SERVER_PORT		5003
-
-#define MAX_CAMERA_MODE		6
+#define USER_CAMERA_PORT	5001
+#define USER_ROBOT_PORT		5002
+#define ROBOT_GAME_PORT		23001
 
 #define CONTROL_BOARD_DEVICE	"/dev/ttyS0"
 #define CONTROL_BOARD_BAUD		9600

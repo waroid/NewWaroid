@@ -11,7 +11,9 @@
 class GRCCoreUtil
 {
 public:
-	static unsigned int	getTickCount();
+	static unsigned int getTickCount();
+
+	static void sleep(double seconds);
 };
 
 #endif /* SRC_CORE_GRCCOREUTIL_H_ */

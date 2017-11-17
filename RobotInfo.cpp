@@ -12,7 +12,7 @@
 #include "core/GRCCore.h"
 #include "core/GRCString.h"
 #include "Manager.h"
-#include "sound/GRCSoundWorker.h"
+#include "common/GRCSoundWorker.h"
 
 RobotInfo::RobotInfo()
 		: 	m_id(0),

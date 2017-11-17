@@ -64,48 +64,47 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 {
 	GRC_CHECK_RETURN(m_logined);
 
-	bool on = rpacket->getOn() == 1;
-
+	const WeaponData::DATA* weaponData = nullptr;
 	switch (rpacket->getWeaponIndex())
 	{
 		case 0:
-		{
-			const WeaponData::DATA* weaponData = Manager::getRobotInfo().getFirstWeaponData();
-			GRC_CHECK_RETURN(weaponData);
-			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(on);
-
-			if (on)
-			{
-				GRCSoundWorker::startPlay(weaponData->soundfilename);
-			}
-			else
-			{
-				if (weaponData->repeat)
-				{
-					GRCSoundWorker::endPlay(weaponData->soundfilename);
-				}
-			}
-		}
+			weaponData = Manager::getRobotInfo().getFirstWeaponData();
 			break;
 
 		case 1:
-		{
-			const WeaponData::DATA* weaponData = Manager::getRobotInfo().getSecondWeaponData();
-			GRC_CHECK_RETURN(weaponData);
-
-			if (on)
-			{
-				GRCSoundWorker::startPlay(weaponData->soundfilename);
-			}
-			else
-			{
-				//GRCSoundWorker::endPlay(weaponData->soundfilename);
-			}
-		}
+			weaponData = Manager::getRobotInfo().getSecondWeaponData();
 			break;
 	}
+	GRC_CHECK_RETURN(weaponData);
 
-	GRC_INFO("fire. weapon=%d on=%d", rpacket->getWeaponIndex(), rpacket->getOn());
+	if (rpacket->getOn() == 1)
+	{
+		if (rpacket->getWeaponIndex() == 0)
+		{
+			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(true);
+			if (weaponData->repeat == false)
+			{
+				usleep(100000);
+				Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(false);
+			}
+		}
+
+		GRCSoundWorker::startPlay(weaponData->soundfilename);
+	}
+	else
+	{
+		if (rpacket->getWeaponIndex() == 0)
+		{
+			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(false);
+		}
+
+		if (weaponData->repeat)
+		{
+			GRCSoundWorker::endPlay(weaponData->soundfilename);
+		}
+	}
+
+	GRC_DEV("fire. weapon=%d,%s on=%d", rpacket->getWeaponIndex(), *weaponData->name, rpacket->getOn());
 }
 
 UserSession::UserSession(size_t maxPacketSize)
@@ -141,10 +140,10 @@ void UserSession::onPacket(const char* packet, int size)
 
 	switch (urp->getCommand())
 	{
-		WAROID_USER_SESSION_COMMAND_CASE_LOG(3,HEARTBEAT_2, urp)
+		WAROID_USER_SESSION_COMMAND_CASE_LOG(3, HEARTBEAT_2, urp)
 		WAROID_USER_SESSION_COMMAND_CASE(U_R_LOGIN, urp)
-		WAROID_USER_SESSION_COMMAND_CASE_LOG(3,U_R_MOVE, urp)
-		WAROID_USER_SESSION_COMMAND_CASE_LOG(3,U_R_FIRE, urp)
+		WAROID_USER_SESSION_COMMAND_CASE_LOG(3, U_R_MOVE, urp)
+		WAROID_USER_SESSION_COMMAND_CASE_LOG(3, U_R_FIRE, urp)
 		default:
 			GRC_ERR("invalid packet. cmd=WAROIDUSERROBOT::%d", urp->getCommand());
 			break;

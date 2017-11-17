@@ -46,14 +46,13 @@ namespace WAROIDCONTROLBOARD
 		{
 			NONE = 0,
 			//-----
-			RP_AR_INIT = 0x11,
-			RP_AR_INIT_YAW,
+			RP_AR_HEARTBEAT = 0x11,
 			RP_AR_STOP_ALL,
 			RP_AR_MOVE,
 			RP_AR_FIRE,
 			RP_AR_LED,
 			//-----
-			AR_RP_INIT_OK = 0x21,
+			AR_RP_HEARTBEAT_ACK = 0x21,
 			AR_RP_YAW,
 			AR_RP_BATTERY,
 		//-----

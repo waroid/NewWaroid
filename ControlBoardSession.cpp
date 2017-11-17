@@ -24,7 +24,7 @@ using namespace CONTROL_BOARD_SESSION;
 
 ControlBoardSession::ControlBoardSession(size_t maxPacketSize)
 		: 	GRCSerialSession(maxPacketSize),
-			m_requestInfothread(GRC_INVALID_THREAD)
+			m_heartbeatThread(GRC_INVALID_THREAD)
 {
 	// TODO Auto-generated constructor stub
 
@@ -33,13 +33,6 @@ ControlBoardSession::ControlBoardSession(size_t maxPacketSize)
 ControlBoardSession::~ControlBoardSession()
 {
 	// TODO Auto-generated destructor stub
-}
-
-void ControlBoardSession::sendInitYaw()
-{
-	WAROIDCONTROLBOARD::PACKET packet;
-	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_INIT_YAW;
-	sendPacket(packet);
 }
 
 void ControlBoardSession::sendStopAll()
@@ -78,14 +71,14 @@ void ControlBoardSession::onOpen()
 {
 	GRCSerialSession::onOpen();
 
-	pthread_create(&m_requestInfothread, NULL, requestInitWorker, this);
+	pthread_create(&m_heartbeatThread, NULL, heartbeatWorker, this);
 }
 
 void ControlBoardSession::onClose()
 {
-	if (m_requestInfothread != GRC_INVALID_THREAD)
+	if (m_heartbeatThread != GRC_INVALID_THREAD)
 	{
-		pthread_cancel(m_requestInfothread);
+		pthread_cancel (m_heartbeatThread);
 		GRC_DEV("[%s]cancel request info thread.", getObjName());
 	}
 
@@ -113,17 +106,19 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 	WAROIDCONTROLBOARD::PACKET* cbp = (WAROIDCONTROLBOARD::PACKET*)packet;
 	switch (cbp->cmd)
 	{
-		case WAROIDCONTROLBOARD::COMMAND::AR_RP_INIT_OK:
-			Manager::getRobotInfo().setReady();
+		case WAROIDCONTROLBOARD::COMMAND::AR_RP_HEARTBEAT_ACK:
+			Manager::getRobotInfo().updateReady(true);
 			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_INIT_OK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_YAW:
 			Manager::getRobotInfo().updateYaw((int)cbp->hi << 8 | cbp->low);
-			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_YAW hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
+			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_YAW hi=%d low=%d", getObjName(), cbp->hi, cbp->low)
+			;
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_BATTERY:
 			Manager::getRobotInfo().updateBattery((int)cbp->hi << 8 | cbp->low);
-			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_BATTERY hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
+			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_BATTERY hi=%d low=%d", getObjName(), cbp->hi, cbp->low)
+			;
 			break;
 		default:
 			GRC_ERR("invalid packet. cmd=WAROIDCONTROLBOARD::%d hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
@@ -149,27 +144,31 @@ void ControlBoardSession::sendPacket(const WAROIDCONTROLBOARD::PACKET& packet)
 	send(&packet, sizeof(packet));
 }
 
-void ControlBoardSession::onRequestinginit()
+void ControlBoardSession::onRequestHeartbeat()
 {
 	WAROIDCONTROLBOARD::PACKET packet;
-	packet.cmd = (char)WAROIDCONTROLBOARD::COMMAND::RP_AR_INIT;
-	packet.hi = (char)Manager::getRobotInfo().getRobotData()->id;
+	packet.cmd = (char)WAROIDCONTROLBOARD::COMMAND::RP_AR_HEARTBEAT;
 
-	while (Manager::getRobotInfo().isReady() == false)
+	while (true)
 	{
+		if (m_requestHeartbeat.update(true) == false)
+		{
+			Manager::getRobotInfo().updateReady(false);
+		}
+
 		sendPacket(packet);
 
 		sleep(5);
 	}
 }
 
-void* ControlBoardSession::requestInitWorker(void* param)
+void* ControlBoardSession::heartbeatWorker(void* param)
 {
 	ControlBoardSession* session = (ControlBoardSession*)param;
 
-	GRC_INFO("[%s]start request init thread(0x%x)", session->getObjName(), pthread_self());
-	session->onRequestinginit();
-	GRC_INFO("[%s]stop request init thread(0x%x)", session->getObjName(), pthread_self());
+	GRC_INFO("[%s]start heartbeat thread(0x%x)", session->getObjName(), pthread_self());
+	session->onRequestHeartbeat();
+	GRC_INFO("[%s]stop heartbeat thread(0x%x)", session->getObjName(), pthread_self());
 
 	return NULL;
 }

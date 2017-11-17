@@ -9,10 +9,13 @@
 #define CONTROLBOARDSESSION_H_
 
 #include <pthread.h>
+#include <stddef.h>
 
 #include "communication/GRCSerialSession.h"
+#include "core/GRCBoolean.h"
 #include "Defines.h"
 #include "ControlBoardSessionDefines.h"
+
 
 class ControlBoardSession: public GRCSerialSession
 {
@@ -21,7 +24,6 @@ public:
 	virtual ~ControlBoardSession();
 
 public:
-	void sendInitYaw();
 	void sendStopAll();
 	void sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed);
 	void sendFire(bool on);
@@ -37,13 +39,14 @@ private:
 	int getSkipSize(const char* data, int size);
 	void sendPacket(const WAROIDCONTROLBOARD::PACKET& packet);
 
-	void onRequestinginit();
+	void onRequestHeartbeat();
 
 private:
-	pthread_t m_requestInfothread;
+	pthread_t m_heartbeatThread;
+	GRCBoolean m_requestHeartbeat;
 
 private:
-	static void* requestInitWorker(void* param);
+	static void* heartbeatWorker(void* param);
 };
 
 #endif /* CONTROLBOARDSESSION_H_ */

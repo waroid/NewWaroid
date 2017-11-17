@@ -172,21 +172,21 @@ void GameSession::sendPacket(const WAROIDROBOTGAME::HEADER* header)
 void GameSession::onSendingInfo()
 {
 	WAROIDROBOTGAME::R_G_INFO spacket;
+	int ready = 0;
 	int yaw = 0;
 	int battery = 0;
 
 	for (;;)
 	{
-		if (Manager::getRobotInfo().isReady())
+		ready = Manager::getRobotInfo().isReady() ? 1 : 0;
+		yaw = Manager::getRobotInfo().getYaw();
+		battery = Manager::getRobotInfo().getBattery();
+		if (ready != spacket.ready || yaw != spacket.yaw || battery != spacket.battery)
 		{
-			yaw = Manager::getRobotInfo().getYaw();
-			battery = Manager::getRobotInfo().getBattery();
-			if (yaw != spacket.yaw || battery != spacket.battery)
-			{
-				spacket.yaw = yaw;
-				spacket.battery = battery;
-				sendPacket(&spacket);
-			}
+			spacket.ready = ready;
+			spacket.yaw = yaw;
+			spacket.battery = battery;
+			sendPacket(&spacket);
 		}
 
 		::usleep(100000);

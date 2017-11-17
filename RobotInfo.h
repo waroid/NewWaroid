@@ -49,11 +49,10 @@ public:
 		return m_secondWeaponData;
 	}
 
-	void setReady()
+	void updateReady(bool ready)
 	{
-		m_ready = true;
+		m_ready = ready;
 	}
-	;
 	bool isReady() const
 	{
 		return m_ready;

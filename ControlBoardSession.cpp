@@ -107,8 +107,7 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 	switch (cbp->cmd)
 	{
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_HEARTBEAT_ACK:
-			Manager::getRobotInfo().updateReady(true);
-			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_INIT_OK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
+			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_YAW:
 			Manager::getRobotInfo().updateYaw((int)cbp->hi << 8 | cbp->low);
@@ -153,12 +152,13 @@ void ControlBoardSession::onRequestHeartbeat()
 	{
 		if (m_requestHeartbeat.update(true) == false)
 		{
-			Manager::getRobotInfo().updateReady(false);
+			// deactive ...
+			Manager::getRobotInfo().updateBattery(0);
 		}
 
 		sendPacket(packet);
 
-		sleep(5);
+		sleep(10);
 	}
 }
 

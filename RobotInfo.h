@@ -49,15 +49,6 @@ public:
 		return m_secondWeaponData;
 	}
 
-	void updateReady(bool ready)
-	{
-		m_ready = ready;
-	}
-	bool isReady() const
-	{
-		return m_ready;
-	}
-
 	void updateYaw(int yaw)
 	{
 		m_yaw = yaw;

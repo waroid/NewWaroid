@@ -126,12 +126,14 @@ void GRCSerialSession::recv(GRCBuffer& buffer)
 			{
 				if (buffer.isFull()) return;
 
-				buffer.append(serialGetchar(m_fd));
+				int v = serialGetchar(m_fd);
+				GRC_DEV("[%s]received. v=0x%x", getObjName(), v);
+				buffer.append((char)v);
 				received++;
 			}
 			if (received > 0)
 			{
-				GRC_DEV("received. size=%d", received);
+				GRC_DEV("[%s]received. size=%d", getObjName(), received);
 				return;
 			}
 #endif

@@ -69,8 +69,7 @@ bool GRCSerialSession::onSend(const void* data, size_t size)
 	{
 		serialPutchar(m_fd, d[i]);
 	}
-	serialFlush(m_fd);
-	GRC_DEV("[%s]sent. size=%d", getObjName(), size);
+	//serialFlush(m_fd);
 #endif
 
 	return true;
@@ -127,9 +126,7 @@ void GRCSerialSession::recv(GRCBuffer& buffer)
 			{
 				if (buffer.isFull()) return;
 
-				int v = serialGetchar(m_fd);
-				GRC_DEV("[%s]received. v=0x%x", getObjName(), v);
-				buffer.append((char)v);
+				buffer.append((char)serialGetchar(m_fd));
 				received++;
 			}
 			if (received > 0)

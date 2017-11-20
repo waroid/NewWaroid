@@ -178,6 +178,10 @@ void ControlBoardSession::onClose()
 int ControlBoardSession::onParsing(const char* data, int size, int& skipSize)
 {
 	skipSize = getSkipSize(data, size);
+	if (size != 5 || skipSize != 0)
+	{
+		GRC_DEV("[%s]paring... size=%d skip=%d", size, skipSize);
+	}
 
 	if (size < (skipSize + PACKET_SIZE)) return 0;
 

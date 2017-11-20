@@ -63,7 +63,7 @@ bool GRCBuffer::append(char ch)
 	GRCMutexAutoLock autoLock(&m_mutex);
 	GRC_CHECK_RETFALSE(m_dataSize + 1 <= m_bufferSize);
 
-	*(m_buffer + 1) = ch;
+	*(m_buffer + m_dataSize) = ch;
 	m_dataSize += 1;
 
 	return true;

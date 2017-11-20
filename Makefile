@@ -15,6 +15,8 @@ LIBS = -lm -lpthread -lwiringPi -lasound -lsndfile
 CSOURCES = 
 
 CPPSOURCES = main.cpp \
+	common/GRCSoundWorker.cpp \
+	common/GRCWave.cpp \
 	communication/GRCAcceptSession.cpp \
 	communication/GRCBaseSession.cpp \
 	communication/GRCConnectSession.cpp \
@@ -27,8 +29,6 @@ CPPSOURCES = main.cpp \
 	core/GRCLogger.cpp \
 	core/GRCObject.cpp \
 	core/GRCString.cpp \
-	sound/GRCSoundWorker.cpp \
-	sound/GRCWave.cpp \
 	ControlBoardSession.cpp \
 	GameSession.cpp \
 	RobotData.cpp \

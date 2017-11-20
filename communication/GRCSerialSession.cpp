@@ -70,6 +70,7 @@ bool GRCSerialSession::onSend(const void* data, size_t size)
 		serialPutchar(m_fd, d[i]);
 	}
 	serialFlush(m_fd);
+	GRC_DEV("[%s]sent. size=%d", getObjName(), size);
 #endif
 
 	return true;

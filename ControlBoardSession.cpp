@@ -177,10 +177,12 @@ void ControlBoardSession::onClose()
 
 int ControlBoardSession::onParsing(const char* data, int size, int& skipSize)
 {
+	if (size == 0) return 0;
+
 	skipSize = getSkipSize(data, size);
 	if (size != 5 || skipSize != 0)
 	{
-		GRC_DEV("[%s]paring... size=%d skip=%d", size, skipSize);
+		GRC_DEV("[%s]paring... size=%d skip=%d", getObjName(), size, skipSize);
 	}
 
 	if (size < (skipSize + PACKET_SIZE)) return 0;
@@ -219,6 +221,15 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_BATTERY hi=%d low=%d", getObjName(), cbp->hi, cbp->low)
 			;
 			break;
+
+		case WAROIDCONTROLBOARD::COMMAND::RP_AR_HEARTBEAT:
+		case WAROIDCONTROLBOARD::COMMAND::RP_AR_STOP_ALL:
+		case WAROIDCONTROLBOARD::COMMAND::RP_AR_MOVE:
+		case WAROIDCONTROLBOARD::COMMAND::RP_AR_FIRE:
+		case WAROIDCONTROLBOARD::COMMAND::RP_AR_LED:
+			GRC_WARN("echo packet. cmd=WAROIDCONTROLBOARD::0xx hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
+			break;
+
 		default:
 			GRC_ERR("invalid packet. cmd=WAROIDCONTROLBOARD::%d hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
 			break;

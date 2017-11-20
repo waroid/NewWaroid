@@ -227,11 +227,11 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 		case WAROIDCONTROLBOARD::COMMAND::RP_AR_MOVE:
 		case WAROIDCONTROLBOARD::COMMAND::RP_AR_FIRE:
 		case WAROIDCONTROLBOARD::COMMAND::RP_AR_LED:
-			GRC_WARN("echo packet. cmd=WAROIDCONTROLBOARD::0xx hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
+			GRC_WARN("echo packet. cmd=WAROIDCONTROLBOARD::0x%x hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
 			break;
 
 		default:
-			GRC_ERR("invalid packet. cmd=WAROIDCONTROLBOARD::%d hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
+			GRC_ERR("invalid packet. cmd=WAROIDCONTROLBOARD::0x%x hi=%d low=%d", cbp->cmd, cbp->hi, cbp->low);
 			break;
 	}
 }

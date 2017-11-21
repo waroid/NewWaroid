@@ -7,10 +7,10 @@
 
 #include "GRCSerialSession.h"
 
-#include <unistd.h>
 #include <wiringSerial.h>
 
 #include "../core/GRCCore.h"
+#include "../core/GRCCoreUtil.h"
 #include "../core/GRCMutex.h"
 
 GRCSerialSession::GRCSerialSession(size_t maxPacketSize)
@@ -104,7 +104,7 @@ void GRCSerialSession::recv(GRCBuffer& buffer)
 {
 	while (m_receiving)
 	{
-		::usleep(100000);
+		GRCCoreUtil::sleep(0.1);
 
 		{
 			GRCMutexAutoLock autolock(&m_mutex);

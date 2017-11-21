@@ -82,7 +82,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(true);
 			if (weaponData->repeat == false)
 			{
-				usleep(100000);
+				GRCCoreUtil::sleep(0.1);
 				Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(false);
 			}
 		}

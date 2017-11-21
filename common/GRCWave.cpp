@@ -7,14 +7,16 @@
 
 #include "GRCWave.h"
 
+#include <alsa/error.h>
+#include <alsa/pcm.h>
+#include <asm-generic/errno-base.h>
 #include <sndfile.h>
-#include <alsa/asoundlib.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <cstring>
 
 #include "../core/GRCCore.h"
+#include "../core/GRCCoreUtil.h"
 #include "GRCSoundWorker.h"
 
 namespace GRC_WAVE
@@ -114,7 +116,7 @@ void GRCWave::play()
 				GRC_ERR("write differs from read.");
 			}
 
-			usleep(1000);
+			GRCCoreUtil::sleep(0.001);
 		}
 	}
 	while (m_repeat);

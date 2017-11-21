@@ -186,7 +186,7 @@ void GameSession::onSendingInfo()
 			sendPacket(&spacket);
 		}
 
-		::usleep(100000);
+		GRCCoreUtil::sleep(0.1);
 	}
 }
 

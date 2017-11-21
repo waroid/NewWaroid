@@ -22,13 +22,13 @@
 typedef std::map<GRCString, GRCWave*> MapWave;
 typedef std::queue<GRCWave*> QueueWave;
 
-snd_pcm_t* GRCSoundWorker::s_pcm;
+snd_pcm_t* GRCSoundWorker::s_pcm = nullptr;
 
 GRCMutex mutex;
 pthread_t thread = GRC_INVALID_THREAD;
 GRCString dir;
 MapWave waveDatas;
-GRCWave* currentWave;
+GRCWave* currentWave = nullptr;
 
 bool GRCSoundWorker::start(GRCCSTR _dir)
 {
@@ -152,6 +152,8 @@ void* GRCSoundWorker::worker(void* param)
 		if (wave)
 		{
 			wave->play();
+
+			GRC_DEV("[%s]played. file=%s", "GRCSoundWorker", wave->getFilename());
 
 			mutex.lock();
 			currentWave = NULL;

@@ -55,7 +55,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
 	//send serial
 	Manager::getControlBoardOpener().getFirstOpenedSession()->sendMove(rpacket->getDirection(), rpacket->getSpeed());
 
-	GRC_INFO("move. dir=%d speed=%d", rpacket->getDirection(), rpacket->getSpeed());
+	GRC_DEV("[%s]move. dir=%d speed=%d", getObjName(), rpacket->getDirection(), rpacket->getSpeed());
 }
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
@@ -102,7 +102,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 		}
 	}
 
-	GRC_DEV("fire. weapon=%d,%s on=%d", rpacket->getWeaponIndex(), *weaponData->name, rpacket->getOn());
+	GRC_DEV("[%s]fire. weapon=%d,%s on=%d", getObjName(), rpacket->getWeaponIndex(), *weaponData->name, rpacket->getOn());
 }
 
 UserSession::UserSession(size_t maxPacketSize)

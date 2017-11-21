@@ -35,19 +35,19 @@ bool Manager::start(int robotId, const char* robotTypeName, const char* gameServ
 	GRCSoundWorker::startPlay(BOOT_SOUND_FILENAME);
 	while (GRCSoundWorker::isPlaying())
 	{
-		GRCCoreUtil::sleep(1.0);
+		GRCCoreUtil::sleep(0.3);
 	}
 
 	GRC_CHECK_RETFALSE(s_robotData.load());
 	GRC_CHECK_RETFALSE(s_weaponData.load());
 	GRC_CHECK_RETFALSE(s_robotInfo.init(robotId, robotTypeName));
 
-	s_gameConnector.start();
-	GRC_CHECK_RETFALSE(s_userListener.listen(USER_ROBOT_PORT));
 	GRC_CHECK_RETFALSE(s_controlBoardOpener.open(CONTROL_BOARD_DEVICE, CONTROL_BOARD_BAUD));
+
+	s_gameConnector.start();
 	GRC_CHECK_RETFALSE(s_gameConnector.connect(gameServerIp, ROBOT_GAME_PORT, true));
 
-
+	GRC_CHECK_RETFALSE(s_userListener.listen(USER_ROBOT_PORT));
 
 	s_mutex.wait();
 
@@ -58,7 +58,11 @@ void Manager::stop()
 {
 	s_mutex.signal();
 
-	s_controlBoardOpener.stop();
-	s_gameConnector.stop();
 	s_userListener.stop();
+	s_gameConnector.stop();
+	s_controlBoardOpener.stop();
+#ifdef __RPI__
+#else
+	system("killall socat");
+#endif
 }

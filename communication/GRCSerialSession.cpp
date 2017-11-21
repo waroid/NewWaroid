@@ -7,14 +7,9 @@
 
 #include "GRCSerialSession.h"
 
-#include <stddef.h>
 #include <unistd.h>
-#ifdef __RPI__
 #include <wiringSerial.h>
-#endif
-#include <cstring>
 
-#include "../core/GRCBuffer.h"
 #include "../core/GRCCore.h"
 #include "../core/GRCMutex.h"
 
@@ -37,11 +32,7 @@ bool GRCSerialSession::open(const char* device, int baud)
 	{
 		GRCMutexAutoLock autoLock(&m_mutex);
 		GRC_CHECK_RETFALSE(m_fd == GRC_INVALID_FD);
-#ifdef __RPI__
 		m_fd = serialOpen(device, baud);
-#else
-		m_fd = 999999;
-#endif
 		GRC_CHECK_RETFALSE(m_fd != GRC_INVALID_FD);
 	}
 
@@ -63,14 +54,11 @@ void GRCSerialSession::onClose()
 bool GRCSerialSession::onSend(const void* data, size_t size)
 {
 	GRCMutexAutoLock autoLock(&m_mutex);
-#ifdef __RPI__
 	const char* d = reinterpret_cast<const char*>(data);
 	for (size_t i = 0; i < size; ++i)
 	{
 		serialPutchar(m_fd, d[i]);
 	}
-	//serialFlush(m_fd);
-#endif
 
 	return true;
 }
@@ -120,7 +108,7 @@ void GRCSerialSession::recv(GRCBuffer& buffer)
 
 		{
 			GRCMutexAutoLock autolock(&m_mutex);
-#ifdef __RPI__
+
 			int received = 0;
 			while (serialDataAvail(m_fd))
 			{
@@ -131,10 +119,9 @@ void GRCSerialSession::recv(GRCBuffer& buffer)
 			}
 			if (received > 0)
 			{
-				GRC_DEV("[%s]received. size=%d", getObjName(), received);
+				//GRC_DEV("[%s]received. size=%d", getObjName(), received);
 				return;
 			}
-#endif
 		}
 	}
 }

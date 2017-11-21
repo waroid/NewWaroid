@@ -240,7 +240,8 @@ int ControlBoardSession::getSkipSize(const char* data, int size)
 {
 	for (int i = 0; i < size; ++i)
 	{
-		if (data[i] == WAROID_CONTROLBOARD_PREFIX)
+		//GRC_DEV("[%s]0x%x==0x%x", getObjName(), (unsigned char)data[i], WAROID_CONTROLBOARD_PREFIX);
+		if (WAROID_IS_PREFIX(data[i]))
 		{
 			return i;
 		}

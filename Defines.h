@@ -14,7 +14,11 @@
 #define USER_ROBOT_PORT		5002
 #define ROBOT_GAME_PORT		23001
 
+#ifdef __RPI__
 #define CONTROL_BOARD_DEVICE	"/dev/ttyS0"
+#else
+#define CONTROL_BOARD_DEVICE	"/home/mirime/ttym0"
+#endif
 #define CONTROL_BOARD_BAUD		9600
 
 #ifdef __RPI__

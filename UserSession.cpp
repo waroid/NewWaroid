@@ -36,8 +36,11 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 		close(reason);
 	};
 
-	GRC_CHECK_FUNC_RETURN(rpacket->getId() == Manager::getRobotInfo().getId(), eclose("invalid robot id"));
-	GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));
+	if (Manager::isTest() == false)
+	{
+		GRC_CHECK_FUNC_RETURN(rpacket->getId() == Manager::getRobotInfo().getId(), eclose("invalid robot id"));
+		GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));
+	}
 
 	m_logined = true;
 	GRCSoundWorker::playTts("rider on");

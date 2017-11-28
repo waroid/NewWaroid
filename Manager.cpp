@@ -22,14 +22,16 @@
 GRCMutex Manager::s_mutex;
 RobotData Manager::s_robotData;
 WeaponData Manager::s_weaponData;
+RobotInfo Manager::s_robotInfo;
 GRCTcpListenerT<UserSession> Manager::s_userListener("UserListener", 1, WAROIDUSERROBOT::PACKET::getSize());
 GRCTcpConnectorT<GameSession> Manager::s_gameConnector("GameConnector", 1, WAROID_ROBOT_GAME_RECONNECT_SECONDS, WAROID_ROBOT_GAME_MAX_PACKET_SIZE);
 GRCSerialOpenerT<ControlBoardSession> Manager::s_controlBoardOpener("ControlBoardOpener", 1, sizeof(WAROIDCONTROLBOARD::PACKET));
-RobotInfo Manager::s_robotInfo;
+bool Manager::s_test = false;
 
-bool Manager::start(int robotId, const char* robotTypeName, const char* gameServerIp)
+bool Manager::start(int robotId, const char* robotTypeName, const char* gameServerIp, bool test)
 {
 	GRC_CHECK_RETFALSE(gameServerIp);
+	s_test = test;
 
 	GRC_CHECK_RETFALSE(GRCSoundWorker::add(BOOT_SOUND_FILENAME, false, 1));
 	GRCSoundWorker::startPlay(BOOT_SOUND_FILENAME);

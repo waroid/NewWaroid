@@ -192,7 +192,7 @@ void GameSession::onSendingInfo()
 			spacket.battery = battery;
 			sendPacket(&spacket);
 
-			GRC_INFO_COUNT(3, "[%s]sending info. yaw=%d battery=%d", getObjName(), yaw, battery);
+			GRC_INFO_COUNT(3, "[%s]sending info. yaw=%f battery=%d", getObjName(), yaw, battery);
 		}
 
 		GRCCoreUtil::sleep(0.1);

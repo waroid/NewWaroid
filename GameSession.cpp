@@ -128,6 +128,8 @@ void GameSession::onClose()
 	system("killall raspivid");
 #endif
 
+	m_sendingInfo = false;
+
 	GRCTcpSession::onClose();
 }
 

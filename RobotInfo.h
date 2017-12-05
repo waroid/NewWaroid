@@ -51,7 +51,7 @@ public:
 
 	void updateYaw(char hi, char low)
 	{
-		m_yaw = (static_cast<float>(hi) * 256 + low) / 10.0f;
+		m_yaw = (static_cast<float>(hi) * 256 + low) * 0.1f;
 	}
 	float getYaw() const
 	{

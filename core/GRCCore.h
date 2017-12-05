@@ -55,7 +55,8 @@
 #define GRC_WARN(fmt,...)	GRCLogger::write(LOG_WARNING, fmt, ##__VA_ARGS__)
 #define GRC_ERR(fmt,...)	GRCLogger::write(LOG_ERR, fmt, ##__VA_ARGS__)
 
-#define GRC_DEV_COUNT(cnt,fmt,...)	{static int _count=0; if (_count<cnt) {_count++; GRCLogger::write(LOG_INFO,"[%d/%d]" fmt,_count,cnt, ##__VA_ARGS__);}}
-#define GRC_INFO_COUNT(cnt,fmt,...)	{static int _count=0; if (_count<cnt) {_count++; GRCLogger::write(LOG_INFO,"[%d/%d]" fmt,_count,cnt, ##__VA_ARGS__);}}
+#define GRC_COUNT(cnt,logt,fmt,...)	{static int _count=0; if (_count<cnt) {_count++; GRCLogger::write(logt,"[%d/%d]" fmt,_count,cnt, ##__VA_ARGS__); }}
+#define GRC_DEV_COUNT(cnt,fmt,...)	GRC_COUNT(cnt, LOG_DEBUG, fmt, __VA_ARGS__)
+#define GRC_INFO_COUNT(cnt,fmt,...)	GRC_COUNT(cnt, LOG_INFO, fmt, __VA_ARGS__)
 
 #endif /* GRCCORE_H_ */

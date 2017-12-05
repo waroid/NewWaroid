@@ -45,6 +45,7 @@ private:
 	void onSendingInfo();
 
 private:
+	bool		m_sendingInfo;
 	pthread_t	m_sendInfoThread;
 
 private:

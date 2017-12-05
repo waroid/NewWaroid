@@ -55,6 +55,9 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CAMERA)
 #endif
 
 	GRCSoundWorker::playTts("Camera on");
+
+	m_sendingInfo = true;
+	pthread_create(&m_sendInfoThread, NULL, sendInfoWorker, this);
 }
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_ATTACHED)
@@ -96,6 +99,7 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_REVIVE)
 
 GameSession::GameSession(size_t maxPacketSize)
 		: 	GRCConnectSession(maxPacketSize),
+			m_sendingInfo(false),
 			m_sendInfoThread(GRC_INVALID_THREAD)
 {
 	// TODO Auto-generated constructor stub
@@ -172,10 +176,10 @@ void GameSession::sendPacket(const WAROIDROBOTGAME::HEADER* header)
 void GameSession::onSendingInfo()
 {
 	WAROIDROBOTGAME::R_G_INFO spacket;
-	int yaw = 0;
-	int battery = 0;
+	int yaw = spacket.yaw = 0;
+	int battery = spacket.battery = 0;
 
-	for (;;)
+	while (m_sendingInfo)
 	{
 		yaw = Manager::getRobotInfo().getYaw();
 		battery = Manager::getRobotInfo().getBattery();
@@ -184,6 +188,8 @@ void GameSession::onSendingInfo()
 			spacket.yaw = yaw;
 			spacket.battery = battery;
 			sendPacket(&spacket);
+
+			GRC_INFO_COUNT(3, "[%s]sending info. yaw=%d battery=%d", getObjName(), yaw, battery);
 		}
 
 		GRCCoreUtil::sleep(0.1);

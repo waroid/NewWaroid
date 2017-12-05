@@ -9,6 +9,7 @@
 #define GRCMUTEX_H_
 
 #include <pthread.h>
+#include <functional>
 
 class GRCMutex
 {
@@ -44,6 +45,16 @@ public:
 	{
 		pthread_mutex_lock(&m_mutex);
 		pthread_cond_signal(&m_cond);
+		pthread_mutex_unlock(&m_mutex);
+	}
+
+	void signalIf(std::function<bool()> func)
+	{
+		pthread_mutex_lock(&m_mutex);
+		if (func())
+		{
+			pthread_cond_signal(&m_cond);
+		}
 		pthread_mutex_unlock(&m_mutex);
 	}
 

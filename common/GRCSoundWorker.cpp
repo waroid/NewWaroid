@@ -58,7 +58,7 @@ void GRCSoundWorker::stop()
 
 	if (s_pcm)
 	{
-		snd_pcm_hw_free (s_pcm);
+		snd_pcm_hw_free(s_pcm);
 		snd_pcm_drain(s_pcm);
 		snd_pcm_close(s_pcm);
 	}
@@ -94,20 +94,22 @@ void GRCSoundWorker::startPlay(GRCCSTR filename)
 	auto iter = waveDatas.find(filename);
 	GRC_CHECK_RETURN(iter != waveDatas.end());
 
-	{
-		GRCMutexAutoLock autoLock(&mutex);
-		if (currentWave)
-		{
-			if (currentWave->getPriority() >= iter->second->getPriority())
-				return;
+	GRCWave** oldWave = &currentWave;
+	GRCWave* newWave = iter->second;
+	GRC_CHECK_RETURN(newWave);
 
+	mutex.signalIf([&oldWave,&newWave,&filename]()->bool
+	{
+		if (*oldWave)
+		{
+			if ((*oldWave)->getPriority() >= newWave->getPriority()) return false;
 			currentWave->stop();
 		}
 
-		currentWave = iter->second;
-	}
-
-	mutex.signal();
+		*oldWave = newWave;
+		GRC_DEV("playing sound. file=%s", filename);
+		return true;
+	});
 }
 
 void GRCSoundWorker::endPlay(GRCCSTR filename)

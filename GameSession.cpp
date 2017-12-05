@@ -130,6 +130,7 @@ void GameSession::onClose()
 
 	m_sendingInfo = false;
 
+
 	GRCTcpSession::onClose();
 }
 

@@ -49,18 +49,18 @@ public:
 		return m_secondWeaponData;
 	}
 
-	void updateYaw(int yaw)
+	void updateYaw(char hi, char low)
 	{
-		m_yaw = yaw;
+		m_yaw = (static_cast<float>(hi) * 256 + low) / 10.0f;
 	}
-	int getYaw() const
+	float getYaw() const
 	{
 		return m_yaw;
 	}
 
-	void updateBattery(int battery)
+	void updateBattery(char hi, char low)
 	{
-		m_battery = battery;
+		m_battery = static_cast<int>(hi) * 256 + low;
 	}
 	int getBattery() const
 	{
@@ -73,7 +73,7 @@ private:
 	const WeaponData::DATA* m_firstWeaponData;
 	const WeaponData::DATA* m_secondWeaponData;
 	bool m_ready;
-	int m_yaw;
+	float m_yaw;
 	int m_battery;
 	unsigned int m_validateKey;
 

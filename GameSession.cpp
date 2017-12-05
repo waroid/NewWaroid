@@ -179,7 +179,7 @@ void GameSession::sendPacket(const WAROIDROBOTGAME::HEADER* header)
 void GameSession::onSendingInfo()
 {
 	WAROIDROBOTGAME::R_G_INFO spacket;
-	int yaw = spacket.yaw = 0;
+	float yaw = spacket.yaw = 0.0f;
 	int battery = spacket.battery = 0;
 
 	while (m_sendingInfo)

@@ -208,12 +208,12 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_YAW:
-			Manager::getRobotInfo().updateYaw((static_cast<int>(cbp->hi) << 8) + cbp->low);
-			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_YAW hi=%d low=%d v=%d", getObjName(), cbp->hi, cbp->low, Manager::getRobotInfo().getYaw())
+			Manager::getRobotInfo().updateYaw(cbp->hi, cbp->low);
+			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_YAW hi=%d low=%d v=%f", getObjName(), cbp->hi, cbp->low, Manager::getRobotInfo().getYaw())
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_BATTERY:
-			Manager::getRobotInfo().updateBattery((static_cast<int>(cbp->hi) << 8) + cbp->low);
-			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_BATTERY hi=%d low=%d", getObjName(), cbp->hi, cbp->low)
+			Manager::getRobotInfo().updateBattery(cbp->hi, cbp->low);
+			GRC_INFO_COUNT(3, "[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_BATTERY hi=%d low=%d v=%d", getObjName(), cbp->hi, cbp->low, Manager::getRobotInfo().getBattery())
 			break;
 
 		case WAROIDCONTROLBOARD::COMMAND::RP_AR_HEARTBEAT:
@@ -272,7 +272,7 @@ void ControlBoardSession::onRequestHeartbeat()
 			m_green.update(false);
 
 			// deactive ...
-			Manager::getRobotInfo().updateBattery(0);
+			Manager::getRobotInfo().updateBattery(0, 0);
 			GRCSoundWorker::playTts("control board is red");
 			ledSOS();
 		}

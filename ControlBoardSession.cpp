@@ -44,10 +44,12 @@ void ControlBoardSession::sendStopAll()
 
 void ControlBoardSession::sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed)
 {
+	static int values[4] = { 0, 80, 120, 160 };
+
 	WAROIDCONTROLBOARD::PACKET packet;
 	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_MOVE;
 	packet.hi = (char)dir;
-	packet.low = (char)speed;
+	packet.low = (char)values[speed];
 	sendPacket(packet);
 }
 
@@ -203,6 +205,8 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 			if (m_green.update(true))
 			{
 				GRCSoundWorker::playTts("control board is green");
+				sendStopAll();
+				GRCCoreUtil::sleep(0.1);
 				ledOK();
 			}
 			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);

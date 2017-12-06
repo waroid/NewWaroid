@@ -81,6 +81,15 @@ public:
 		return m_cameraBitRate;
 	}
 
+	void updateUserLogin(bool logined)
+	{
+		m_userLogined = logined;
+	}
+	bool isUserLogin() const
+	{
+		return m_userLogined;
+	}
+
 private:
 	int m_id;
 	const RobotData::DATA* m_robotData;
@@ -92,6 +101,7 @@ private:
 	unsigned int m_validateKey;
 	int m_cameraFps;
 	int m_cameraBitRate;
+	bool m_userLogined;
 };
 
 #endif /* ROBOTINFO_H_ */

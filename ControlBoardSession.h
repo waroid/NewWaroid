@@ -35,11 +35,7 @@ public:
 	void sendStopAll();
 	void sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed);
 	void sendFire(bool on);
-
-	void ledNumber(int robotId);
-	void ledOK();
-	void ledSOS();
-
+	void sendLed(bool on);
 
 protected:
 	virtual void onOpen() override;
@@ -51,8 +47,7 @@ private:
 	int getSkipSize(const char* data, int size);
 	void sendPacket(const WAROIDCONTROLBOARD::PACKET& packet);
 
-	void pushLedMosDot();
-	void pushLedMosDash();
+	void pushLed(bool on, float seconds);
 
 	void onRequestHeartbeat();
 	void onProcessLed();

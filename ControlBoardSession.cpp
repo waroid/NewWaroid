@@ -61,117 +61,12 @@ void ControlBoardSession::sendFire(bool on)
 	sendPacket(packet);
 }
 
-void ControlBoardSession::ledNumber(int robotId)
+void ControlBoardSession::sendLed(bool on)
 {
-	{
-		GRCMutexAutoLock autoLock(&m_ledMutex);
-
-		switch (robotId)
-		{
-			case 0:
-				pushLedMosDash();
-				break;
-			case 1:
-				pushLedMosDot();
-				pushLedMosDash();
-				break;
-			case 2:
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDash();
-				break;
-			case 3:
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDash();
-				break;
-			case 4:
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDash();
-				break;
-			case 5:
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				break;
-			case 6:
-				pushLedMosDash();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				break;
-			case 7:
-				pushLedMosDash();
-				pushLedMosDot();
-				pushLedMosDot();
-				pushLedMosDot();
-				break;
-			case 8:
-				pushLedMosDash();
-				pushLedMosDot();
-				pushLedMosDot();
-				break;
-			case 9:
-				pushLedMosDash();
-				pushLedMosDot();
-				break;
-		}
-	}
-
-	m_ledMutex.signal();
-
-}
-
-void ControlBoardSession::ledOK()
-{
-	{
-		GRCMutexAutoLock autoLock(&m_ledMutex);
-
-		//O
-		pushLedMosDash();
-		pushLedMosDash();
-		pushLedMosDash();
-
-		//K
-		pushLedMosDash();
-		pushLedMosDot();
-		pushLedMosDash();
-	}
-
-	m_ledMutex.signal();
-
-}
-
-void ControlBoardSession::ledSOS()
-{
-	{
-		GRCMutexAutoLock autoLock(&m_ledMutex);
-
-		//S
-		pushLedMosDot();
-		pushLedMosDot();
-		pushLedMosDot();
-
-		//O
-		pushLedMosDash();
-		pushLedMosDash();
-		pushLedMosDash();
-
-		//S
-		pushLedMosDot();
-		pushLedMosDot();
-		pushLedMosDot();
-	}
-
-	m_ledMutex.signal();
-
+	WAROIDCONTROLBOARD::PACKET packet;
+	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_LED;
+	packet.hi = on ? 1 : 0;
+	sendPacket(packet);
 }
 
 void ControlBoardSession::onOpen()
@@ -227,10 +122,22 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 			m_requestHeartbeat = false;
 			if (m_green.update(true))
 			{
-				GRCSoundWorker::playTts("control board is green");
 				sendStopAll();
+				GRCSoundWorker::playTts("control board is green");
 				GRCCoreUtil::sleep(0.1);
-				ledOK();
+				if (Manager::getRobotInfo().isUserLogin())
+				{
+					sendLed(true);
+				}
+				else
+				{
+					pushLed(true, 0.5);
+					pushLed(false, 0.5);
+					pushLed(true, 0.5);
+					pushLed(false, 0.5);
+					pushLed(true, 0.5);
+					pushLed(false, 0.5);
+				}
 			}
 			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
@@ -271,15 +178,10 @@ int ControlBoardSession::getSkipSize(const char* data, int size)
 	return size;
 }
 
-void ControlBoardSession::pushLedMosDot()
+void ControlBoardSession::pushLed(bool on, float seconds)
 {
-	m_ledQueue.push(0.03);
-	m_ledQueue.push(-0.07);
-}
-void ControlBoardSession::pushLedMosDash()
-{
-	m_ledQueue.push(0.07);
-	m_ledQueue.push(-0.03);
+	if (seconds)
+	m_ledQueue.push(seconds * (on ? 1 : -1));
 }
 
 void ControlBoardSession::sendPacket(const WAROIDCONTROLBOARD::PACKET& packet)
@@ -301,7 +203,6 @@ void ControlBoardSession::onRequestHeartbeat()
 			// deactive ...
 			Manager::getRobotInfo().updateBattery(0, 0);
 			GRCSoundWorker::playTts("control board is red");
-			ledSOS();
 		}
 
 		sendPacket(packet);

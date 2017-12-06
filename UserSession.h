@@ -36,9 +36,6 @@ protected:
 
 private:
 	void sendPacket(const WAROIDUSERROBOT::PACKET& packet);
-
-private:
-	bool m_logined;
 };
 
 #endif /* USERSESSION_H_ */

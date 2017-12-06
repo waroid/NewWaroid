@@ -42,8 +42,9 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 		GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));
 	}
 
-	m_logined = true;
-	GRCSoundWorker::playTts("rider on");
+	Manager::getRobotInfo().updateUserLogin(true);
+	GRCSoundWorker::playTts("board a %s", *Manager::getRobotInfo().getRobotData()->name);
+	Manager::getControlBoardOpener().getFirstOpenedSession()->sendLed(true);
 
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
 	sendPacket(spacket);
@@ -51,7 +52,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
 {
-	GRC_CHECK_RETURN(m_logined);
+	GRC_CHECK_RETURN(Manager::getRobotInfo().isUserLogin());
 
 	system("killall nc");
 	system("killall raspivid");
@@ -69,12 +70,14 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
 		GRC_INFO("closed camera");
 	}
 
-	GRCSoundWorker::playTts("camera %s", rpacket->getOn() == 1 ? "on" : "off");
+	GRCSoundWorker::playTts("%s camera",
+			rpacket->getOn() == 1 ? "open" : "close");
 }
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
 {
-	GRC_CHECK_RETURN(m_logined);
+	GRC_CHECK_RETURN(Manager::getRobotInfo().isUserLogin());
+
 	GRC_CHECK_RETURN(rpacket->getDirection() >= WAROIDDIRECTION::NONE && rpacket->getDirection() < WAROIDDIRECTION::TOTAL);
 	GRC_CHECK_RETURN(rpacket->getSpeed() >= WAROIDSPEED::NONE && rpacket->getSpeed() < WAROIDSPEED::TOTAL);
 
@@ -86,7 +89,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 {
-	GRC_CHECK_RETURN(m_logined);
+	GRC_CHECK_RETURN(Manager::getRobotInfo().isUserLogin());
 
 	const WeaponData::DATA* weaponData = nullptr;
 	switch (rpacket->getWeaponIndex())
@@ -132,8 +135,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 }
 
 UserSession::UserSession(size_t maxPacketSize)
-		: 	GRCAcceptSession(maxPacketSize),
-			m_logined(false)
+		: GRCAcceptSession(maxPacketSize)
 {
 	// TODO Auto-generated constructor stub
 
@@ -146,10 +148,18 @@ UserSession::~UserSession()
 
 void UserSession::onClose()
 {
-	m_logined = false;
-
 	system("killall nc");
 	system("killall raspivid");
+
+	//stop all
+	auto* controlBoardSession = Manager::getControlBoardOpener().getFirstOpenedSession();
+	if (controlBoardSession) controlBoardSession->sendStopAll();
+
+	if (Manager::getRobotInfo().isUserLogin())
+	{
+		Manager::getRobotInfo().updateUserLogin(false);
+		GRCSoundWorker::playTts("alight from %s", *Manager::getRobotInfo().getRobotData()->name);
+	}
 
 	GRCAcceptSession::onClose();
 }

@@ -60,6 +60,8 @@ private:
 	LedQueue m_ledQueue;
 	GRCMutex m_ledMutex;
 
+	bool m_currentLed;
+
 private:
 	static void* heartbeatWorker(void* param);
 	static void* ledWorker(void* param);

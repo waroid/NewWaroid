@@ -24,7 +24,8 @@ using namespace CONTROL_BOARD_SESSION;
 ControlBoardSession::ControlBoardSession(size_t maxPacketSize)
 		: 	GRCSerialSession(maxPacketSize),
 			m_heartbeatThread(GRC_INVALID_THREAD),
-			m_ledThread(GRC_INVALID_THREAD)
+			m_ledThread(GRC_INVALID_THREAD),
+			m_currentLed(false)
 {
 	// TODO Auto-generated constructor stub
 
@@ -40,6 +41,8 @@ void ControlBoardSession::sendStopAll()
 	WAROIDCONTROLBOARD::PACKET packet;
 	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_STOP_ALL;
 	sendPacket(packet);
+
+	m_currentLed = false;
 }
 
 void ControlBoardSession::sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed)
@@ -59,6 +62,8 @@ void ControlBoardSession::sendFire(bool on)
 	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_FIRE;
 	packet.hi = on ? 1 : 0;
 	sendPacket(packet);
+
+	m_currentLed = on;
 }
 
 void ControlBoardSession::sendLed(bool on)
@@ -142,11 +147,10 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 				{
 					sendLed(true);
 				}
-				else
-				{
-					blinkLed(0.5, 0.5, 3);
-				}
 			}
+
+			blinkLed(0.5, 0.5, 3);
+
 			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_YAW:
@@ -249,6 +253,8 @@ void ControlBoardSession::onProcessLed()
 				if (value < 0) GRCCoreUtil::sleep(-value);
 			}
 		}
+
+		sendLed(m_currentLed);
 	}
 }
 

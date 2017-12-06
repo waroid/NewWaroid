@@ -66,6 +66,7 @@ public:
 		GRC_CHECK_FUNC_RETFALSE(::listen(m_fd, 10) == 0, eclose());
 
 		pthread_create(&m_acceptThread, NULL, acceptWorker, this);
+		GRCCoreUtil::sleep(0.1);
 
 		GRC_INFO("[%s]listened. address=%s", this->getObjName(), *m_sockAddr);
 

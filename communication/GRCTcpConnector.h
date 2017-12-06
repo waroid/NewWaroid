@@ -42,6 +42,7 @@ public:
 		{
 			//reconnect check thread
 			pthread_create(&m_reconnectThread, NULL, reconnectWorker, this);
+			GRCCoreUtil::sleep(0.1);
 		}
 	}
 

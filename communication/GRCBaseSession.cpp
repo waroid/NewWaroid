@@ -59,6 +59,7 @@ void GRCBaseSession::openning()
 	onOpen();
 	m_receiving = true;
 	pthread_create(&m_receiveThread, NULL, receiveWorker, this);
+	GRCCoreUtil::sleep(0.1);
 }
 
 void GRCBaseSession::recvHeartbeat(unsigned int tick)

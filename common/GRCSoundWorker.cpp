@@ -10,12 +10,15 @@
 #include <alsa/error.h>
 #include <alsa/pcm.h>
 #include <pthread.h>
+#include <cstdarg>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <queue>
 #include <utility>
 
 #include "../core/GRCCore.h"
+#include "../core/GRCCoreUtil.h"
 #include "../core/GRCMutex.h"
 #include "GRCWave.h"
 
@@ -38,6 +41,7 @@ bool GRCSoundWorker::start(GRCCSTR _dir)
 	GRC_CHECKV_RETFALSE(ret >= 0, "failed snd_pcm_open(). error=%s(%d)", snd_strerror(ret), ret);
 
 	pthread_create(&thread, NULL, worker, NULL);
+	GRCCoreUtil::sleep(0.1);
 
 	return true;
 }

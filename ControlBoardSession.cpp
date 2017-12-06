@@ -63,100 +63,115 @@ void ControlBoardSession::sendFire(bool on)
 
 void ControlBoardSession::ledNumber(int robotId)
 {
-	GRCMutexAutoLock autoLock(&m_ledMutex);
-
-	switch (robotId)
 	{
-		case 0:
-			pushLedMosDash();
-			break;
-		case 1:
-			pushLedMosDot();
-			pushLedMosDash();
-			break;
-		case 2:
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDash();
-			break;
-		case 3:
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDash();
-			break;
-		case 4:
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDash();
-			break;
-		case 5:
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			break;
-		case 6:
-			pushLedMosDash();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			break;
-		case 7:
-			pushLedMosDash();
-			pushLedMosDot();
-			pushLedMosDot();
-			pushLedMosDot();
-			break;
-		case 8:
-			pushLedMosDash();
-			pushLedMosDot();
-			pushLedMosDot();
-			break;
-		case 9:
-			pushLedMosDash();
-			pushLedMosDot();
-			break;
+		GRCMutexAutoLock autoLock(&m_ledMutex);
+
+		switch (robotId)
+		{
+			case 0:
+				pushLedMosDash();
+				break;
+			case 1:
+				pushLedMosDot();
+				pushLedMosDash();
+				break;
+			case 2:
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDash();
+				break;
+			case 3:
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDash();
+				break;
+			case 4:
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDash();
+				break;
+			case 5:
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				break;
+			case 6:
+				pushLedMosDash();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				break;
+			case 7:
+				pushLedMosDash();
+				pushLedMosDot();
+				pushLedMosDot();
+				pushLedMosDot();
+				break;
+			case 8:
+				pushLedMosDash();
+				pushLedMosDot();
+				pushLedMosDot();
+				break;
+			case 9:
+				pushLedMosDash();
+				pushLedMosDot();
+				break;
+		}
 	}
+
+	m_ledMutex.signal();
+
 }
 
 void ControlBoardSession::ledOK()
 {
-	GRCMutexAutoLock autoLock(&m_ledMutex);
+	{
+		GRCMutexAutoLock autoLock(&m_ledMutex);
 
-	//O
-	pushLedMosDash();
-	pushLedMosDash();
-	pushLedMosDash();
+		//O
+		pushLedMosDash();
+		pushLedMosDash();
+		pushLedMosDash();
 
-	//K
-	pushLedMosDash();
-	pushLedMosDot();
-	pushLedMosDash();
+		//K
+		pushLedMosDash();
+		pushLedMosDot();
+		pushLedMosDash();
+	}
+
+	m_ledMutex.signal();
+
 }
 
 void ControlBoardSession::ledSOS()
 {
-	GRCMutexAutoLock autoLock(&m_ledMutex);
+	{
+		GRCMutexAutoLock autoLock(&m_ledMutex);
 
-	//S
-	pushLedMosDot();
-	pushLedMosDot();
-	pushLedMosDot();
+		//S
+		pushLedMosDot();
+		pushLedMosDot();
+		pushLedMosDot();
 
-	//O
-	pushLedMosDash();
-	pushLedMosDash();
-	pushLedMosDash();
+		//O
+		pushLedMosDash();
+		pushLedMosDash();
+		pushLedMosDash();
 
-	//S
-	pushLedMosDot();
-	pushLedMosDot();
-	pushLedMosDot();
+		//S
+		pushLedMosDot();
+		pushLedMosDot();
+		pushLedMosDot();
+	}
+
+	m_ledMutex.signal();
+
 }
 
 void ControlBoardSession::onOpen()
@@ -164,6 +179,8 @@ void ControlBoardSession::onOpen()
 	GRCSerialSession::onOpen();
 
 	pthread_create(&m_heartbeatThread, NULL, heartbeatWorker, this);
+	pthread_create(&m_ledThread, NULL, ledWorker, this);
+	GRCCoreUtil::sleep(0.1);
 }
 
 void ControlBoardSession::onClose()
@@ -171,7 +188,13 @@ void ControlBoardSession::onClose()
 	if (m_heartbeatThread != GRC_INVALID_THREAD)
 	{
 		pthread_cancel(m_heartbeatThread);
-		GRC_DEV("[%s]cancel request info thread.", getObjName());
+		GRC_DEV("[%s]cancel heartbeat thread.", getObjName());
+	}
+
+	if (m_ledThread != GRC_INVALID_THREAD)
+	{
+		pthread_cancel(m_ledThread);
+		GRC_DEV("[%s]cancel led thread.", getObjName());
 	}
 
 	GRCSerialSession::onClose();
@@ -299,6 +322,7 @@ void ControlBoardSession::onProcessLed()
 		m_ledMutex.wait();
 
 		size_t count = m_ledQueue.size();
+		GRC_DEV("led count=%d", count);
 		for (size_t i = 0; i < count; ++i)
 		{
 			{

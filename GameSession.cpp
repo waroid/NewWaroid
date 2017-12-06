@@ -58,6 +58,7 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CAMERA)
 
 	m_sendingInfo = true;
 	pthread_create(&m_sendInfoThread, NULL, sendInfoWorker, this);
+	GRCCoreUtil::sleep(0.1);
 }
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_ATTACHED)

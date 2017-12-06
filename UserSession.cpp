@@ -45,6 +45,16 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 	m_logined = true;
 	GRCSoundWorker::playTts("rider on");
 
+#ifdef __RPI__
+	system("killall nc");
+	system("killall raspivid");
+
+	char command[256] = { 0 };
+	sprintf(command, "raspivid -o - -t 0 -w 1280 -h 720 -fps %d -b %d -vf -n | nc %s %d &", Manager::getRobotInfo().getCameraFps(), Manager::getRobotInfo().getCameraBitRate(), m_remoteSockAddr.getIp(), CAMERA_USER_PORT);
+	system(command);
+	GRC_INFO("opened camera. system=%s", command);
+#endif
+
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
 	sendPacket(spacket);
 }
@@ -124,6 +134,11 @@ UserSession::~UserSession()
 void UserSession::onClose()
 {
 	m_logined = false;
+
+	#ifdef __RPI__
+	system("killall nc");
+	system("killall raspivid");
+#endif
 
 	GRCAcceptSession::onClose();
 }

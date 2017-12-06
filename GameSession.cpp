@@ -38,23 +38,7 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_3)
 
 WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CAMERA)
 {
-	system("killall nc");
-
-	char command[256] = { 0 };
-
-#ifdef __RPI__
-	system("killall raspivid");
-
-	sprintf(command, "raspivid -o - -t 0 -w 1280 -h 720 -fps %d -b %d -vf -n | nc -k -l -p %d &", rpacket->fps, rpacket->bitRate, USER_CAMERA_PORT);
-	system(command);
-	GRC_INFO("opened camera. system=%s", command);
-#else
-	sprintf(command, "nc -k -l -p %d &", USER_CAMERA_PORT);
-	system(command);
-	GRC_INFO("opened camera. fps=%d bitrate=%d system=%s", rpacket->fps, rpacket->bitRate, command);
-#endif
-
-	GRCSoundWorker::playTts("Camera on");
+	Manager::getRobotInfo().updateCamera(rpacket->fps, rpacket->bitRate);
 
 	m_sendingInfo = true;
 	pthread_create(&m_sendInfoThread, NULL, sendInfoWorker, this);

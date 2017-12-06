@@ -10,7 +10,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-#define USER_CAMERA_PORT	5001
+#define CAMERA_USER_PORT	5001
 #define USER_ROBOT_PORT		5002
 #define ROBOT_GAME_PORT		23001
 

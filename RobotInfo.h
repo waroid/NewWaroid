@@ -67,6 +67,20 @@ public:
 		return m_battery;
 	}
 
+	void updateCamera(int fps, int bitRate)
+	{
+		m_cameraFps = fps;
+		m_cameraBitRate = bitRate;
+	}
+	int getCameraFps() const
+	{
+		return m_cameraFps;
+	}
+	int getCameraBitRate() const
+	{
+		return m_cameraBitRate;
+	}
+
 private:
 	int m_id;
 	const RobotData::DATA* m_robotData;
@@ -76,7 +90,8 @@ private:
 	float m_yaw;
 	int m_battery;
 	unsigned int m_validateKey;
-
+	int m_cameraFps;
+	int m_cameraBitRate;
 };
 
 #endif /* ROBOTINFO_H_ */

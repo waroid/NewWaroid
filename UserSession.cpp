@@ -45,18 +45,31 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 	m_logined = true;
 	GRCSoundWorker::playTts("rider on");
 
-#ifdef __RPI__
-	system("killall nc");
-	system("killall raspivid");
-
-	char command[256] = { 0 };
-	sprintf(command, "raspivid -o - -t 0 -w 1280 -h 720 -fps %d -b %d -vf -n | nc %s %d &", Manager::getRobotInfo().getCameraFps(), Manager::getRobotInfo().getCameraBitRate(), m_remoteSockAddr.getIp(), CAMERA_USER_PORT);
-	system(command);
-	GRC_INFO("opened camera. system=%s", command);
-#endif
-
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
 	sendPacket(spacket);
+}
+
+WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_CAMERA)
+{
+	GRC_CHECK_RETURN(m_logined);
+
+	system("killall nc");
+	system("killall raspivid");
+	if (rpacket->getOn() == 1)
+	{
+		char command[256] = { 0 };
+		sprintf(command, "raspivid -o - -t 0 -w 1280 -h 720 -fps %d -b %d -vf -n | nc %s %d &", Manager::getRobotInfo().getCameraFps(), Manager::getRobotInfo().getCameraBitRate(), m_remoteSockAddr.getIp(), CAMERA_USER_PORT);
+#ifdef __RPI__
+		system(command);
+#endif
+		GRC_INFO("opened camera. system=%s", command);
+	}
+	else
+	{
+		GRC_INFO("closed camera");
+	}
+
+	GRCSoundWorker::playTts("camera %s", rpacket->getOn() == 1 ? "on" : "off");
 }
 
 WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_MOVE)
@@ -135,10 +148,8 @@ void UserSession::onClose()
 {
 	m_logined = false;
 
-	#ifdef __RPI__
 	system("killall nc");
 	system("killall raspivid");
-#endif
 
 	GRCAcceptSession::onClose();
 }
@@ -158,6 +169,7 @@ void UserSession::onPacket(const char* packet, int size)
 	{
 		WAROID_USER_SESSION_COMMAND_CASE_LOG(3, HEARTBEAT_2, urp)
 		WAROID_USER_SESSION_COMMAND_CASE(U_R_LOGIN, urp)
+		WAROID_USER_SESSION_COMMAND_CASE(U_R_CAMERA, urp)
 		WAROID_USER_SESSION_COMMAND_CASE_LOG(3, U_R_MOVE, urp)
 		WAROID_USER_SESSION_COMMAND_CASE_LOG(3, U_R_FIRE, urp)
 		default:

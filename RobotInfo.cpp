@@ -23,6 +23,7 @@ RobotInfo::RobotInfo()
 			m_yaw(0),
 			m_battery(0),
 			m_validateKey(0)
+,m_cameraFps(25), m_cameraBitRate()
 {
 	// TODO Auto-generated constructor stub
 

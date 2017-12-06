@@ -62,8 +62,6 @@ void ControlBoardSession::sendFire(bool on)
 	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_FIRE;
 	packet.hi = on ? 1 : 0;
 	sendPacket(packet);
-
-	m_currentLed = on;
 }
 
 void ControlBoardSession::sendLed(bool on)
@@ -72,6 +70,8 @@ void ControlBoardSession::sendLed(bool on)
 	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_LED;
 	packet.hi = on ? 1 : 0;
 	sendPacket(packet);
+
+	m_currentLed = on;
 }
 
 void ControlBoardSession::blinkLed(float onSeconds, float offSeconds, int count/* = 1 */)
@@ -143,13 +143,16 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 				sendStopAll();
 				GRCSoundWorker::playTts("control board is green");
 				GRCCoreUtil::sleep(0.1);
-				if (Manager::getRobotInfo().isUserLogin())
-				{
-					sendLed(true);
-				}
 			}
 
-			blinkLed(0.5, 0.5, 3);
+			if (Manager::getRobotInfo().isUserLogin())
+			{
+				blinkLed(0.25, 0.25, 2);
+			}
+			else
+			{
+				blinkLed(0.5, 0.5, 1);
+			}
 
 			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
 			break;
@@ -213,7 +216,7 @@ void ControlBoardSession::onRequestHeartbeat()
 
 		sendPacket(packet);
 
-		GRCCoreUtil::sleep(10.0);
+		GRCCoreUtil::sleep(5.0);
 	}
 }
 

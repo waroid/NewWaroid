@@ -44,7 +44,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 
 	Manager::getRobotInfo().updateUserLogin(true);
 	GRCSoundWorker::playTts("get on %s", *Manager::getRobotInfo().getRobotData()->name);
-	Manager::getControlBoardOpener().getFirstOpenedSession()->sendLed(true);
+	Manager::getControlBoardOpener().getFirstOpenedSession()->blinkLed(0.2, 0.2, 5);
 
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);
 	sendPacket(spacket);

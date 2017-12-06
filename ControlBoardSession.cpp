@@ -69,6 +69,19 @@ void ControlBoardSession::sendLed(bool on)
 	sendPacket(packet);
 }
 
+void ControlBoardSession::blinkLed(float onSeconds, float offSeconds, int count/* = 1 */)
+{
+	m_ledMutex.lock();
+	for (int i = 0; i < count; ++i)
+	{
+		m_ledQueue.push(onSeconds);
+		m_ledQueue.push(-offSeconds);
+	}
+	m_ledMutex.unlock();
+
+	m_ledMutex.signal();
+}
+
 void ControlBoardSession::onOpen()
 {
 	GRCSerialSession::onOpen();
@@ -131,12 +144,7 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 				}
 				else
 				{
-					pushLed(true, 0.5);
-					pushLed(false, 0.5);
-					pushLed(true, 0.5);
-					pushLed(false, 0.5);
-					pushLed(true, 0.5);
-					pushLed(false, 0.5);
+					blinkLed(0.5, 0.5, 3);
 				}
 			}
 			GRC_INFO("[%s]received. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), cbp->hi, cbp->low);
@@ -176,12 +184,6 @@ int ControlBoardSession::getSkipSize(const char* data, int size)
 	}
 
 	return size;
-}
-
-void ControlBoardSession::pushLed(bool on, float seconds)
-{
-	if (seconds)
-	m_ledQueue.push(seconds * (on ? 1 : -1));
 }
 
 void ControlBoardSession::sendPacket(const WAROIDCONTROLBOARD::PACKET& packet)

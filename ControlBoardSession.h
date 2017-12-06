@@ -21,7 +21,6 @@ namespace WAROIDCONTROLBOARD
 	struct PACKET;
 } /* namespace WAROIDCONTROLBOARD */
 
-
 class ControlBoardSession: public GRCSerialSession
 {
 private:
@@ -37,6 +36,8 @@ public:
 	void sendFire(bool on);
 	void sendLed(bool on);
 
+	void blinkLed(float onSeconds, float offSeconds, int count = 1);
+
 protected:
 	virtual void onOpen() override;
 	virtual void onClose() override;
@@ -46,8 +47,6 @@ protected:
 private:
 	int getSkipSize(const char* data, int size);
 	void sendPacket(const WAROIDCONTROLBOARD::PACKET& packet);
-
-	void pushLed(bool on, float seconds);
 
 	void onRequestHeartbeat();
 	void onProcessLed();
@@ -60,7 +59,6 @@ private:
 	pthread_t m_ledThread;
 	LedQueue m_ledQueue;
 	GRCMutex m_ledMutex;
-
 
 private:
 	static void* heartbeatWorker(void* param);

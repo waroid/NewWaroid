@@ -43,7 +43,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 	}
 
 	Manager::getRobotInfo().updateUserLogin(true);
-	GRCSoundWorker::playTts("board a %s", *Manager::getRobotInfo().getRobotData()->name);
+	GRCSoundWorker::playTts("get on %s", *Manager::getRobotInfo().getRobotData()->name);
 	Manager::getControlBoardOpener().getFirstOpenedSession()->sendLed(true);
 
 	WAROIDUSERROBOT::U_R_LOGIN_ACK spacket(WAROIDUSERROBOT::PERROR::SUCCESS);

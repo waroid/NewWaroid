@@ -33,8 +33,8 @@
 
 #define BOOT_SOUND_FILENAME	"Common_Booting_Sound.wav"
 
-#define MIN_MOVE_POWER	80
-#define MAX_MOVE_POWER	200
+#define MIN_MOVE_POWER	60
+#define MAX_MOVE_POWER	250
 
 //////////////////////////////////////////////////////////////////////////
 //

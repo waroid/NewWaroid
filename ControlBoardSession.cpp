@@ -47,12 +47,10 @@ void ControlBoardSession::sendStopAll()
 
 void ControlBoardSession::sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed)
 {
-	static int values[4] = { 0, 80, 120, 160 };
-
 	WAROIDCONTROLBOARD::PACKET packet;
 	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_MOVE;
 	packet.hi = (char)dir;
-	packet.low = (char)values[speed];
+	packet.low = (char)Manager::getRobotInfo().getMovePower(dir, speed);
 	sendPacket(packet);
 }
 

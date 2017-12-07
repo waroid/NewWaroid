@@ -66,7 +66,30 @@ bool RobotData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 				data->revivesoundfilename = siter->value.GetString();
 		}
 
+		{
+			auto siter = v.FindMember("movepower");
+			if (siter != v.MemberEnd())
+			{
+				GRC_CHECK_RETFALSE(setMovePowers(data, siter->value));
+			}
+
+		}
+
 		GRC_CHECK_RETFALSE(addData(data));
+	}
+
+	return true;
+}
+
+bool RobotData::setMovePowers(DATA* data, const RAPIDJSON_NAMESPACE::Value& value)
+{
+
+	for (auto iter = value.MemberBegin(); iter != value.MemberEnd(); ++iter)
+	{
+		WAROIDDIRECTION::ETYPE dir = WAROIDDIRECTION::getType(iter->name.GetString());
+		GRC_CHECK_RETFALSE(dir != WAROIDDIRECTION::NONE);
+
+		data->movepowers[dir] = iter->value.GetInt();
 	}
 
 	return true;

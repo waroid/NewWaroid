@@ -8,8 +8,11 @@
 #ifndef ROBOTDATA_H_
 #define ROBOTDATA_H_
 
+#include <cstring>
+
 #include "core/GRCJsonData.h"
 #include "core/GRCString.h"
+#include "Defines.h"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 
@@ -22,9 +25,11 @@ public:
 		GRCString attackedsoundfilename;
 		GRCString deathsoundfilename;
 		GRCString revivesoundfilename;
+		unsigned char movepowers[WAROIDDIRECTION::TOTAL];
 
 		DATA()
 		{
+			bzero(movepowers, sizeof(movepowers));
 		}
 
 		virtual bool isValid() const override
@@ -52,6 +57,9 @@ public:
 
 protected:
 	virtual bool onLoad(const RAPIDJSON_NAMESPACE::Value& data) override;
+
+private:
+	bool setMovePowers(DATA* data, const RAPIDJSON_NAMESPACE::Value& value);
 };
 
 #endif /* ROBOTDATA_H_ */

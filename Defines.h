@@ -8,6 +8,8 @@
 #ifndef DEFINES_H_
 #define DEFINES_H_
 
+#include "core/GRCString.h"
+
 //////////////////////////////////////////////////////////////////////////
 //
 #define CAMERA_USER_PORT	5001
@@ -30,6 +32,9 @@
 #endif
 
 #define BOOT_SOUND_FILENAME	"Common_Booting_Sound.wav"
+
+#define MIN_MOVE_POWER	80
+#define MAX_MOVE_POWER	200
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -65,6 +70,8 @@ namespace WAROIDDIRECTION
 		//-----
 		TOTAL
 	};
+
+	extern ETYPE getType(GRCCSTR name);
 }
 
 namespace WAROIDSPEED

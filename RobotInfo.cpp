@@ -7,12 +7,11 @@
 
 #include "RobotInfo.h"
 
-#include <stddef.h>
-
+#include "common/GRCSoundWorker.h"
 #include "core/GRCCore.h"
+#include "core/GRCMath.h"
 #include "core/GRCString.h"
 #include "Manager.h"
-#include "common/GRCSoundWorker.h"
 
 RobotInfo::RobotInfo()
 		: 	m_id(0),
@@ -65,5 +64,20 @@ void RobotInfo::updateSecondWeapon(int weaponId)
 		m_secondWeaponData = Manager::getWeaponData().find(weaponId);
 		GRC_CHECK_RETURN(m_secondWeaponData);
 		GRC_CHECK_RETURN(GRCSoundWorker::add(m_secondWeaponData->soundfilename, m_secondWeaponData->repeat, 3));
+	}
+}
+
+unsigned char RobotInfo::getMovePower(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed)
+{
+	switch (speed)
+	{
+		case WAROIDSPEED::SLOW:
+			return GRCMath::Clamp<int>(m_movePowers[dir] / 2, MIN_MOVE_POWER, MAX_MOVE_POWER);
+		case WAROIDSPEED::DEFAULT:
+			return GRCMath::Clamp<int>(m_movePowers[dir], MIN_MOVE_POWER, MAX_MOVE_POWER);
+		case WAROIDSPEED::FAST:
+			return GRCMath::Clamp<int>(m_movePowers[dir] * 2, MIN_MOVE_POWER, MAX_MOVE_POWER);
+		default:
+			return 0;
 	}
 }

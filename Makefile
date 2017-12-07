@@ -29,6 +29,7 @@ CPPSOURCES = main.cpp \
 	core/GRCLogger.cpp \
 	core/GRCObject.cpp \
 	core/GRCString.cpp \
+	Defines.cpp \
 	ControlBoardSession.cpp \
 	GameSession.cpp \
 	RobotData.cpp \

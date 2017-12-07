@@ -36,9 +36,10 @@ WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(HEARTBEAT_3)
 	recvHeartbeat(rpacket->clientTick);
 }
 
-WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CAMERA)
+WAROID_GAME_SESSION_COMMAND_FUNC_IMPLEMENTATION(G_R_CONFIG)
 {
 	Manager::getRobotInfo().updateCamera(rpacket->fps, rpacket->bitRate);
+	Manager::getRobotInfo().updateMovePowers(rpacket->movePowers);
 
 	m_sendingInfo = true;
 	pthread_create(&m_sendInfoThread, NULL, sendInfoWorker, this);
@@ -143,7 +144,7 @@ void GameSession::onPacket(const char* packet, int size)
 	{
 		WAROID_GAME_SESSION_COMMAND_CASE_LOG(3, HEARTBEAT_1, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE_LOG(3, HEARTBEAT_3, rgh)
-		WAROID_GAME_SESSION_COMMAND_CASE(G_R_CAMERA, rgh)
+		WAROID_GAME_SESSION_COMMAND_CASE(G_R_CONFIG, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_ATTACHED, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_DETACHED, rgh)
 		WAROID_GAME_SESSION_COMMAND_CASE(G_R_UPDATE_SECOND_WEAPON, rgh)

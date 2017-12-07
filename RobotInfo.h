@@ -8,6 +8,9 @@
 #ifndef ROBOTINFO_H_
 #define ROBOTINFO_H_
 
+#include <cstring>
+
+#include "Defines.h"
 #include "RobotData.h"
 #include "WeaponData.h"
 
@@ -90,6 +93,13 @@ public:
 		return m_userLogined;
 	}
 
+	void updateMovePowers(const unsigned char* movePowers)
+	{
+		memcpy(m_movePowers, movePowers, sizeof(m_movePowers));
+	}
+
+	unsigned char getMovePower(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed);
+
 private:
 	int m_id;
 	const RobotData::DATA* m_robotData;
@@ -102,6 +112,7 @@ private:
 	int m_cameraFps;
 	int m_cameraBitRate;
 	bool m_userLogined;
+	unsigned char m_movePowers[WAROIDDIRECTION::TOTAL];
 };
 
 #endif /* ROBOTINFO_H_ */

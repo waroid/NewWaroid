@@ -151,8 +151,8 @@
 			"deathsoundfilename": "3_c_destruction.wav",
 			"revivesoundfilename": "4_c_revival.wav",
 			"movepower": {
-				"FORWARD": 140,
-				"BACKWARD": 140,
+				"FORWARD": 200,
+				"BACKWARD": 120,
 				"LEFT": 140,
 				"RIGHT": 140,
 				"LEFT_FORWARD": 140,

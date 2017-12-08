@@ -52,6 +52,8 @@ void ControlBoardSession::sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYP
 	packet.hi = (char)dir;
 	packet.low = (char)Manager::getRobotInfo().getMovePower(dir, speed);
 	sendPacket(packet);
+
+	GRC_DEV("[%s]move dir=%d speed=%d power=%d", getObjName(), dir, speed, Manager::getRobotInfo().getMovePower(dir, speed));
 }
 
 void ControlBoardSession::sendFire(bool on)

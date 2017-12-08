@@ -36,7 +36,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 		close(reason);
 	};
 
-#define MASTER_ID			9999
+#define MASTER_ID			999
 #define MASTER_VALIDATEKEY	12345678
 
 	if (rpacket->getId() == MASTER_ID)

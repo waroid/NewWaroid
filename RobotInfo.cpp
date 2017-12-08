@@ -41,6 +41,7 @@ bool RobotInfo::init(int id, const char* typeName)
 
 	m_robotData = Manager::getRobotData().find(typeName);
 	GRC_CHECK_RETFALSE(m_robotData);
+	memcpy(m_movePowers, m_robotData->movepowers, sizeof(m_movePowers));
 
 	GRC_CHECK_RETFALSE(GRCSoundWorker::add(m_robotData->attackedsoundfilename, false, 1));
 	GRC_CHECK_RETFALSE(GRCSoundWorker::add(m_robotData->deathsoundfilename, false, 4));

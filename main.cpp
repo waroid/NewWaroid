@@ -22,9 +22,9 @@ void cleanup(int s);
 
 int main(int argc, char* argv[])
 {
-	if (argc < 6)
+	if (argc < 5)
 	{
-		GRC_WARN("usage: %s <robot id> <robot type name> <game sever ip>  <dev 0 or 1> <test 0 or 1>", argv[0]);
+		GRC_WARN("usage: %s <robot id> <robot type name> <game sever ip>  <dev 0 or 1>", argv[0]);
 		return -1;
 	}
 
@@ -37,9 +37,8 @@ int main(int argc, char* argv[])
 	int robotId = atoi(argv[1]);
 	const char* robotTypeName = argv[2];
 	const char* gameServerIp = argv[3];
-	bool test = atoi(argv[5]) == 1;
 
-	Manager::start(robotId, robotTypeName, gameServerIp, test);
+	Manager::start(robotId, robotTypeName, gameServerIp);
 
 	cleanup(0);
 

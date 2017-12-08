@@ -46,12 +46,7 @@ public:
 		return s_controlBoardOpener;
 	}
 
-	static bool isTest()
-	{
-		return s_test;
-	}
-
-	static bool start(int robotId, const char* robotTypeName, const char* gameServerIp, bool test);
+	static bool start(int robotId, const char* robotTypeName, const char* gameServerIp);
 	static void stop();
 
 private:
@@ -62,8 +57,6 @@ private:
 	static GRCTcpListenerT<UserSession> s_userListener;
 	static GRCTcpConnectorT<GameSession> s_gameConnector;
 	static GRCSerialOpenerT<ControlBoardSession> s_controlBoardOpener;
-	static bool s_test;
-
 };
 
 #endif /* MANAGER_H_ */

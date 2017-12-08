@@ -36,7 +36,14 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_LOGIN)
 		close(reason);
 	};
 
-	if (Manager::isTest() == false)
+#define MASTER_ID			9999
+#define MASTER_VALIDATEKEY	12345678
+
+	if (rpacket->getId() == MASTER_ID)
+	{
+		GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == MASTER_VALIDATEKEY, eclose("invalid validate key"));
+	}
+	else
 	{
 		GRC_CHECK_FUNC_RETURN(rpacket->getId() == Manager::getRobotInfo().getId(), eclose("invalid robot id"));
 		GRC_CHECK_FUNC_RETURN(rpacket->getValidateKey() == Manager::getRobotInfo().getValidateKey(), eclose("invalid validate key"));

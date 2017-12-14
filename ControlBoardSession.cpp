@@ -25,7 +25,10 @@ ControlBoardSession::ControlBoardSession(size_t maxPacketSize)
 		: 	GRCSerialSession(maxPacketSize),
 			m_heartbeatThread(GRC_INVALID_THREAD),
 			m_ledThread(GRC_INVALID_THREAD),
-			m_currentLed(false)
+			m_currentLed(false),
+			m_oldDirection(WAROIDDIRECTION::NONE),
+			m_oldSpeed(WAROIDSPEED::NONE)
+
 {
 	// TODO Auto-generated constructor stub
 
@@ -47,11 +50,17 @@ void ControlBoardSession::sendStopAll()
 
 void ControlBoardSession::sendMove(WAROIDDIRECTION::ETYPE dir, WAROIDSPEED::ETYPE speed)
 {
-	WAROIDCONTROLBOARD::PACKET packet;
-	packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_MOVE;
-	packet.hi = (char)dir;
-	packet.low = (char)Manager::getRobotInfo().getMovePower(dir, speed);
-	sendPacket(packet);
+	if (m_oldDirection != dir || m_oldSpeed != speed)
+	{
+		WAROIDCONTROLBOARD::PACKET packet;
+		packet.cmd = WAROIDCONTROLBOARD::COMMAND::RP_AR_MOVE;
+		packet.hi = (char)dir;
+		packet.low = (char)Manager::getRobotInfo().getMovePower(dir, speed);
+		sendPacket(packet);
+
+		m_oldDirection = dir;
+		m_oldSpeed = speed;
+	}
 
 	GRC_DEV("[%s]move dir=%d speed=%d power=%d", getObjName(), dir, speed, Manager::getRobotInfo().getMovePower(dir, speed));
 }

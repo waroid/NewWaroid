@@ -14,6 +14,7 @@
 
 #include "communication/GRCSerialSession.h"
 #include "core/GRCBoolean.h"
+#include "core/GRCMutex.h"
 #include "Defines.h"
 
 namespace WAROIDCONTROLBOARD
@@ -61,6 +62,9 @@ private:
 	GRCMutex m_ledMutex;
 
 	bool m_currentLed;
+
+	WAROIDDIRECTION::ETYPE m_oldDirection;
+	WAROIDSPEED::ETYPE m_oldSpeed;
 
 private:
 	static void* heartbeatWorker(void* param);

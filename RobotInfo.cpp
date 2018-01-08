@@ -49,7 +49,7 @@ bool RobotInfo::init(int id, const char* typeName)
 
 	m_firstWeaponData = Manager::getWeaponData().find(m_robotData->weaponname);
 	GRC_CHECKV_RETFALSE(m_firstWeaponData, "invalid weapon. name=%s", *m_robotData->weaponname);
-	GRC_CHECK_RETFALSE(GRCSoundWorker::add(m_firstWeaponData->soundfilename, m_firstWeaponData->repeat, 3));
+	GRC_CHECK_RETFALSE(GRCSoundWorker::add(m_firstWeaponData->soundfilename, m_firstWeaponData->isRepeat(), 3));
 
 	GRCSoundWorker::playTts("I'm %s number %d", *m_robotData->name, m_id);
 
@@ -64,7 +64,7 @@ void RobotInfo::updateSecondWeapon(int weaponId)
 	{
 		m_secondWeaponData = Manager::getWeaponData().find(weaponId);
 		GRC_CHECK_RETURN(m_secondWeaponData);
-		GRC_CHECK_RETURN(GRCSoundWorker::add(m_secondWeaponData->soundfilename, m_secondWeaponData->repeat, 3));
+		GRC_CHECK_RETURN(GRCSoundWorker::add(m_secondWeaponData->soundfilename, m_secondWeaponData->isRepeat(), 3));
 	}
 }
 

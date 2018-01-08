@@ -116,7 +116,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 		if (rpacket->getWeaponIndex() == 0)
 		{
 			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(true);
-			if (weaponData->repeat == false)
+			if (weaponData->isRepeat() == false)
 			{
 				GRCCoreUtil::sleep(0.1);
 				Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(false);
@@ -132,7 +132,7 @@ WAROID_USER_SESSION_COMMAND_FUNC_IMPLEMENTATION(U_R_FIRE)
 			Manager::getControlBoardOpener().getFirstOpenedSession()->sendFire(false);
 		}
 
-		if (weaponData->repeat)
+		if (weaponData->isRepeat())
 		{
 			GRCSoundWorker::endPlay(weaponData->soundfilename);
 		}

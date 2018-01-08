@@ -146,7 +146,7 @@ void ControlBoardSession::onPacket(const char* packet, int size)
 	switch (cbp->cmd)
 	{
 		case WAROIDCONTROLBOARD::COMMAND::AR_RP_HEARTBEAT_ACK:
-			m_requestHeartbeat = false;
+			m_requestHeartbeat.exchange(0);
 			if (m_green.update(true))
 			{
 				sendStopAll();
@@ -209,12 +209,16 @@ void ControlBoardSession::sendPacket(const WAROIDCONTROLBOARD::PACKET& packet)
 
 void ControlBoardSession::onRequestHeartbeat()
 {
+	static char low = 0;
+
 	WAROIDCONTROLBOARD::PACKET packet;
 	packet.cmd = (char)WAROIDCONTROLBOARD::COMMAND::RP_AR_HEARTBEAT;
 
 	while (true)
 	{
-		if (m_requestHeartbeat.update(true) == false)
+		packet.hi = static_cast<char>(m_requestHeartbeat.inc());
+		packet.low = ++low;
+		if (packet.hi >= 2)
 		{
 			m_green.update(false);
 
@@ -224,6 +228,7 @@ void ControlBoardSession::onRequestHeartbeat()
 		}
 
 		sendPacket(packet);
+		GRC_INFO("[%s]sent. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), packet.hi, packet.low);
 
 		GRCCoreUtil::sleep(5.0);
 	}

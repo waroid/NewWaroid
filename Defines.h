@@ -36,6 +36,9 @@
 #define MIN_MOVE_POWER	60
 #define MAX_MOVE_POWER	250
 
+#define OBSERVER_ROBOT_TYPE		0
+#define START_SECOND_WEAPON_ID	10001
+
 //////////////////////////////////////////////////////////////////////////
 //
 namespace WAROIDTEAM
@@ -86,6 +89,19 @@ namespace WAROIDSPEED
 		//-----
 		TOTAL
 	};
+}
+
+namespace WAROIDWEAPONFIRE
+{
+	enum ETYPE
+	{
+		UNKNOWN = 0,
+		//-----
+		GATLING,
+		CANNON,
+	};
+
+	extern ETYPE getType(GRCCSTR name);
 }
 
 #endif /* DEFINES_H_ */

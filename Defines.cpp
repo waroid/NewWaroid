@@ -29,3 +29,19 @@ namespace WAROIDDIRECTION
 		return ETYPE::NONE;
 	}
 }
+
+#define WAROIDWEAPONFIREELSEIFRETURN(e,n)	else if (strcasecmp(#e, n) == 0) return WAROIDWEAPONFIRE::e;
+namespace WAROIDWEAPONFIRE
+{
+	ETYPE getType(GRCCSTR name)
+	{
+		if (name == nullptr)
+			return ETYPE::UNKNOWN;
+
+		WAROIDWEAPONFIREELSEIFRETURN(UNKNOWN, name)
+		WAROIDWEAPONFIREELSEIFRETURN(GATLING, name)
+		WAROIDWEAPONFIREELSEIFRETURN(CANNON, name)
+
+		return ETYPE::UNKNOWN;
+	}
+}

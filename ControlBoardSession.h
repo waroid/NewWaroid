@@ -14,6 +14,7 @@
 
 #include "communication/GRCSerialSession.h"
 #include "core/GRCBoolean.h"
+#include "core/GRCCounter.h"
 #include "core/GRCMutex.h"
 #include "Defines.h"
 
@@ -54,7 +55,7 @@ private:
 
 private:
 	pthread_t m_heartbeatThread;
-	GRCBoolean m_requestHeartbeat;
+	GRCCounter m_requestHeartbeat;
 	GRCBoolean m_green;
 
 	pthread_t m_ledThread;

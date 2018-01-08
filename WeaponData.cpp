@@ -10,9 +10,6 @@
 #include <cstdio>
 
 #include "core/GRCCore.h"
-#include "Defines.h"
-#include "rapidjson/document.h"
-#include "rapidjson/rapidjson.h"
 
 WeaponData::WeaponData()
 {
@@ -43,15 +40,9 @@ bool WeaponData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 		const RAPIDJSON_NAMESPACE::Value& v = iter->value;
 
 		{
-			auto siter = v.FindMember("secondid");
+			auto siter = v.FindMember("firetype");
 			if (siter != v.MemberEnd())
-				data->secondid = siter->value.GetInt();
-		}
-
-		{
-			auto siter = v.FindMember("repeat");
-			if (siter != v.MemberEnd())
-				data->repeat = siter->value.GetBool();
+				data->firetype = WAROIDWEAPONFIRE::getType(siter->value.GetString());
 		}
 
 		{

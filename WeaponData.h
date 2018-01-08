@@ -8,10 +8,9 @@
 #ifndef WEAPONDATA_H_
 #define WEAPONDATA_H_
 
-#include <cstring>
-
 #include "core/GRCJsonData.h"
 #include "core/GRCString.h"
+#include "Defines.h"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 
@@ -20,13 +19,17 @@ class WeaponData: public GRCJsonData
 public:
 	struct DATA: public BASEDATA
 	{
-		int secondid;
-		bool repeat;
+		WAROIDWEAPONFIRE::ETYPE firetype;
 		GRCString soundfilename;
 
 		DATA()
-				: secondid(0), repeat(false)
+				: firetype(WAROIDWEAPONFIRE::UNKNOWN)
 		{
+		}
+
+		bool isRepeat() const
+		{
+			return firetype == WAROIDWEAPONFIRE::GATLING;
 		}
 	};
 
@@ -39,11 +42,11 @@ public:
 
 	const DATA* find(int id) const
 	{
-		return (const DATA*) findData(id);
+		return (const DATA*)findData(id);
 	}
 	const DATA* find(GRCCSTR name) const
 	{
-		return (const DATA*) findData(name);
+		return (const DATA*)findData(name);
 	}
 
 protected:

@@ -218,7 +218,7 @@ void ControlBoardSession::onRequestHeartbeat()
 	{
 		packet.hi = static_cast<char>(m_requestHeartbeat.inc());
 		packet.low = ++low;
-		if (packet.hi >= 2)
+		if (packet.hi > 2)
 		{
 			m_green.update(false);
 
@@ -228,7 +228,7 @@ void ControlBoardSession::onRequestHeartbeat()
 		}
 
 		sendPacket(packet);
-		GRC_INFO("[%s]sent. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT_ACK hi=%d low=%d", getObjName(), packet.hi, packet.low);
+		GRC_INFO("[%s]sent. cmd=WAROIDCONTROLBOARD::AR_RP_HEARTBEAT hi=%d low=%d", getObjName(), packet.hi, packet.low);
 
 		GRCCoreUtil::sleep(5.0);
 	}

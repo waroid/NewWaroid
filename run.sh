@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_ROBOT_ID=0
+_ROBOT_ID=3
 _ROBOT_TYPE="TOAD"
 _GAME_SERVER="192.168.1.201"
 

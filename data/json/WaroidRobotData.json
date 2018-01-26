@@ -4,7 +4,7 @@
 	"Version": 1,
 	"Data": {
 		"OBSERVER": {
-			"id": 0,
+			"type": 0,
 			"display": "OBSERVER",
 			"discription": "Gatling Gun",
 			"weaponname": "M134D_MINIGUN",
@@ -15,16 +15,16 @@
 			"deathsoundfilename": "3_c_destruction.wav",
 			"revivesoundfilename": "4_c_revival.wav",
 			"movepower": {},
-			"collisionx": 1.0,
-			"collisiony": 1.0,
-			"collisionz": 1.0,
+			"collisionx": 20,
+			"collisiony": 270,
+			"collisionz": 20,
 			"sensorx": 0,
-			"sensory": 0,
+			"sensory": 270,
 			"sensorz": 0,
 			"camerafovhorizontal": 62.2,
 			"camerafovvertical": 48.8,
 			"camerax": 0,
-			"cameray": 0,
+			"cameray": 270,
 			"cameraz": 0,
 			"camerarotationx": 90,
 			"camerarotationy": 0,
@@ -33,7 +33,7 @@
 			"armament": "- Main AR: Dual M134D gathling gun\n- Secondray AR : Optional"
 		},
 		"CRAB": {
-			"id": 1,
+			"type": 1,
 			"display": "CRAB",
 			"discription": "Gatling Gun",
 			"weaponname": "M134D_MINIGUN",
@@ -44,12 +44,12 @@
 			"deathsoundfilename": "3_c_destruction.wav",
 			"revivesoundfilename": "4_c_revival.wav",
 			"movepower": {
-				"FORWARD": 140,
-				"BACKWARD": 140,
-				"LEFT_FORWARD": 140,
-				"RIGHT_FORWARD": 140,
-				"LEFT_TURN": 80,
-				"RIGHT_TURN": 80
+				"FORWARD": 200,
+				"BACKWARD": 200,
+				"LEFT_FORWARD": 200,
+				"RIGHT_FORWARD": 200,
+				"LEFT_TURN": 140,
+				"RIGHT_TURN": 140
 			},
 			"collisionx": 19.0,
 			"collisiony": 14.0,
@@ -69,7 +69,7 @@
 			"armament": "- Main AR: Dual M134D gathling gun\n- Secondray AR : Optional"
 		},
 		"TAURUS": {
-			"id": 2,
+			"type": 2,
 			"display": "TAURUS",
 			"discription": "Gatling Gun",
 			"weaponname": "GAU_19_B_HMG",
@@ -80,12 +80,12 @@
 			"deathsoundfilename": "3_c_destruction.wav",
 			"revivesoundfilename": "4_c_revival.wav",
 			"movepower": {
-				"FORWARD": 140,
-				"BACKWARD": 140,
-				"LEFT_FORWARD": 140,
-				"RIGHT_FORWARD": 140,
-				"LEFT_TURN": 80,
-				"RIGHT_TURN": 80
+				"FORWARD": 200,
+				"BACKWARD": 200,
+				"LEFT_FORWARD": 200,
+				"RIGHT_FORWARD": 200,
+				"LEFT_TURN": 140,
+				"RIGHT_TURN": 140
 			},
 			"collisionx": 19.0,
 			"collisiony": 14.0,
@@ -105,7 +105,7 @@
 			"armament": "- Main AR: Dual M134D gathling gun\n- Secondray AR : Optional"
 		},
 		"TURTLE": {
-			"id": 3,
+			"type": 3,
 			"display": "TURTLE",
 			"discription": "Canon Gun",
 			"weaponname": "_2A72_AUTOCANNON",
@@ -116,16 +116,16 @@
 			"deathsoundfilename": "3_c_destruction.wav",
 			"revivesoundfilename": "4_c_revival.wav",
 			"movepower": {
-				"FORWARD": 140,
-				"BACKWARD": 140,
-				"LEFT": 140,
-				"RIGHT": 140,
-				"LEFT_FORWARD": 140,
-				"RIGHT_FORWARD": 140,
-				"LEFT_BACKWARD": 140,
-				"RIGHT_BACKWARD": 140,
-				"LEFT_TURN": 80,
-				"RIGHT_TURN": 80
+				"FORWARD": 100,
+				"BACKWARD": 100,
+				"LEFT": 100,
+				"RIGHT": 100,
+				"LEFT_FORWARD": 100,
+				"RIGHT_FORWARD": 100,
+				"LEFT_BACKWARD": 100,
+				"RIGHT_BACKWARD": 100,
+				"LEFT_TURN": 70,
+				"RIGHT_TURN": 70
 			},
 			"collisionx": 20.5,
 			"collisiony": 13.0,
@@ -145,7 +145,7 @@
 			"armament": "- Main AR: Dual M68 105mm rifled gun\n- Secondray AR : Optional"
 		},
 		"TOAD": {
-			"id": 4,
+			"type": 4,
 			"display": "TOAD",
 			"discription": "Canon Gun",
 			"weaponname": "M242_CHAINGUN",
@@ -156,14 +156,14 @@
 			"deathsoundfilename": "3_c_destruction.wav",
 			"revivesoundfilename": "4_c_revival.wav",
 			"movepower": {
-				"FORWARD": 200,
-				"BACKWARD": 120,
-				"LEFT": 140,
-				"RIGHT": 140,
-				"LEFT_FORWARD": 140,
-				"RIGHT_FORWARD": 140,
-				"LEFT_TURN": 80,
-				"RIGHT_TURN": 80
+				"FORWARD": 100,
+				"BACKWARD": 100,
+				"LEFT": 100,
+				"RIGHT": 100,
+				"LEFT_FORWARD": 100,
+				"RIGHT_FORWARD": 100,
+				"LEFT_TURN": 70,
+				"RIGHT_TURN": 70
 			},
 			"collisionx": 19.0,
 			"collisiony": 14.0,

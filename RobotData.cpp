@@ -7,10 +7,9 @@
 
 #include "RobotData.h"
 
-#include <cstdio>
+#include <utility>
 
 #include "core/GRCCore.h"
-#include "Defines.h"
 
 //#include "json/json.h"
 
@@ -23,6 +22,11 @@ RobotData::RobotData()
 RobotData::~RobotData()
 {
 	// TODO Auto-generated destructor stub
+	for (auto& it : m_datas)
+		{
+			delete it.second;
+		}
+		m_datas.clear();
 }
 
 bool RobotData::load()
@@ -33,14 +37,38 @@ bool RobotData::load()
 	return loadFile(path);
 }
 
+const RobotData::DATA* RobotData::find(int id) const
+{
+	auto iter = m_datas.find(id);
+	GRC_CHECK_RETNULL(iter != m_datas.end());
+
+	return iter->second;
+}
+
+const RobotData::DATA* RobotData::find(GRCCSTR name) const
+{
+	for (auto& it : m_datas)
+	{
+		if (it.second->name.compareNoCase(name) == 0) return it.second;
+	}
+
+	return nullptr;
+}
+
 bool RobotData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 {
 	for (auto iter = data.MemberBegin(); iter != data.MemberEnd(); ++iter)
 	{
 		DATA* data = new DATA();
-		loadBaseData(iter, data);
+
+		data->name = iter->name.GetString();
 
 		const RAPIDJSON_NAMESPACE::Value& v = iter->value;
+
+		{
+			auto siter = v.FindMember("type");
+			if (siter != v.MemberEnd()) data->type = siter->value.GetInt();
+		}
 
 		{
 			auto siter = v.FindMember("weaponname");
@@ -75,7 +103,8 @@ bool RobotData::onLoad(const RAPIDJSON_NAMESPACE::Value& data)
 
 		}
 
-		GRC_CHECK_RETFALSE(addData(data));
+		GRC_CHECK_RETFALSE(data->isValid());
+		GRC_CHECK_RETFALSE(m_datas.insert(std::make_pair(data->type, data)).second);
 	}
 
 	return true;

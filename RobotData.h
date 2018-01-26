@@ -9,6 +9,7 @@
 #define ROBOTDATA_H_
 
 #include <cstring>
+#include <map>
 
 #include "core/GRCJsonData.h"
 #include "core/GRCString.h"
@@ -19,25 +20,27 @@
 class RobotData: public GRCJsonData
 {
 public:
-	struct DATA: BASEDATA
+	struct DATA
 	{
+		GRCString name;
+		int type;
 		GRCString weaponname;
 		GRCString attackedsoundfilename;
 		GRCString deathsoundfilename;
 		GRCString revivesoundfilename;
 		unsigned char movepowers[WAROIDDIRECTION::TOTAL];
 
-		DATA()
+		DATA() : type(0)
 		{
 			bzero(movepowers, sizeof(movepowers));
 		}
 
-		virtual bool isValid() const override
+		bool isValid() const
 		{
-			return BASEDATA::isValid() && weaponname.isEmpty() == false;
+			return name.isEmpty() == false && type >= 0 && weaponname.isEmpty() == false;
 		}
-
 	};
+	using MapData = std::map<int, DATA*>;
 
 public:
 	RobotData();
@@ -46,20 +49,17 @@ public:
 public:
 	bool load();
 
-	const DATA* find(int id) const
-	{
-		return (const DATA*) findData(id);
-	}
-	const DATA* find(GRCCSTR name) const
-	{
-		return (const DATA*) findData(name);
-	}
+	const DATA* find(int id) const;
+	const DATA* find(GRCCSTR name) const;
 
 protected:
 	virtual bool onLoad(const RAPIDJSON_NAMESPACE::Value& data) override;
 
 private:
 	bool setMovePowers(DATA* data, const RAPIDJSON_NAMESPACE::Value& value);
+
+private:
+	MapData m_datas;
 };
 
 #endif /* ROBOTDATA_H_ */

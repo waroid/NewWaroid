@@ -103,7 +103,7 @@ void GameSession::onOpen()
 
 	WAROIDROBOTGAME::R_G_ACTIVE spacket;
 	spacket.id = Manager::getRobotInfo().getId();
-	spacket.type = Manager::getRobotInfo().getRobotData()->id;
+	spacket.type = Manager::getRobotInfo().getRobotData()->type;
 	sendPacket(&spacket);
 }
 

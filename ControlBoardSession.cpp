@@ -218,7 +218,7 @@ void ControlBoardSession::onRequestHeartbeat()
 	{
 		packet.hi = static_cast<char>(m_requestHeartbeat.inc());
 		packet.low = ++low;
-		if (packet.hi > 2)
+		if (packet.hi >= 2)
 		{
 			m_green.update(false);
 

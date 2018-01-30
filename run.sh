@@ -1,7 +1,0 @@
-#!/bin/bash
-
-_ROBOT_ID=3
-_ROBOT_TYPE="TOAD"
-_GAME_SERVER="192.168.1.201"
-
-sudo ./NewWaroidServer $_ROBOT_ID $_ROBOT_TYPE $_GAME_SERVER 1

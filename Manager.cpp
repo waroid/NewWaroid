@@ -44,8 +44,11 @@ bool Manager::start(int robotId, const char* robotTypeName, const char* gameServ
 
 	GRC_CHECK_RETFALSE(s_controlBoardOpener.open(CONTROL_BOARD_DEVICE, CONTROL_BOARD_BAUD));
 
-	s_gameConnector.start();
-	GRC_CHECK_RETFALSE(s_gameConnector.connect(gameServerIp, ROBOT_GAME_PORT, true));
+	if (gameServerIp != nullptr && strcasecmp(gameServerIp, "none") != 0)
+	{
+		s_gameConnector.start();
+		GRC_CHECK_RETFALSE(s_gameConnector.connect(gameServerIp, ROBOT_GAME_PORT, true));
+	}
 
 	GRC_CHECK_RETFALSE(s_userListener.listen(USER_ROBOT_PORT));
 
